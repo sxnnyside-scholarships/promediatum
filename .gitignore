@@ -1,0 +1,42 @@
+# ── Laravel ──
+/vendor
+/node_modules
+/storage/*.key
+/storage/app/*
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+/storage/pail
+/bootstrap/cache/*
+/public/storage
+.env
+.env.*
+.phpunit.result.cache
+/.phpunit.cache
+Homestead.json
+Homestead.yaml
+/auth.json
+
+# ── Vite ──
+/public/build
+/public/hot
+
+# ── OS ──
+.DS_Store
+Thumbs.db
+
+# ── IDE ──
+/.fleet
+/.idea
+/.nova
+/.vscode
+/.zed
+*.swp
+.phpactor.json
+
+# ── SQLite ──
+database/database.sqlite
+
+# ── Logs ──
+npm-debug.log
+yarn-error.log
