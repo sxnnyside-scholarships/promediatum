@@ -6,6 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property int $id
+ * @property int $group_id
+ * @property string $name
+ * @property float $weight
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Grade> $grades
+ */
 class GradeCategory extends Model
 {
     protected $fillable = [
@@ -17,7 +26,7 @@ class GradeCategory extends Model
     protected function casts(): array
     {
         return [
-            'weight' => 'decimal:2',
+            'weight' => 'float',
         ];
     }
 

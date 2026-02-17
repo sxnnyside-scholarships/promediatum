@@ -5,6 +5,21 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int $student_id
+ * @property int $group_id
+ * @property int $period_id
+ * @property string $type
+ * @property string $content
+ * @property string $status
+ * @property \Illuminate\Support\Carbon|null $resolved_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read Student|null $student
+ * @property-read Group|null $group
+ * @property-read Period|null $period
+ */
 class Observation extends Model
 {
     protected $fillable = [

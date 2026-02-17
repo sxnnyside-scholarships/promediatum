@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Group;
+use App\Models\GradeCategory;
 use App\Models\Period;
+use App\Models\Student;
 use App\Services\AcademicService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -66,15 +68,32 @@ class GroupController extends Controller
      */
     public function show(Group $group): Response
     {
-        $group->load(['period', 'students', 'gradeCategories']);
+        $group->load([
+            'period',
+            'gradeCategories',
+            'students' => function ($query) {
+                $query->orderBy('last_name')->orderBy('first_name');
+            },
+        ]);
 
         $periodId = $group->period_id;
-        $studentsWithSummary = $group->students->map(function ($student) use ($group, $periodId) {
-            $summary = $this->academic->getStudentSummary($student->id, $group->id, $periodId);
+
+        // Batch: 3 queries total instead of 3-7+ per student (N+1 fix)
+        $studentIds = $group->students->pluck('id')->all();
+        $summaries = $this->academic->getGroupStudentSummaries($studentIds, $group->id, $periodId);
+
+        $studentsWithSummary = $group->students->map(function (Student $student) use ($summaries) {
+            $summary = $summaries[$student->id] ?? [
+                'average' => null,
+                'attendance' => ['total' => 0, 'present' => 0, 'absent' => 0, 'justified' => 0, 'rate' => null],
+                'absence_streak' => 0,
+                'has_absence_alert' => false,
+                'at_risk' => false,
+            ];
             return array_merge($student->toArray(), ['summary' => $summary]);
         });
 
-        $categoryBreakdown = $group->gradeCategories->map(fn ($cat) => [
+        $categoryBreakdown = $group->gradeCategories->map(fn (GradeCategory $cat) => [
             'id' => $cat->id,
             'name' => $cat->name,
             'weight' => $cat->weight,

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Attendance;
 use App\Models\Group;
+use App\Models\Student;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -26,7 +27,7 @@ class AttendanceController extends Controller
             ->pluck('status', 'student_id')
             ->toArray();
 
-        $students = $group->students->map(fn ($s) => [
+        $students = $group->students->map(fn (Student $s) => [
             'id' => $s->id,
             'full_name' => $s->full_name,
             'status' => $existing[$s->id] ?? null,

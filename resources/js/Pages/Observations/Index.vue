@@ -3,9 +3,10 @@
  * Observations Index — Global list with filters
  */
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import CpButton from '@/Components/CpButton.vue';
 import CpSelect from '@/Components/CpSelect.vue';
 import { useTranslations } from '@/composables/useTranslations.js';
-import { Head, router } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
 
 const { t } = useTranslations();
@@ -73,14 +74,19 @@ function formatDate(dateStr) {
         <Head :title="t('observations.title')" />
 
         <div>
-            <h1 class="font-serif mb-6">{{ t('observations.title') }}</h1>
+            <div class="flex items-center justify-between mb-6">
+                <h1 class="font-serif">{{ t('observations.title') }}</h1>
+                <Link :href="route('exports.history')">
+                    <CpButton type="button" variant="ghost">{{ t('exports.title') }}</CpButton>
+                </Link>
+            </div>
 
             <!-- Filters -->
             <div class="flex flex-wrap items-end gap-4 mb-6">
-                <div class="w-40">
+                <div class="w-48">
                     <CpSelect id="filter_status" v-model="statusFilter" :label="t('observations.status')" :options="statusOptions" />
                 </div>
-                <div class="w-40">
+                <div class="w-44">
                     <CpSelect id="filter_type" v-model="typeFilter" :label="t('observations.type')" :options="typeOptions" />
                 </div>
                 <div class="w-48">

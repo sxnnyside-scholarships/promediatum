@@ -2,6 +2,8 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\SmtpSetting;
+use App\Services\UI\FabActionResolver;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -54,7 +56,29 @@ class HandleInertiaRequests extends Middleware
             'locale' => fn () => app()->getLocale(),
             'flash' => [
                 'status' => fn () => $request->session()->get('status'),
+                'smtp_status' => fn () => $request->session()->get('smtp_status'),
             ],
+            // FAB contextual actions (resolved server-side)
+            'fab' => fn () => $this->resolveFabActions($request),
+            // Whether the user has SMTP configured (for showing email option)
+            'smtp_configured' => fn () => $user ? SmtpSetting::where('user_id', $user->id)->where('verified', true)->exists() : false,
         ];
+    }
+
+    /**
+     * Resolve intelligent FAB actions based on current route and app state.
+     */
+    protected function resolveFabActions(Request $request): array
+    {
+        if (! $request->user()) {
+            return [];
+        }
+
+        $resolver  = app(FabActionResolver::class);
+        $routeName = $request->route()?->getName() ?? 'workspace';
+        $params    = $request->route()?->parameters() ?? [];
+        $state     = $resolver->gatherState();
+
+        return $resolver->resolve($routeName, $params, $state);
     }
 }

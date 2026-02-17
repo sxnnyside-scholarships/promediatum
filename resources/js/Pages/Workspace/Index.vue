@@ -20,8 +20,38 @@ const props = defineProps({
     groups: { type: Array, default: () => [] },
     pendingObservations: { type: Array, default: () => [] },
     recentActivity: { type: Array, default: () => [] },
+    insights: { type: Array, default: () => [] },
+    suggestedActions: { type: Array, default: () => [] },
     stats: { type: Object, default: () => ({}) },
 });
+
+const insightSeverityStyle = {
+    critical: 'border-l-state-danger bg-state-danger/5 dark:bg-state-danger/10',
+    high: 'border-l-state-warning bg-state-warning/5 dark:bg-state-warning/10',
+    medium: 'border-l-accent-400 bg-accent-50/50 dark:bg-accent-900/10',
+    low: 'border-l-state-info bg-state-info/5 dark:bg-state-info/10',
+};
+
+const insightSeverityDot = {
+    critical: 'bg-state-danger',
+    high: 'bg-state-warning',
+    medium: 'bg-accent-400',
+    low: 'bg-state-info',
+};
+
+const actionSeverityStyle = {
+    critical: 'border-l-state-danger',
+    high: 'border-l-state-warning',
+    medium: 'border-l-accent-400',
+    low: 'border-l-state-info',
+};
+
+const actionIconMap = {
+    book: 'book',
+    phone: 'phone',
+    download: 'download',
+    clipboard: 'clipboard',
+};
 
 const observationTypeColor = {
     performance: 'text-state-warning',
@@ -226,17 +256,62 @@ const observationTypeColor = {
                     </p>
                 </section>
 
-                <!-- ═══ 5. FAVORITES PLACEHOLDER ═══ -->
+                <!-- ═══ 5. INSIGHTS ═══ -->
                 <section class="rounded-subtle bg-cafe-100/60 dark:bg-surface-dark-1 p-6">
                     <div class="flex items-center gap-2 mb-4">
-                        <CpIcon name="star" :size="18" class-name="text-cafe-500 dark:text-cafe-400" />
+                        <CpIcon name="alert-triangle" :size="18" class-name="text-cafe-500 dark:text-cafe-400" />
                         <h2 class="text-sm font-semibold text-cafe-700 dark:text-cafe-200">
-                            {{ t('workspace.favorites') }}
+                            {{ t('workspace.insights') }}
                         </h2>
                     </div>
-                    <p class="text-sm text-cafe-400 dark:text-cafe-500 text-center py-6">
-                        {{ t('workspace.favorites_soon') }}
+
+                    <div v-if="insights.length" class="space-y-2">
+                        <a
+                            v-for="(insight, idx) in insights"
+                            :key="idx"
+                            :href="insight.route"
+                            class="block border-l-3 rounded-r-subtle px-3 py-2.5 transition-colors duration-150 hover:opacity-80"
+                            :class="insightSeverityStyle[insight.severity] || ''"
+                        >
+                            <div class="flex items-center gap-2 mb-0.5">
+                                <span class="w-1.5 h-1.5 rounded-full shrink-0" :class="insightSeverityDot[insight.severity]" />
+                                <span class="text-xs font-medium uppercase tracking-wide text-cafe-500 dark:text-cafe-400">
+                                    {{ t('insights.severity_' + insight.severity) }}
+                                </span>
+                            </div>
+                            <p class="text-sm text-cafe-700 dark:text-cafe-200 leading-snug">{{ insight.message }}</p>
+                            <p class="text-xs text-cafe-500 dark:text-cafe-400 mt-1">{{ insight.suggested_action }}</p>
+                        </a>
+                    </div>
+                    <p v-else class="text-sm text-cafe-400 dark:text-cafe-500 text-center py-6">
+                        {{ t('workspace.no_insights') }}
                     </p>
+                </section>
+
+                <!-- ═══ 6. SUGGESTED ACTIONS ═══ -->
+                <section v-if="suggestedActions.length" class="lg:col-span-2 rounded-subtle bg-cafe-100/60 dark:bg-surface-dark-1 p-6">
+                    <div class="flex items-center gap-2 mb-4">
+                        <CpIcon name="zap" :size="18" class-name="text-cafe-500 dark:text-cafe-400" />
+                        <h2 class="text-sm font-semibold text-cafe-700 dark:text-cafe-200">
+                            {{ t('workspace.suggested_actions') }}
+                        </h2>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                        <a
+                            v-for="(action, idx) in suggestedActions.slice(0, 5)"
+                            :key="idx"
+                            :href="action.route ? route(action.route) : '#'"
+                            class="flex items-start gap-3 border-l-3 rounded-r-subtle px-4 py-3 bg-cafe-50 dark:bg-surface-dark-2 hover:bg-cafe-200/40 dark:hover:bg-surface-dark-3 transition-colors duration-150"
+                            :class="actionSeverityStyle[action.severity] || ''"
+                        >
+                            <CpIcon :name="action.icon || 'zap'" :size="18" class-name="text-cafe-500 dark:text-cafe-400 mt-0.5 shrink-0" />
+                            <div class="min-w-0">
+                                <p class="text-sm font-medium text-cafe-800 dark:text-cafe-100 leading-snug">{{ action.title }}</p>
+                                <p class="text-xs text-cafe-500 dark:text-cafe-400 mt-0.5 line-clamp-2">{{ action.description }}</p>
+                            </div>
+                        </a>
+                    </div>
                 </section>
             </div>
         </div>

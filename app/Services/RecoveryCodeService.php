@@ -54,6 +54,7 @@ class RecoveryCodeService
     {
         $unusedCodes = $user->unusedRecoveryCodes()->get();
 
+        /** @var RecoveryCode $recoveryCode */
         foreach ($unusedCodes as $recoveryCode) {
             if (Hash::check($code, $recoveryCode->code_hash)) {
                 return true;
@@ -71,6 +72,7 @@ class RecoveryCodeService
     {
         $unusedCodes = $user->unusedRecoveryCodes()->get();
 
+        /** @var RecoveryCode $recoveryCode */
         foreach ($unusedCodes as $recoveryCode) {
             if (Hash::check($code, $recoveryCode->code_hash)) {
                 $recoveryCode->markAsUsed();

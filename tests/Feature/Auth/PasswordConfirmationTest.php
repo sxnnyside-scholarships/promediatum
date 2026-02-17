@@ -2,43 +2,29 @@
 
 namespace Tests\Feature\Auth;
 
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
+/**
+ * Password confirmation route is not used in this app.
+ * The app uses recovery codes for password reset instead.
+ */
 class PasswordConfirmationTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_confirm_password_screen_can_be_rendered(): void
+    public function test_forgot_password_screen_can_be_rendered(): void
     {
-        $user = User::factory()->create();
-
-        $response = $this->actingAs($user)->get('/confirm-password');
+        $response = $this->get('/forgot-password');
 
         $response->assertStatus(200);
     }
 
-    public function test_password_can_be_confirmed(): void
+    public function test_reset_password_requires_verification_first(): void
     {
-        $user = User::factory()->create();
+        // GET /reset-password without session should redirect to forgot-password
+        $response = $this->get('/reset-password');
 
-        $response = $this->actingAs($user)->post('/confirm-password', [
-            'password' => 'password',
-        ]);
-
-        $response->assertRedirect();
-        $response->assertSessionHasNoErrors();
-    }
-
-    public function test_password_is_not_confirmed_with_invalid_password(): void
-    {
-        $user = User::factory()->create();
-
-        $response = $this->actingAs($user)->post('/confirm-password', [
-            'password' => 'wrong-password',
-        ]);
-
-        $response->assertSessionHasErrors();
+        $response->assertRedirect(route('password.request'));
     }
 }

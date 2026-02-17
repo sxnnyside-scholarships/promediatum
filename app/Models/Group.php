@@ -8,6 +8,23 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
+/**
+ * @property int $id
+ * @property string $name
+ * @property string|null $subject
+ * @property string|null $educational_level
+ * @property int $period_id
+ * @property string $slug
+ * @property bool $is_archived
+ * @property int $students_count
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read Period|null $period
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Student> $students
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, GradeCategory> $gradeCategories
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Grade> $grades
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Attendance> $attendances
+ */
 class Group extends Model
 {
     protected $fillable = [

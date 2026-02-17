@@ -47,14 +47,19 @@ function formatDate(dateStr) {
                         {{ t('periods.details') }}
                     </p>
                 </div>
-                <span
-                    class="inline-flex items-center px-2.5 py-1 rounded-subtle text-xs font-medium"
-                    :class="period.is_active
-                        ? 'bg-state-success/10 text-state-success'
-                        : 'bg-cafe-200 dark:bg-surface-dark-3 text-cafe-500 dark:text-cafe-400'"
-                >
-                    {{ period.is_active ? t('periods.active') : t('periods.inactive') }}
-                </span>
+                <div class="flex items-center gap-3">
+                    <Link :href="route('exports.history', { type: 'period', period_id: period.id })">
+                        <CpButton type="button" variant="ghost">{{ t('exports.title') }}</CpButton>
+                    </Link>
+                    <span
+                        class="inline-flex items-center px-2.5 py-1 rounded-subtle text-xs font-medium"
+                        :class="period.is_active
+                            ? 'bg-state-success/10 text-state-success'
+                            : 'bg-cafe-200 dark:bg-surface-dark-3 text-cafe-500 dark:text-cafe-400'"
+                    >
+                        {{ period.is_active ? t('periods.active') : t('periods.inactive') }}
+                    </span>
+                </div>
             </div>
 
             <!-- Detail fields — grid -->

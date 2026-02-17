@@ -6,6 +6,17 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
+/**
+ * @property int $id
+ * @property string $name
+ * @property string $slug
+ * @property \Illuminate\Support\Carbon|null $start_date
+ * @property \Illuminate\Support\Carbon|null $end_date
+ * @property bool $is_active
+ * @property int $days_remaining
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ */
 class Period extends Model
 {
     protected $fillable = [
@@ -69,10 +80,14 @@ class Period extends Model
 
     /**
      * Calculate the number of days remaining until end_date.
-     * Returns 0 if the period has already ended.
+     * Returns 0 if the period has already ended or end_date is null.
      */
     public function getDaysRemainingAttribute(): int
     {
+        if (! $this->end_date instanceof \Carbon\Carbon) {
+            return 0;
+        }
+
         $today = now()->startOfDay();
         $end = $this->end_date->startOfDay();
 
@@ -90,8 +105,10 @@ class Period extends Model
 
     /**
      * Get the currently active period.
+     *
+     * @return self|null
      */
-    public static function active(): ?static
+    public static function active(): ?self
     {
         return static::where('is_active', true)->first();
     }

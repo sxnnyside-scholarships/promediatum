@@ -7,6 +7,17 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
+/**
+ * @property int $id
+ * @property string $first_name
+ * @property string $last_name
+ * @property string $slug
+ * @property string $full_name
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Group> $groups
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Observation> $observations
+ */
 class Student extends Model
 {
     protected $fillable = [

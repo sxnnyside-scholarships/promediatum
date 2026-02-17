@@ -126,7 +126,10 @@ function toggleArchive() {
                     </p>
                 </div>
                 <div class="flex items-center gap-2">
-                    <Link :href="route('attendance.index', group.slug)">
+                    <Link :href="route('exports.history', { type: 'group', group_id: group.id })" class="inline">
+                        <CpButton type="button" variant="ghost">{{ t('exports.title') }}</CpButton>
+                    </Link>
+                    <Link :href="route('attendance.index', group.slug)" class="inline">
                         <CpButton type="button" variant="secondary">{{ t('attendance.title') }}</CpButton>
                     </Link>
                     <CpButton type="button" :variant="group.is_archived ? 'primary' : 'ghost'" @click="toggleArchive">
@@ -206,10 +209,10 @@ function toggleArchive() {
                     <section>
                         <div class="flex items-center justify-between mb-4">
                             <h2 class="text-sm font-medium text-cafe-700 dark:text-cafe-200 uppercase tracking-wide">
-                                {{ t('grades.add') }}
+                                {{ t('grades.title') }}
                             </h2>
                             <CpButton type="button" variant="ghost" @click="showGradeForm = !showGradeForm">
-                                {{ showGradeForm ? t('common.cancel') : '+' }}
+                                {{ showGradeForm ? t('common.cancel') : t('grades.add') }}
                             </CpButton>
                         </div>
 
@@ -232,10 +235,10 @@ function toggleArchive() {
                     <section>
                         <div class="flex items-center justify-between mb-4">
                             <h2 class="text-sm font-medium text-cafe-700 dark:text-cafe-200 uppercase tracking-wide">
-                                {{ t('observations.add') }}
+                                {{ t('observations.title') }}
                             </h2>
                             <CpButton type="button" variant="ghost" @click="showObsForm = !showObsForm">
-                                {{ showObsForm ? t('common.cancel') : '+' }}
+                                {{ showObsForm ? t('common.cancel') : t('observations.add') }}
                             </CpButton>
                         </div>
 
@@ -268,7 +271,7 @@ function toggleArchive() {
                                 {{ t('grades.categories') }}
                             </h2>
                             <CpButton type="button" variant="ghost" @click="showCategoryForm = !showCategoryForm">
-                                {{ showCategoryForm ? t('common.cancel') : '+' }}
+                                {{ showCategoryForm ? t('common.cancel') : t('common.add') }}
                             </CpButton>
                         </div>
 

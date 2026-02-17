@@ -1,4 +1,13 @@
 {
+    "name": "promediatum",
+    "version": "1.0.0",
+    "description": "Personal academic workspace for independent educators",
+    "author": "Sxnnyside Scholarships",
+    "homepage": "https://www.sxnnysideproject.com",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/HoujouSxnnyside/promediatum"
+    },
     "private": true,
     "type": "module",
     "scripts": {

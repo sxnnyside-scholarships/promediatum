@@ -5,6 +5,20 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int $student_id
+ * @property int $group_id
+ * @property int $period_id
+ * @property int $category_id
+ * @property string $title
+ * @property float $score
+ * @property float $max_score
+ * @property \Illuminate\Support\Carbon|null $date
+ * @property float $percentage
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ */
 class Grade extends Model
 {
     protected $fillable = [
@@ -21,8 +35,8 @@ class Grade extends Model
     protected function casts(): array
     {
         return [
-            'score' => 'decimal:2',
-            'max_score' => 'decimal:2',
+            'score' => 'float',
+            'max_score' => 'float',
             'date' => 'date',
         ];
     }

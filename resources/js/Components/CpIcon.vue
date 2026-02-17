@@ -167,6 +167,55 @@
             <polyline points="9 22 9 12 15 12 15 22" />
         </template>
 
+        <!-- Mail / Email -->
+        <template v-else-if="name === 'mail'">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+            <polyline points="22,6 12,13 2,6" />
+        </template>
+
+        <!-- Send -->
+        <template v-else-if="name === 'send'">
+            <line x1="22" y1="2" x2="11" y2="13" />
+            <polygon points="22 2 15 22 11 13 2 9 22 2" />
+        </template>
+
+        <!-- Download -->
+        <template v-else-if="name === 'download'">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+        </template>
+
+        <!-- Filter -->
+        <template v-else-if="name === 'filter'">
+            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+        </template>
+
+        <!-- Zap / Lightning (visual effects) -->
+        <template v-else-if="name === 'zap'">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+        </template>
+
+        <!-- Check Circle -->
+        <template v-else-if="name === 'check-circle'">
+            <path d="M22 11.08V12a10 10 0 11-5.93-9.14" />
+            <polyline points="22 4 12 14.01 9 11.01" />
+        </template>
+
+        <!-- X Circle -->
+        <template v-else-if="name === 'x-circle'">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="15" y1="9" x2="9" y2="15" />
+            <line x1="9" y1="9" x2="15" y2="15" />
+        </template>
+
+        <!-- Info -->
+        <template v-else-if="name === 'info'">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="16" x2="12" y2="12" />
+            <line x1="12" y1="8" x2="12.01" y2="8" />
+        </template>
+
         <!-- Fallback: question mark -->
         <template v-else>
             <circle cx="12" cy="12" r="10" />

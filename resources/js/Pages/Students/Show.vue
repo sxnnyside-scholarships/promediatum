@@ -70,7 +70,12 @@ function toggleResolved(obs) {
                 </Link>
             </div>
 
-            <h1 class="font-serif mb-2">{{ student.full_name }}</h1>
+            <div class="flex items-start justify-between mb-2">
+                <h1 class="font-serif">{{ student.full_name }}</h1>
+                <Link :href="route('exports.history', { type: 'student', student_id: student.id })">
+                    <CpButton type="button" variant="ghost">{{ t('exports.title') }}</CpButton>
+                </Link>
+            </div>
             <p class="text-sm text-cafe-500 dark:text-cafe-400 mb-8">
                 {{ student.groups?.length || 0 }} {{ t('students.groups_count') }}
             </p>
@@ -137,7 +142,7 @@ function toggleResolved(obs) {
                             {{ t('observations.title') }}
                         </h2>
                         <CpButton type="button" variant="ghost" @click="showObsForm = !showObsForm">
-                            {{ showObsForm ? t('common.cancel') : '+' }}
+                            {{ showObsForm ? t('common.cancel') : t('observations.add') }}
                         </CpButton>
                     </div>
 

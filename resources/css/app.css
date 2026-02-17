@@ -46,6 +46,18 @@
                dark:placeholder-cafe-500 dark:focus:border-accent-400;
     }
 
+    select.cp-input {
+        @apply pr-10 appearance-none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 1rem;
+    }
+
+    .dark select.cp-input {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    }
+
     .cp-label {
         @apply block text-sm font-medium text-cafe-700 dark:text-cafe-200 mb-1;
     }
@@ -82,5 +94,10 @@
     /* ── Horizontal rule separator ── */
     .cp-separator {
         @apply border-t border-cafe-200 dark:border-cafe-800;
+    }
+
+    /* ── Decorative icon visibility toggle ── */
+    .hide-decorative-icons .decorative-icon {
+        @apply invisible w-0 h-0 overflow-hidden;
     }
 }

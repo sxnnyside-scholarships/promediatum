@@ -10,7 +10,6 @@
 /bootstrap/cache/*
 /public/storage
 .env
-.env.*
 .phpunit.result.cache
 /.phpunit.cache
 Homestead.json

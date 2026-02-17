@@ -1,6 +1,6 @@
 # Promediatum Roadmap
 
-Strategic overview of planned development phases.
+Strategic overview of development phases.
 
 ## Phase 1 — Foundation (Completed)
 
@@ -15,21 +15,30 @@ Strategic overview of planned development phases.
 - Centralized icon system
 - Full-width layout enforcement with 70/30 grid pattern
 
-## Phase 2 — Export System (Planned)
+## Phase 2 — Export System (Completed)
 
-- Export engine with customizable templates
-- PDF generation with personalized formatting
-- Excel / CSV structured data exports
-- JSON export for interoperability
-- SMTP email integration for report delivery
-- Google Sheets / Notion structure-ready output formats
-- Export history and template management
+- Export engine with customizable templates (PDF, Excel, CSV, JSON)
+- DomPDF-powered PDF generation with personalized formatting
+- Maatwebsite Excel and CSV structured data exports
+- SMTP email integration for report delivery with encrypted credentials
+- Export history and template management UI
+- Template CRUD with column selection, sorting, and grouping
 
-## Phase 3 — Insights & Expansion (Future)
+## Phase 3 — Insights, Automation & Desktop (Completed)
 
-- Advanced academic insights engine
-- Automated risk detection enhancements with configurable thresholds
-- Optional visual effects system for UI polish
-- Integration layer expansion for external tools
-- Bulk operations for attendance and grading workflows
-- Archive and historical data analysis
+- NativePHP + Electron desktop packaging (macOS, Windows)
+- AES-256-CBC encrypted backup system with create/restore/validate/prune
+- GitHub Releases-based auto-update with safe migration and rollback
+- Insights engine with composite risk scoring and trend analysis
+- Automation engine with rule-based suggested actions
+- Cache-based notification service with cooldown deduplication
+- Performance optimization (batch queries, composite indexes, multi-layer cache)
+
+## Phase 4 — Final Hardening & 1.0.0 Release (Completed)
+
+- Official version 1.0.0
+- Project identity and metadata consistency
+- Security hardening (dev tools disabled in production, no debug routes)
+- Production build configuration
+- Documentation alignment (README, CHANGELOG, SECURITY.md)
+- Packaging finalization with correct bundle identifiers

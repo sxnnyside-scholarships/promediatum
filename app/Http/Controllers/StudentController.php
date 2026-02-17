@@ -61,16 +61,17 @@ class StudentController extends Controller
         $student->load(['groups.period', 'observations']);
 
         // Build per-group summaries
-        $groupSummaries = $student->groups->map(function ($group) use ($student) {
+        $groupSummaries = $student->groups->map(function (Group $group) use ($student) {
+            $periodId = $group->pivot->period_id ?? $group->period_id;
             $summary = $this->academic->getStudentSummary(
                 $student->id,
                 $group->id,
-                $group->pivot->period_id ?? $group->period_id
+                $periodId
             );
             $categories = $this->academic->getCategoryBreakdown(
                 $student->id,
                 $group->id,
-                $group->pivot->period_id ?? $group->period_id
+                $periodId
             );
 
             return [

@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\Attendance;
+use App\Models\ExportHistory;
+use App\Models\ExportTemplate;
 use App\Models\Grade;
 use App\Models\GradeCategory;
 use App\Models\Group;
@@ -27,6 +29,8 @@ class DatabaseSeeder extends Seeder
      * - Attendance records (with consecutive absences for risk detection)
      * - Sample grades (some below 60% for risk flags)
      * - Observations (mix of types and statuses)
+     * - 3 export templates (1 per type, all default)
+     * - 3 export history records (CSV, JSON, XLSX; 1 via email)
      */
     public function run(): void
     {
@@ -304,6 +308,110 @@ class DatabaseSeeder extends Seeder
             'type' => 'followup',
             'content' => 'Seguimiento a reunión con padres. El estudiante muestra mejora gradual en participación.',
             'status' => 'pending',
+        ]);
+
+        // ── Export Templates ──
+        // Default group template
+        $groupTemplate = ExportTemplate::create([
+            'user_id' => $user->id,
+            'name' => 'Reporte Estándar de Grupo',
+            'type' => 'group',
+            'is_default' => true,
+            'config' => [
+                'orientation' => 'portrait',
+                'date_format' => 'Y-m-d',
+                'numeric_precision' => 2,
+                'include_attendance_summary' => true,
+                'include_observations_summary' => true,
+                'include_category_breakdown' => true,
+                'include_signature_line' => false,
+                'include_header_text' => 'Escuela Normal Superior',
+                'include_footer_text' => '',
+            ],
+        ]);
+
+        // Student template (landscape + signature)
+        $studentTemplate = ExportTemplate::create([
+            'user_id' => $user->id,
+            'name' => 'Ficha del Estudiante',
+            'type' => 'student',
+            'is_default' => true,
+            'config' => [
+                'orientation' => 'landscape',
+                'date_format' => 'd/m/Y',
+                'numeric_precision' => 1,
+                'include_attendance_summary' => true,
+                'include_observations_summary' => true,
+                'include_category_breakdown' => true,
+                'include_signature_line' => true,
+                'include_header_text' => 'Escuela Normal Superior — Ficha Académica',
+                'include_footer_text' => 'Documento confidencial',
+            ],
+        ]);
+
+        // Period summary template
+        ExportTemplate::create([
+            'user_id' => $user->id,
+            'name' => 'Resumen de Periodo',
+            'type' => 'period',
+            'is_default' => true,
+            'config' => [
+                'orientation' => 'portrait',
+                'date_format' => 'Y-m-d',
+                'numeric_precision' => 2,
+                'include_attendance_summary' => true,
+                'include_observations_summary' => false,
+                'include_category_breakdown' => true,
+                'include_signature_line' => false,
+                'include_header_text' => '',
+                'include_footer_text' => '',
+            ],
+        ]);
+
+        // ── Export History ──
+        // CSV group export (download)
+        ExportHistory::create([
+            'user_id' => $user->id,
+            'type' => 'group',
+            'format' => 'csv',
+            'period_id' => $activePeriod->id,
+            'group_id' => $mathGroup->id,
+            'student_id' => null,
+            'template_id' => $groupTemplate->id,
+            'file_name' => 'matematicas-3a-export.csv',
+            'file_path' => 'exports/matematicas-3a-export.csv',
+            'sent_via_email' => false,
+            'recipient_email' => null,
+        ]);
+
+        // JSON student export (download)
+        ExportHistory::create([
+            'user_id' => $user->id,
+            'type' => 'student',
+            'format' => 'json',
+            'period_id' => $activePeriod->id,
+            'group_id' => $mathGroup->id,
+            'student_id' => $students[0]->id,
+            'template_id' => $studentTemplate->id,
+            'file_name' => 'carlos-hernandez-export.json',
+            'file_path' => 'exports/carlos-hernandez-export.json',
+            'sent_via_email' => false,
+            'recipient_email' => null,
+        ]);
+
+        // XLSX group export (sent via email)
+        ExportHistory::create([
+            'user_id' => $user->id,
+            'type' => 'group',
+            'format' => 'xlsx',
+            'period_id' => $activePeriod->id,
+            'group_id' => $scienceGroup->id,
+            'student_id' => null,
+            'template_id' => $groupTemplate->id,
+            'file_name' => 'ciencias-2b-export.xlsx',
+            'file_path' => 'exports/ciencias-2b-export.xlsx',
+            'sent_via_email' => true,
+            'recipient_email' => 'director@escuela.edu.mx',
         ]);
     }
 }

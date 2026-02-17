@@ -12,6 +12,7 @@ import ThemeToggle from '@/Components/ThemeToggle.vue';
 import LocaleSwitch from '@/Components/LocaleSwitch.vue';
 import CpIcon from '@/Components/CpIcon.vue';
 import CpFab from '@/Components/CpFab.vue';
+import CpToast from '@/Components/CpToast.vue';
 import { useTranslations } from '@/composables/useTranslations.js';
 import { router, usePage, Link } from '@inertiajs/vue3';
 import { ref, computed, onMounted, onUnmounted } from 'vue';
@@ -26,6 +27,7 @@ const sidebarOpen = ref(true);
 // UI preferences from DB
 const userSettings = computed(() => page.props.auth.user?.settings ?? {});
 const sidebarTrailing = computed(() => userSettings.value.sidebar_position === 'trailing');
+const iconsHidden = computed(() => userSettings.value.icons_enabled === false);
 const textWeightClass = computed(() => {
     const w = userSettings.value.text_weight;
     if (w === '300') return 'font-light';
@@ -58,17 +60,18 @@ function logout() {
 }
 
 const navItems = computed(() => [
-    { label: t('nav.dashboard'), href: route('workspace'), active: route().current('workspace') },
-    { label: t('nav.periods'), href: route('periods.index'), active: route().current('periods.*') },
-    { label: t('nav.groups'), href: route('groups.index'), active: route().current('groups.*') || route().current('attendance.*') || route().current('categories.*') || route().current('grades.*') },
-    { label: t('nav.students'), href: route('students.index'), active: route().current('students.*') },
-    { label: t('nav.observations'), href: route('observations.index'), active: route().current('observations.*') },
-    { label: t('nav.settings'), href: route('settings.index'), active: route().current('settings.*') },
+    { label: t('nav.dashboard'), href: route('workspace'), active: route().current('workspace'), icon: 'home' },
+    { label: t('nav.periods'), href: route('periods.index'), active: route().current('periods.*'), icon: 'calendar' },
+    { label: t('nav.groups'), href: route('groups.index'), active: route().current('groups.*') || route().current('attendance.*') || route().current('categories.*') || route().current('grades.*'), icon: 'users' },
+    { label: t('nav.students'), href: route('students.index'), active: route().current('students.*'), icon: 'user' },
+    { label: t('nav.observations'), href: route('observations.index'), active: route().current('observations.*'), icon: 'clipboard' },
+    { label: t('nav.exports'), href: route('exports.history'), active: route().current('exports.*'), icon: 'download' },
+    { label: t('nav.settings'), href: route('settings.index'), active: route().current('settings.*'), icon: 'settings' },
 ]);
 </script>
 
 <template>
-    <div class="min-h-screen bg-cafe-50 dark:bg-surface-dark flex flex-col" :class="textWeightClass">
+    <div class="min-h-screen bg-cafe-50 dark:bg-surface-dark flex flex-col" :class="[textWeightClass, { 'hide-decorative-icons': iconsHidden }]">
         <!-- Top bar -->
         <header class="border-b border-cafe-200 dark:border-cafe-800 bg-cafe-100 dark:bg-surface-dark-1 z-30">
             <div class="flex items-center justify-between px-6 py-3">
@@ -164,18 +167,25 @@ const navItems = computed(() => [
                         <Link
                             v-if="!item.disabled"
                             :href="item.href"
-                            class="block px-3 py-2 rounded-subtle text-sm transition-colors duration-150"
+                            class="flex items-center gap-2.5 px-3 py-2 rounded-subtle text-sm transition-colors duration-150"
                             :class="item.active
                                 ? 'bg-accent-100 dark:bg-accent-900/30 text-accent-700 dark:text-accent-300 font-medium'
                                 : 'text-cafe-600 dark:text-cafe-300 hover:bg-cafe-200/60 dark:hover:bg-surface-dark-2 hover:text-cafe-800 dark:hover:text-cafe-100'"
                         >
-                            {{ item.label }}
+                            <CpIcon
+                                :name="item.icon"
+                                :size="16"
+                                :stroke-width="item.active ? 2 : 1.5"
+                                class-name="shrink-0 decorative-icon"
+                            />
+                            <span>{{ item.label }}</span>
                         </Link>
                         <span
                             v-else
-                            class="block px-3 py-2 rounded-subtle text-sm text-cafe-400 dark:text-cafe-600 cursor-default"
+                            class="flex items-center gap-2.5 px-3 py-2 rounded-subtle text-sm text-cafe-400 dark:text-cafe-600 cursor-default"
                         >
-                            {{ item.label }}
+                            <CpIcon :name="item.icon" :size="16" :stroke-width="1.5" class-name="shrink-0 decorative-icon" />
+                            <span>{{ item.label }}</span>
                         </span>
                     </template>
                 </nav>
@@ -205,5 +215,8 @@ const navItems = computed(() => [
 
         <!-- Intelligent FAB -->
         <CpFab v-if="userSettings.fab_enabled !== false" />
+
+        <!-- Toast notifications -->
+        <CpToast />
     </div>
 </template>
