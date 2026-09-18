@@ -6,11 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -27,6 +28,9 @@ class User extends Authenticatable
         'educational_area',
         'educational_level',
         'profile_photo_path',
+        'two_factor_secret',
+        'two_factor_recovery_codes',
+        'two_factor_confirmed_at',
         'is_locked',
         'locale',
         'settings',
@@ -40,6 +44,8 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'two_factor_secret',
+        'two_factor_recovery_codes',
     ];
 
     /**
@@ -51,6 +57,7 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'two_factor_confirmed_at' => 'datetime',
             'password' => 'hashed',
             'is_locked' => 'boolean',
             'settings' => 'array',
@@ -63,6 +70,17 @@ class User extends Authenticatable
     public function getFullNameAttribute(): string
     {
         return "{$this->first_name} {$this->last_name}";
+    }
+
+    /**
+     * Get the user's initials.
+     */
+    public function getInitialsAttribute(): string
+    {
+        $first = mb_substr($this->first_name, 0, 1);
+        $last = mb_substr($this->last_name, 0, 1);
+
+        return mb_strtoupper("{$first}{$last}");
     }
 
     /**

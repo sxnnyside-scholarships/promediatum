@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\Auth\RecoveryCodeController;
 use App\Http\Controllers\BackupController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\ExportTemplateController;
@@ -15,9 +16,7 @@ use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SmtpSettingsController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\WorkspaceController;
-use App\Http\Controllers\Auth\RecoveryCodeController;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,6 +28,7 @@ Route::get('/', function () {
         if (auth()->user()->is_locked) {
             return redirect()->route('unlock');
         }
+
         return redirect()->route('workspace');
     }
 
@@ -115,7 +115,9 @@ Route::middleware(['auth', 'session.unlocked'])->group(function () {
     Route::post('/groups', [GroupController::class, 'store'])->name('groups.store');
     Route::get('/groups/{group}', [GroupController::class, 'show'])->name('groups.show');
     Route::post('/groups/{group}/toggle-archive', [GroupController::class, 'toggleArchive'])->name('groups.toggle-archive');
+    Route::patch('/groups/{group}/move-period', [GroupController::class, 'movePeriod'])->name('groups.move-period');
     Route::post('/groups/{group}/students', [GroupController::class, 'addStudent'])->name('groups.add-student');
+    Route::post('/groups/{group}/students/bulk', [GroupController::class, 'bulkAddStudents'])->name('groups.bulk-add-students');
     Route::delete('/groups/{group}/students/{student}', [GroupController::class, 'removeStudent'])->name('groups.remove-student');
 });
 
@@ -129,6 +131,7 @@ Route::middleware(['auth', 'session.unlocked'])->group(function () {
     Route::get('/students/create', [StudentController::class, 'create'])->name('students.create');
     Route::post('/students', [StudentController::class, 'store'])->name('students.store');
     Route::get('/students/{student}', [StudentController::class, 'show'])->name('students.show');
+    Route::patch('/students/{student}', [StudentController::class, 'update'])->name('students.update');
 });
 
 /*

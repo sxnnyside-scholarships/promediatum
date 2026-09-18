@@ -28,7 +28,7 @@ class GradeCategoryController extends Controller
         $currentTotal = $this->academic->validateCategoryWeights($group->id);
         if (($currentTotal + $validated['weight']) > 100) {
             return back()->withErrors([
-                'weight' => 'Total category weights cannot exceed 100%. Current total: ' . $currentTotal . '%.',
+                'weight' => 'Total category weights cannot exceed 100%. Current total: '.$currentTotal.'%.',
             ]);
         }
 
@@ -55,7 +55,7 @@ class GradeCategoryController extends Controller
         $currentTotal = $this->academic->validateCategoryWeights($category->group_id, $category->id);
         if (($currentTotal + $validated['weight']) > 100) {
             return back()->withErrors([
-                'weight' => 'Total category weights cannot exceed 100%. Current total (excluding this): ' . $currentTotal . '%.',
+                'weight' => 'Total category weights cannot exceed 100%. Current total (excluding this): '.$currentTotal.'%.',
             ]);
         }
 

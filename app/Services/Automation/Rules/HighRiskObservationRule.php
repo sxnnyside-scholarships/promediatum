@@ -34,24 +34,24 @@ final class HighRiskObservationRule extends AutomationRule
             }
 
             $studentId = $insight->meta['student_id'] ?? null;
-            $groupId   = $insight->meta['group_id'] ?? null;
-            $score     = $insight->meta['score'] ?? 0;
+            $groupId = $insight->meta['group_id'] ?? null;
+            $score = $insight->meta['score'] ?? 0;
 
             $severity = $insight->severity === InsightResult::SEVERITY_CRITICAL
                 ? AutomationAction::SEVERITY_CRITICAL
                 : AutomationAction::SEVERITY_HIGH;
 
             $actions[] = new AutomationAction(
-                type:        AutomationAction::TYPE_SUGGEST_OBSERVATION,
-                severity:    $severity,
-                title:       __('automation.suggest_observation_title'),
+                type: AutomationAction::TYPE_SUGGEST_OBSERVATION,
+                severity: $severity,
+                title: __('automation.suggest_observation_title'),
                 description: __('automation.suggest_observation_desc', ['score' => $score]),
-                icon:        'book',
-                route:       'observations.index',
-                meta:        [
+                icon: 'book',
+                route: 'observations.index',
+                meta: [
                     'student_id' => $studentId,
-                    'group_id'   => $groupId,
-                    'rule'       => $this->ruleKey(),
+                    'group_id' => $groupId,
+                    'rule' => $this->ruleKey(),
                 ],
             );
         }

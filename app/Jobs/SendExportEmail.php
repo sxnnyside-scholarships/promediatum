@@ -24,57 +24,60 @@ class SendExportEmail implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public int $tries = 3;
+
     public array $backoff = [10, 30, 60];
 
     public function __construct(
-        public readonly int    $exportHistoryId,
-        public readonly int    $smtpSettingId,
+        public readonly int $exportHistoryId,
+        public readonly int $smtpSettingId,
         public readonly string $recipientEmail,
     ) {}
 
     public function handle(SMTPMailer $mailer): void
     {
         $history = ExportHistory::find($this->exportHistoryId);
-        $smtp    = SmtpSetting::find($this->smtpSettingId);
+        $smtp = SmtpSetting::find($this->smtpSettingId);
 
         if (! $history || ! $smtp) {
             Log::warning('SendExportEmail: missing history or SMTP config', [
                 'export_history_id' => $this->exportHistoryId,
-                'smtp_setting_id'   => $this->smtpSettingId,
+                'smtp_setting_id' => $this->smtpSettingId,
             ]);
+
             return;
         }
 
-        $fullPath = storage_path('app/' . $history->file_path);
+        $fullPath = storage_path('app/'.$history->file_path);
 
         if (! file_exists($fullPath)) {
             Log::warning('SendExportEmail: file not found', [
                 'file_path' => $history->file_path,
             ]);
+
             return;
         }
 
         $subject = "Promediatum — Export: {$history->file_name}";
-        $body    = "Attached is your export file generated on {$history->created_at->toDateTimeString()}.\n\nContext: {$history->context_label}";
+        $body = "Attached is your export file generated on {$history->created_at->toDateTimeString()}.\n\nContext: {$history->context_label}";
 
         $result = $mailer->send(
-            smtp:      $smtp,
+            smtp: $smtp,
             recipient: $this->recipientEmail,
-            filePath:  $fullPath,
-            fileName:  $history->file_name,
-            subject:   $subject,
-            body:      $body,
+            filePath: $fullPath,
+            fileName: $history->file_name,
+            subject: $subject,
+            body: $body,
         );
 
         if ($result['success']) {
             $history->update([
-                'sent_via_email'  => true,
+                'sent_via_email' => true,
                 'recipient_email' => $this->recipientEmail,
             ]);
         } else {
             Log::error('SendExportEmail: failed to send', [
                 'export_history_id' => $this->exportHistoryId,
-                'error'             => $result['message'],
+                'error' => $result['message'],
             ]);
 
             // Re-throw so the queue can retry

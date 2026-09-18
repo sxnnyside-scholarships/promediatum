@@ -25,11 +25,11 @@ class SettingsController extends Controller
     public function update(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'sidebar_position'       => ['sometimes', 'in:leading,trailing'],
-            'text_weight'            => ['sometimes', 'in:300,400,500,600'],
-            'fab_enabled'            => ['sometimes', 'boolean'],
+            'sidebar_position' => ['sometimes', 'in:leading,trailing'],
+            'text_weight' => ['sometimes', 'in:300,400,500,600'],
+            'fab_enabled' => ['sometimes', 'boolean'],
             'visual_effects_enabled' => ['sometimes', 'boolean'],
-            'icons_enabled'          => ['sometimes', 'boolean'],
+            'icons_enabled' => ['sometimes', 'boolean'],
         ]);
 
         $user = $request->user();

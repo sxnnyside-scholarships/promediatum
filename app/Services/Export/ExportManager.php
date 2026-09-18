@@ -26,7 +26,7 @@ class ExportManager
 
     public function __construct(
         protected ExportDataResolver $resolver,
-        protected TemplateResolver   $templateResolver,
+        protected TemplateResolver $templateResolver,
     ) {
         $this->registerDefaultExporters();
     }
@@ -51,7 +51,7 @@ class ExportManager
         // Resolve template configuration
         $templateResult = $this->templateResolver->resolve($context);
         $templateConfig = $templateResult['config'];
-        $template       = $templateResult['template'];
+        $template = $templateResult['template'];
 
         $exporter = $this->resolveExporter($context->format);
 
@@ -78,10 +78,10 @@ class ExportManager
 
     protected function registerDefaultExporters(): void
     {
-        $this->exporters['csv']  = new CSVExporter();
-        $this->exporters['json'] = new JSONExporter();
-        $this->exporters['xlsx'] = new ExcelExporter();
-        $this->exporters['pdf']  = new PDFExporter();
+        $this->exporters['csv'] = new CSVExporter;
+        $this->exporters['json'] = new JSONExporter;
+        $this->exporters['xlsx'] = new ExcelExporter;
+        $this->exporters['pdf'] = new PDFExporter;
     }
 
     protected function resolveExporter(string $format): ExporterInterface
@@ -136,18 +136,18 @@ class ExportManager
     protected function recordHistory(ExportContext $context, string $filePath, ?\App\Models\ExportTemplate $template = null): void
     {
         $fileName = basename($filePath);
-        $relativePath = 'exports/' . $fileName;
+        $relativePath = 'exports/'.$fileName;
 
         ExportHistory::create([
-            'user_id'     => Auth::id(),
-            'type'        => $context->type,
-            'format'      => $context->format,
-            'period_id'   => $context->periodId,
-            'group_id'    => $context->groupId,
-            'student_id'  => $context->studentId,
+            'user_id' => Auth::id(),
+            'type' => $context->type,
+            'format' => $context->format,
+            'period_id' => $context->periodId,
+            'group_id' => $context->groupId,
+            'student_id' => $context->studentId,
             'template_id' => $template?->id,
-            'file_name'   => $fileName,
-            'file_path'   => $relativePath,
+            'file_name' => $fileName,
+            'file_path' => $relativePath,
         ]);
     }
 }

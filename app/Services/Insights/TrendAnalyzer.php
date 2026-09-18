@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Services\Insights;
 
 use App\Models\Grade;
-use App\Models\GradeCategory;
 use App\Models\Group;
 use App\Models\Period;
 use Illuminate\Support\Collection;
@@ -32,7 +31,7 @@ final class TrendAnalyzer
     /**
      * Analyze trend for a single student in a group/period.
      *
-     * @return InsightResult|null  Null if no decline detected or insufficient data.
+     * @return InsightResult|null Null if no decline detected or insufficient data.
      */
     public function analyze(int $studentId, int $groupId, int $periodId, string $studentName, string $groupSlug): ?InsightResult
     {
@@ -46,20 +45,20 @@ final class TrendAnalyzer
 
         return match (true) {
             $slope <= -5.0 => new InsightResult(
-                type:            InsightResult::TYPE_TREND,
-                severity:        InsightResult::SEVERITY_HIGH,
-                message:         "{$studentName}: " . __('insights.trend_significant_decline'),
+                type: InsightResult::TYPE_TREND,
+                severity: InsightResult::SEVERITY_HIGH,
+                message: "{$studentName}: ".__('insights.trend_significant_decline'),
                 suggestedAction: __('insights.action_urgent_intervention'),
-                route:           route('groups.show', $groupSlug),
-                meta:            ['slope' => round($slope, 2), 'averages' => $averages->values()->all()],
+                route: route('groups.show', $groupSlug),
+                meta: ['slope' => round($slope, 2), 'averages' => $averages->values()->all()],
             ),
             $slope <= -2.0 => new InsightResult(
-                type:            InsightResult::TYPE_TREND,
-                severity:        InsightResult::SEVERITY_MEDIUM,
-                message:         "{$studentName}: " . __('insights.trend_moderate_decline'),
+                type: InsightResult::TYPE_TREND,
+                severity: InsightResult::SEVERITY_MEDIUM,
+                message: "{$studentName}: ".__('insights.trend_moderate_decline'),
                 suggestedAction: __('insights.action_monitor_closely'),
-                route:           route('groups.show', $groupSlug),
-                meta:            ['slope' => round($slope, 2), 'averages' => $averages->values()->all()],
+                route: route('groups.show', $groupSlug),
+                meta: ['slope' => round($slope, 2), 'averages' => $averages->values()->all()],
             ),
             default => null, // stable or improving — no insight needed
         };
@@ -91,11 +90,11 @@ final class TrendAnalyzer
 
         return $chunks->map(function (Collection $chunk): float {
             $totalScore = 0.0;
-            $totalMax   = 0.0;
+            $totalMax = 0.0;
 
             foreach ($chunk as $grade) {
                 $totalScore += (float) $grade->score;
-                $totalMax   += (float) $grade->max_score;
+                $totalMax += (float) $grade->max_score;
             }
 
             return $totalMax > 0 ? round(($totalScore / $totalMax) * 100, 2) : 0.0;
@@ -105,7 +104,7 @@ final class TrendAnalyzer
     /**
      * Simple linear regression slope (least squares).
      *
-     * @param float[] $values  Sequential data points.
+     * @param  float[]  $values  Sequential data points.
      */
     private function calculateSlope(array $values): float
     {
@@ -115,8 +114,8 @@ final class TrendAnalyzer
             return 0.0;
         }
 
-        $sumX  = 0.0;
-        $sumY  = 0.0;
+        $sumX = 0.0;
+        $sumY = 0.0;
         $sumXY = 0.0;
         $sumX2 = 0.0;
 
@@ -124,8 +123,8 @@ final class TrendAnalyzer
             $x = (float) $i;
             $y = $values[$i];
 
-            $sumX  += $x;
-            $sumY  += $y;
+            $sumX += $x;
+            $sumY += $y;
             $sumXY += $x * $y;
             $sumX2 += $x * $x;
         }

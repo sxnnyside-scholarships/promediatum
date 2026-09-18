@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { computed, ref } from 'vue';
 import CpIcon from '@/Components/CpIcon.vue';
 
 const props = defineProps({

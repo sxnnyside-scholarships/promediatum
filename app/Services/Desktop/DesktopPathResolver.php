@@ -46,7 +46,7 @@ class DesktopPathResolver
     {
         $home = $_SERVER['HOME'] ?? getenv('HOME') ?: '/tmp';
 
-        return $home . '/Library/Application Support/' . $this->appName;
+        return $home.'/Library/Application Support/'.$this->appName;
     }
 
     /**
@@ -54,9 +54,9 @@ class DesktopPathResolver
      */
     protected function windowsPath(): string
     {
-        $appData = getenv('APPDATA') ?: (getenv('USERPROFILE') . '\\AppData\\Roaming');
+        $appData = getenv('APPDATA') ?: (getenv('USERPROFILE').'\\AppData\\Roaming');
 
-        return $appData . '\\' . $this->appName;
+        return $appData.'\\'.$this->appName;
     }
 
     /**
@@ -65,9 +65,9 @@ class DesktopPathResolver
     protected function linuxPath(): string
     {
         $home = $_SERVER['HOME'] ?? getenv('HOME') ?: '/tmp';
-        $xdgData = getenv('XDG_DATA_HOME') ?: ($home . '/.local/share');
+        $xdgData = getenv('XDG_DATA_HOME') ?: ($home.'/.local/share');
 
-        return $xdgData . '/' . $this->appName;
+        return $xdgData.'/'.$this->appName;
     }
 
     /**
@@ -75,7 +75,7 @@ class DesktopPathResolver
      */
     public function databaseDir(): string
     {
-        return $this->basePath() . DIRECTORY_SEPARATOR . 'database';
+        return $this->basePath().DIRECTORY_SEPARATOR.'database';
     }
 
     /**
@@ -83,7 +83,7 @@ class DesktopPathResolver
      */
     public function databasePath(): string
     {
-        return $this->databaseDir() . DIRECTORY_SEPARATOR . 'database.sqlite';
+        return $this->databaseDir().DIRECTORY_SEPARATOR.'database.sqlite';
     }
 
     /**
@@ -91,7 +91,7 @@ class DesktopPathResolver
      */
     public function storagePath(): string
     {
-        return $this->basePath() . DIRECTORY_SEPARATOR . 'storage';
+        return $this->basePath().DIRECTORY_SEPARATOR.'storage';
     }
 
     /**
@@ -99,7 +99,7 @@ class DesktopPathResolver
      */
     public function exportsPath(): string
     {
-        return $this->basePath() . DIRECTORY_SEPARATOR . 'exports';
+        return $this->basePath().DIRECTORY_SEPARATOR.'exports';
     }
 
     /**
@@ -107,7 +107,7 @@ class DesktopPathResolver
      */
     public function backupsPath(): string
     {
-        return $this->basePath() . DIRECTORY_SEPARATOR . 'backups';
+        return $this->basePath().DIRECTORY_SEPARATOR.'backups';
     }
 
     /**
@@ -115,7 +115,7 @@ class DesktopPathResolver
      */
     public function logsPath(): string
     {
-        return $this->basePath() . DIRECTORY_SEPARATOR . 'logs';
+        return $this->basePath().DIRECTORY_SEPARATOR.'logs';
     }
 
     /**
@@ -128,10 +128,10 @@ class DesktopPathResolver
         $created = [];
 
         foreach ($this->subdirectories as $subdir) {
-            $path = $this->basePath() . DIRECTORY_SEPARATOR . $subdir;
+            $path = $this->basePath().DIRECTORY_SEPARATOR.$subdir;
 
-            if (!is_dir($path)) {
-                if (!mkdir($path, 0755, true) && !is_dir($path)) {
+            if (! is_dir($path)) {
+                if (! mkdir($path, 0755, true) && ! is_dir($path)) {
                     throw new \RuntimeException("Failed to create directory: {$path}");
                 }
                 $created[] = $path;
@@ -146,7 +146,7 @@ class DesktopPathResolver
      */
     public function isFirstLaunch(): bool
     {
-        return !file_exists($this->databasePath());
+        return ! file_exists($this->databasePath());
     }
 
     /**

@@ -4,13 +4,14 @@
  * Desktop backup management: create, restore, validate, delete, download backups.
  * Uses the BackupService (.pdbk encrypted format).
  */
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+
+import { Head, router, usePage } from '@inertiajs/vue3';
+import { computed, ref } from 'vue';
 import CpButton from '@/Components/CpButton.vue';
 import CpInput from '@/Components/CpInput.vue';
-import { useTranslations } from '@/composables/useTranslations.js';
-import { useToast } from '@/composables/useToast.js';
-import { Head, router, usePage } from '@inertiajs/vue3';
-import { ref, computed } from 'vue';
+import { useToast } from '@/composables/useToast';
+import { useTranslations } from '@/composables/useTranslations';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 
 const props = defineProps({
     backups: { type: Array, default: () => [] },
@@ -31,39 +32,47 @@ function formatBytes(bytes) {
     const k = 1024;
     const sizes = ['B', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+    return `${parseFloat((bytes / k ** i).toFixed(1))} ${sizes[i]}`;
 }
 
 function createBackup() {
     isCreating.value = true;
-    router.post(route('backup.store'), {
-        password: createPassword.value || null,
-    }, {
-        preserveScroll: true,
-        onSuccess: () => {
-            createPassword.value = '';
-            toast.success(t('backup.created_successfully'));
+    router.post(
+        route('backup.store'),
+        {
+            password: createPassword.value || null,
         },
-        onError: () => toast.error(t('backup.creation_failed', { error: 'Unknown' })),
-        onFinish: () => (isCreating.value = false),
-    });
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+                createPassword.value = '';
+                toast.success(t('backup.created_successfully'));
+            },
+            onError: () => toast.error(t('backup.creation_failed', { error: 'Unknown' })),
+            onFinish: () => (isCreating.value = false),
+        },
+    );
 }
 
 function restoreBackup(backup) {
     if (!confirm(t('backup.confirm_restore'))) return;
     isRestoring.value = true;
-    router.post(route('backup.restore'), {
-        backup_path: backup.path,
-        password: restorePassword.value || null,
-    }, {
-        preserveScroll: true,
-        onSuccess: () => {
-            restorePassword.value = '';
-            toast.success(t('backup.restored_successfully'));
+    router.post(
+        route('backup.restore'),
+        {
+            backup_path: backup.path,
+            password: restorePassword.value || null,
         },
-        onError: () => toast.error(t('backup.restore_failed', { error: 'Unknown' })),
-        onFinish: () => (isRestoring.value = false),
-    });
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+                restorePassword.value = '';
+                toast.success(t('backup.restored_successfully'));
+            },
+            onError: () => toast.error(t('backup.restore_failed', { error: 'Unknown' })),
+            onFinish: () => (isRestoring.value = false),
+        },
+    );
 }
 
 function deleteBackup(backup) {
@@ -76,14 +85,18 @@ function deleteBackup(backup) {
 }
 
 function downloadBackup(backup) {
-    window.location.href = route('backup.download') + '?backup_path=' + encodeURIComponent(backup.path);
+    window.location.href = `${route('backup.download')}?backup_path=${encodeURIComponent(backup.path)}`;
 }
 
 function pruneBackups() {
-    router.post(route('backup.prune'), { keep: 5 }, {
-        preserveScroll: true,
-        onSuccess: () => toast.success(t('backup.pruned_successfully', { count: '' })),
-    });
+    router.post(
+        route('backup.prune'),
+        { keep: 5 },
+        {
+            preserveScroll: true,
+            onSuccess: () => toast.success(t('backup.pruned_successfully', { count: '' })),
+        },
+    );
 }
 </script>
 

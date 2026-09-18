@@ -7,7 +7,6 @@ namespace App\Services\Automation\Rules;
 use App\Services\Automation\AutomationAction;
 use App\Services\Automation\AutomationContext;
 use App\Services\Automation\AutomationRule;
-use App\Services\Insights\InsightResult;
 
 /**
  * PeriodEndingExportRule — When the active period ends in < 7 days,
@@ -39,16 +38,16 @@ final class PeriodEndingExportRule extends AutomationRule
 
         return [
             new AutomationAction(
-                type:        AutomationAction::TYPE_SUGGEST_EXPORT,
-                severity:    $severity,
-                title:       __('automation.suggest_export_title'),
+                type: AutomationAction::TYPE_SUGGEST_EXPORT,
+                severity: $severity,
+                title: __('automation.suggest_export_title'),
                 description: __('automation.suggest_export_desc', ['days' => $context->daysRemaining]),
-                icon:        'download',
-                route:       'exports.history',
-                meta:        [
-                    'period_id'      => $context->periodId,
+                icon: 'download',
+                route: 'exports.history',
+                meta: [
+                    'period_id' => $context->periodId,
                     'days_remaining' => $context->daysRemaining,
-                    'rule'           => $this->ruleKey(),
+                    'rule' => $this->ruleKey(),
                 ],
             ),
         ];

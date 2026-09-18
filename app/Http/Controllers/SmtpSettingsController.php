@@ -21,19 +21,19 @@ class SmtpSettingsController extends Controller
         if (! $smtp) {
             return response()->json([
                 'configured' => false,
-                'settings'   => null,
+                'settings' => null,
             ]);
         }
 
         return response()->json([
             'configured' => $smtp->isConfigured(),
-            'verified'   => $smtp->verified,
-            'settings'   => [
-                'host'       => $smtp->host,
-                'port'       => $smtp->port,
-                'username'   => $smtp->username,
+            'verified' => $smtp->verified,
+            'settings' => [
+                'host' => $smtp->host,
+                'port' => $smtp->port,
+                'username' => $smtp->username,
                 'encryption' => $smtp->encryption,
-                'from_name'  => $smtp->from_name,
+                'from_name' => $smtp->from_name,
                 'from_email' => $smtp->from_email,
                 // Password is never sent back to the client
             ],

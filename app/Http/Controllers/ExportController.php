@@ -70,10 +70,10 @@ class ExportController extends Controller
 
         // Default: download
         $mimeType = match ($context->format) {
-            'csv'  => 'text/csv',
+            'csv' => 'text/csv',
             'json' => 'application/json',
             'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            'pdf'  => 'application/pdf',
+            'pdf' => 'application/pdf',
             default => 'application/octet-stream',
         };
 
@@ -92,31 +92,31 @@ class ExportController extends Controller
             ->orderByDesc('created_at')
             ->get()
             ->map(fn (ExportHistory $export) => [
-                'id'              => $export->id,
-                'type'            => $export->type,
-                'format'          => $export->format,
-                'context_label'   => $export->context_label,
-                'template_name'   => $export->template?->name,
-                'file_name'       => $export->file_name,
-                'sent_via_email'  => $export->sent_via_email,
+                'id' => $export->id,
+                'type' => $export->type,
+                'format' => $export->format,
+                'context_label' => $export->context_label,
+                'template_name' => $export->template?->name,
+                'file_name' => $export->file_name,
+                'sent_via_email' => $export->sent_via_email,
                 'recipient_email' => $export->recipient_email,
-                'created_at'      => $export->created_at?->toDateTimeString(),
-                'can_download'    => Storage::disk('local')->exists($export->file_path),
+                'created_at' => $export->created_at?->toDateTimeString(),
+                'can_download' => Storage::disk('local')->exists($export->file_path),
             ]);
 
         // Provide reference data for the export form
-        $periods   = Period::orderByDesc('start_date')->get(['id', 'name']);
-        $groups    = Group::orderBy('name')->get(['id', 'name', 'period_id']);
-        $students  = Student::orderBy('last_name')->orderBy('first_name')->get(['id', 'first_name', 'last_name']);
+        $periods = Period::orderByDesc('start_date')->get(['id', 'name']);
+        $groups = Group::orderBy('name')->get(['id', 'name', 'period_id']);
+        $students = Student::orderBy('last_name')->orderBy('first_name')->get(['id', 'first_name', 'last_name']);
         $templates = ExportTemplate::where('user_id', Auth::id())->orderBy('name')->get(['id', 'name', 'type', 'is_default']);
 
         return Inertia::render('Exports/History', [
-            'exports'         => $exports,
-            'periods'         => $periods,
-            'groups'          => $groups,
-            'students'        => $students,
-            'templates'       => $templates,
-            'smtpConfigured'  => SmtpSetting::where('user_id', Auth::id())->where('verified', true)->exists(),
+            'exports' => $exports,
+            'periods' => $periods,
+            'groups' => $groups,
+            'students' => $students,
+            'templates' => $templates,
+            'smtpConfigured' => SmtpSetting::where('user_id', Auth::id())->where('verified', true)->exists(),
         ]);
     }
 
@@ -130,17 +130,17 @@ class ExportController extends Controller
             abort(403);
         }
 
-        $fullPath = storage_path('app/' . $exportHistory->file_path);
+        $fullPath = storage_path('app/'.$exportHistory->file_path);
 
         if (! file_exists($fullPath)) {
             abort(404, 'Export file no longer exists.');
         }
 
         $mimeType = match ($exportHistory->format) {
-            'csv'  => 'text/csv',
+            'csv' => 'text/csv',
             'json' => 'application/json',
             'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            'pdf'  => 'application/pdf',
+            'pdf' => 'application/pdf',
             default => 'application/octet-stream',
         };
 

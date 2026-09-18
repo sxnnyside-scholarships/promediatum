@@ -22,9 +22,9 @@ class SmtpSetting extends Model
     protected function casts(): array
     {
         return [
-            'password'  => 'encrypted',
-            'port'      => 'integer',
-            'verified'  => 'boolean',
+            'password' => 'encrypted',
+            'port' => 'integer',
+            'verified' => 'boolean',
         ];
     }
 

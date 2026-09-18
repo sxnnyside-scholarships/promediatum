@@ -24,6 +24,10 @@ class Student extends Model
         'first_name',
         'last_name',
         'slug',
+        'email',
+        'phone',
+        'guardian_name',
+        'notes',
     ];
 
     public function getRouteKeyName(): string
@@ -49,18 +53,26 @@ class Student extends Model
 
     public function getFullNameAttribute(): string
     {
-        return "{$this->last_name}, {$this->first_name}";
+        return "{$this->first_name} {$this->last_name}";
     }
 
-    protected $appends = ['full_name'];
+    public function getInitialsAttribute(): string
+    {
+        $first = mb_substr(trim($this->first_name), 0, 1);
+        $last = mb_substr(trim($this->last_name), 0, 1);
+
+        return mb_strtoupper("{$first}{$last}");
+    }
+
+    protected $appends = ['full_name', 'initials'];
 
     // ── Relationships ──
 
     public function groups(): BelongsToMany
     {
         return $this->belongsToMany(Group::class, 'group_student')
-                    ->withPivot('period_id')
-                    ->withTimestamps();
+            ->withPivot('period_id')
+            ->withTimestamps();
     }
 
     public function attendances(): HasMany

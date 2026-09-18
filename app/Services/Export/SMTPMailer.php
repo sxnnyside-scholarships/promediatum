@@ -19,12 +19,12 @@ class SMTPMailer
     /**
      * Send an export file as an email attachment.
      *
-     * @param  SmtpSetting  $smtp       User's SMTP configuration.
-     * @param  string       $recipient  Recipient email address.
-     * @param  string       $filePath   Absolute path to the export file.
-     * @param  string       $fileName   Display name for the attachment.
-     * @param  string       $subject    Email subject line.
-     * @param  string       $body       Plain-text email body.
+     * @param  SmtpSetting  $smtp  User's SMTP configuration.
+     * @param  string  $recipient  Recipient email address.
+     * @param  string  $filePath  Absolute path to the export file.
+     * @param  string  $fileName  Display name for the attachment.
+     * @param  string  $subject  Email subject line.
+     * @param  string  $body  Plain-text email body.
      * @return array{success: bool, message: string}
      */
     public function send(
@@ -47,7 +47,7 @@ class SMTPMailer
             $transport = Transport::fromDsn($dsn);
             $mailer = new Mailer($transport);
 
-            $email = (new Email())
+            $email = (new Email)
                 ->from("{$smtp->from_name} <{$smtp->from_email}>")
                 ->to($recipient)
                 ->subject($subject)
@@ -88,7 +88,7 @@ class SMTPMailer
 
             // Send a minimal test email to the sender themselves
             $mailer = new Mailer($transport);
-            $email = (new Email())
+            $email = (new Email)
                 ->from("{$smtp->from_name} <{$smtp->from_email}>")
                 ->to($smtp->from_email)
                 ->subject('Promediatum — SMTP Test')
@@ -114,8 +114,8 @@ class SMTPMailer
     protected function buildDsn(SmtpSetting $smtp): string
     {
         $scheme = match ($smtp->encryption) {
-            'ssl'  => 'smtps',
-            'tls'  => 'smtp',
+            'ssl' => 'smtps',
+            'tls' => 'smtp',
             'none' => 'smtp',
             default => 'smtp',
         };

@@ -18,6 +18,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property float $percentage
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read GradeCategory|null $category
+ * @property-read Group|null $group
+ * @property-read Period|null $period
+ * @property-read Student|null $student
  */
 class Grade extends Model
 {
@@ -46,7 +50,10 @@ class Grade extends Model
      */
     public function getPercentageAttribute(): float
     {
-        if ($this->max_score == 0) return 0;
+        if ($this->max_score == 0) {
+            return 0;
+        }
+
         return round(($this->score / $this->max_score) * 100, 2);
     }
 

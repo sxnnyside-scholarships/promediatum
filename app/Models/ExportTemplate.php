@@ -19,7 +19,7 @@ class ExportTemplate extends Model
     {
         return [
             'is_default' => 'boolean',
-            'config'     => 'array',
+            'config' => 'array',
         ];
     }
 
@@ -29,18 +29,18 @@ class ExportTemplate extends Model
     public static function defaultConfig(): array
     {
         return [
-            'included_columns'             => [],
-            'column_order'                 => [],
-            'include_logo'                 => false,
-            'include_header_text'          => null,
-            'include_footer_text'          => null,
-            'include_signature_line'       => false,
-            'date_format'                  => 'Y-m-d',
-            'numeric_precision'            => 2,
-            'orientation'                  => 'portrait',
-            'include_attendance_summary'   => true,
+            'included_columns' => [],
+            'column_order' => [],
+            'include_logo' => false,
+            'include_header_text' => null,
+            'include_footer_text' => null,
+            'include_signature_line' => false,
+            'date_format' => 'Y-m-d',
+            'numeric_precision' => 2,
+            'orientation' => 'portrait',
+            'include_attendance_summary' => true,
             'include_observations_summary' => true,
-            'include_category_breakdown'   => true,
+            'include_category_breakdown' => true,
         ];
     }
 

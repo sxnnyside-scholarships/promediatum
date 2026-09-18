@@ -8,13 +8,14 @@
  * Respects design system: 150ms fade only, no dramatic motion.
  *
  * Usage (via provide/inject or event bus):
- *   import { useToast } from '@/composables/useToast.js';
+ *   import { useToast } from '@/composables/useToast';
  *   const toast = useToast();
  *   toast.success('Export downloaded!');
  *   toast.error('SMTP connection failed.');
  */
+
+import { onMounted, onUnmounted, ref } from 'vue';
 import CpIcon from '@/Components/CpIcon.vue';
-import { ref, onMounted, onUnmounted } from 'vue';
 
 const toasts = ref([]);
 let nextId = 0;
@@ -45,11 +46,11 @@ function addToast(event) {
 }
 
 function removeToast(id) {
-    const idx = toasts.value.findIndex(t => t.id === id);
+    const idx = toasts.value.findIndex((t) => t.id === id);
     if (idx !== -1) {
         toasts.value[idx].visible = false;
         setTimeout(() => {
-            toasts.value = toasts.value.filter(t => t.id !== id);
+            toasts.value = toasts.value.filter((t) => t.id !== id);
         }, 150); // match fade duration
     }
 }

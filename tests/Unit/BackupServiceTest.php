@@ -9,21 +9,22 @@ use PHPUnit\Framework\TestCase;
 class BackupServiceTest extends TestCase
 {
     protected string $tempDir;
+
     protected BackupService $service;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->tempDir = sys_get_temp_dir() . '/promediatum_test_' . uniqid();
-        mkdir($this->tempDir . '/database', 0755, true);
-        mkdir($this->tempDir . '/backups', 0755, true);
+        $this->tempDir = sys_get_temp_dir().'/promediatum_test_'.uniqid();
+        mkdir($this->tempDir.'/database', 0755, true);
+        mkdir($this->tempDir.'/backups', 0755, true);
 
         // Create a mock resolver that uses temporary paths
         $resolver = $this->createMock(DesktopPathResolver::class);
-        $resolver->method('databasePath')->willReturn($this->tempDir . '/database/database.sqlite');
-        $resolver->method('databaseDir')->willReturn($this->tempDir . '/database');
-        $resolver->method('backupsPath')->willReturn($this->tempDir . '/backups');
+        $resolver->method('databasePath')->willReturn($this->tempDir.'/database/database.sqlite');
+        $resolver->method('databaseDir')->willReturn($this->tempDir.'/database');
+        $resolver->method('backupsPath')->willReturn($this->tempDir.'/backups');
 
         $this->service = new BackupService($resolver);
     }
@@ -37,10 +38,12 @@ class BackupServiceTest extends TestCase
 
     protected function removeDirectory(string $dir): void
     {
-        if (!is_dir($dir)) return;
+        if (! is_dir($dir)) {
+            return;
+        }
         $files = array_diff(scandir($dir), ['.', '..']);
         foreach ($files as $file) {
-            $path = $dir . '/' . $file;
+            $path = $dir.'/'.$file;
             is_dir($path) ? $this->removeDirectory($path) : unlink($path);
         }
         rmdir($dir);
@@ -48,9 +51,10 @@ class BackupServiceTest extends TestCase
 
     protected function createFakeSQLiteDB(): string
     {
-        $dbPath = $this->tempDir . '/database/database.sqlite';
+        $dbPath = $this->tempDir.'/database/database.sqlite';
         // SQLite files always start with this magic header
-        file_put_contents($dbPath, "SQLite format 3\x00" . str_repeat("\x00", 100));
+        file_put_contents($dbPath, "SQLite format 3\x00".str_repeat("\x00", 100));
+
         return $dbPath;
     }
 
@@ -100,7 +104,7 @@ class BackupServiceTest extends TestCase
 
     public function test_validate_rejects_corrupted_file(): void
     {
-        $fakePath = $this->tempDir . '/backups/fake.pdbk';
+        $fakePath = $this->tempDir.'/backups/fake.pdbk';
         file_put_contents($fakePath, 'not a real backup');
 
         $validation = $this->service->validate($fakePath, 'any');
@@ -123,7 +127,7 @@ class BackupServiceTest extends TestCase
         $result = $this->service->create('round-trip-pw');
 
         // Modify the DB (simulate changes)
-        file_put_contents($dbPath, "SQLite format 3\x00" . str_repeat("\xFF", 100));
+        file_put_contents($dbPath, "SQLite format 3\x00".str_repeat("\xFF", 100));
         $modified = file_get_contents($dbPath);
         $this->assertNotEquals($original, $modified);
 

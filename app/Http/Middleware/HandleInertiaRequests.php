@@ -74,10 +74,10 @@ class HandleInertiaRequests extends Middleware
             return [];
         }
 
-        $resolver  = app(FabActionResolver::class);
+        $resolver = app(FabActionResolver::class);
         $routeName = $request->route()?->getName() ?? 'workspace';
-        $params    = $request->route()?->parameters() ?? [];
-        $state     = $resolver->gatherState();
+        $params = $request->route()?->parameters() ?? [];
+        $state = $resolver->gatherState();
 
         return $resolver->resolve($routeName, $params, $state);
     }

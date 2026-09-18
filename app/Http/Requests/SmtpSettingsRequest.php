@@ -14,12 +14,12 @@ class SmtpSettingsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'host'       => ['required', 'string', 'max:255'],
-            'port'       => ['required', 'integer', 'min:1', 'max:65535'],
-            'username'   => ['required', 'string', 'max:255'],
-            'password'   => ['required', 'string', 'max:500'],
+            'host' => ['required', 'string', 'max:255'],
+            'port' => ['required', 'integer', 'min:1', 'max:65535'],
+            'username' => ['required', 'string', 'max:255'],
+            'password' => ['required', 'string', 'max:500'],
             'encryption' => ['required', 'in:tls,ssl,none'],
-            'from_name'  => ['required', 'string', 'max:255'],
+            'from_name' => ['required', 'string', 'max:255'],
             'from_email' => ['required', 'email', 'max:255'],
         ];
     }

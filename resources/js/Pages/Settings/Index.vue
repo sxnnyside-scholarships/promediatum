@@ -6,15 +6,16 @@
  * SMTP settings persist via PUT /settings/smtp.
  * Component variety: segmented controls, toggle switches, radio groups.
  */
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+
+import { Head, router, usePage } from '@inertiajs/vue3';
+import { computed, onMounted, ref } from 'vue';
+import CpButton from '@/Components/CpButton.vue';
 import CpIcon from '@/Components/CpIcon.vue';
 import CpInput from '@/Components/CpInput.vue';
-import CpButton from '@/Components/CpButton.vue';
-import { useTranslations } from '@/composables/useTranslations.js';
-import { useTheme } from '@/composables/useTheme.js';
-import { useToast } from '@/composables/useToast.js';
-import { Head, router, usePage } from '@inertiajs/vue3';
-import { ref, computed, onMounted } from 'vue';
+import { useTheme } from '@/composables/useTheme';
+import { useToast } from '@/composables/useToast';
+import { useTranslations } from '@/composables/useTranslations';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 
 const { t, locale } = useTranslations();
 const { mode, setMode } = useTheme();
@@ -22,12 +23,16 @@ const toast = useToast();
 const page = usePage();
 
 function switchLocale(newLocale) {
-    router.post(route('locale.update'), {
-        locale: newLocale,
-    }, {
-        preserveState: false,
-        preserveScroll: true,
-    });
+    router.post(
+        route('locale.update'),
+        {
+            locale: newLocale,
+        },
+        {
+            preserveState: false,
+            preserveScroll: true,
+        },
+    );
 }
 
 // Interface preferences — loaded from DB via shared props
@@ -39,12 +44,16 @@ const visualEffectsEnabled = ref(userSettings.value.visual_effects_enabled !== f
 const iconsEnabled = ref(userSettings.value.icons_enabled !== false);
 
 function persistSetting(key, value) {
-    router.put(route('settings.update'), {
-        [key]: value,
-    }, {
-        preserveState: true,
-        preserveScroll: true,
-    });
+    router.put(
+        route('settings.update'),
+        {
+            [key]: value,
+        },
+        {
+            preserveState: true,
+            preserveScroll: true,
+        },
+    );
 }
 
 function setSidebarPosition(pos) {

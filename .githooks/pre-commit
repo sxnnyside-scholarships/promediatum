@@ -1,0 +1,14 @@
+#!/usr/bin/env sh
+set -e
+
+echo "Running pre-commit quality checks..."
+
+# Check formatting and linting
+if command -v just >/dev/null 2>&1; then
+    just lint
+else
+    bun run lint
+    ./vendor/bin/pint --test
+fi
+
+echo "✔ Pre-commit checks passed."

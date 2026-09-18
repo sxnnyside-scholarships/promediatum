@@ -58,7 +58,7 @@ class TemplateResolver
 
         return [
             'template' => $template,
-            'config'   => $config,
+            'config' => $config,
         ];
     }
 

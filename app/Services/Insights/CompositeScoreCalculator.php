@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace App\Services\Insights;
 
 use App\Models\Attendance;
-use App\Models\Grade;
-use App\Models\GradeCategory;
 use App\Models\Observation;
 use App\Services\AcademicService;
 
@@ -26,9 +24,12 @@ use App\Services\AcademicService;
 final class CompositeScoreCalculator
 {
     /** Weight distribution — must sum to 1.0 */
-    private const W_ACADEMIC   = 0.40;
+    private const W_ACADEMIC = 0.40;
+
     private const W_ATTENDANCE = 0.25;
-    private const W_ABSENCES   = 0.15;
+
+    private const W_ABSENCES = 0.15;
+
     private const W_OBSERVATIONS = 0.20;
 
     public function __construct(
@@ -42,10 +43,10 @@ final class CompositeScoreCalculator
      */
     public function calculate(int $studentId, int $groupId, int $periodId): array
     {
-        $average        = $this->academic->calculateWeightedAverage($studentId, $groupId, $periodId);
+        $average = $this->academic->calculateWeightedAverage($studentId, $groupId, $periodId);
         $attendanceStats = $this->academic->getAttendanceStats($studentId, $groupId, $periodId);
-        $absenceStreak  = $this->academic->detectConsecutiveAbsences($studentId, $groupId, $periodId);
-        $unresolvedObs  = Observation::where('student_id', $studentId)
+        $absenceStreak = $this->academic->detectConsecutiveAbsences($studentId, $groupId, $periodId);
+        $unresolvedObs = Observation::where('student_id', $studentId)
             ->where('group_id', $groupId)
             ->where('period_id', $periodId)
             ->where('status', 'pending')
@@ -82,12 +83,12 @@ final class CompositeScoreCalculator
         $score = max(0.0, min(100.0, $score));
 
         return [
-            'score'    => $score,
+            'score' => $score,
             'severity' => self::classifySeverity($score),
-            'factors'  => [
-                'academic'     => round($academicFactor, 1),
-                'attendance'   => round($attendanceFactor, 1),
-                'absences'     => round($absenceFactor, 1),
+            'factors' => [
+                'academic' => round($academicFactor, 1),
+                'attendance' => round($attendanceFactor, 1),
+                'absences' => round($absenceFactor, 1),
                 'observations' => round($observationFactor, 1),
             ],
         ];
@@ -102,7 +103,7 @@ final class CompositeScoreCalculator
             $score >= 76 => InsightResult::SEVERITY_CRITICAL,
             $score >= 51 => InsightResult::SEVERITY_HIGH,
             $score >= 26 => InsightResult::SEVERITY_MEDIUM,
-            default      => InsightResult::SEVERITY_LOW,
+            default => InsightResult::SEVERITY_LOW,
         };
     }
 }

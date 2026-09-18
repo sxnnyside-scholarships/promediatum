@@ -43,38 +43,17 @@ Promediatum stores all data in a local SQLite database. There are no cloud servi
 
 | Layer       | Technology                        |
 |-------------|-----------------------------------|
-| Backend     | Laravel 11                        |
-| Frontend    | Vue 3 + Inertia.js v2             |
+| Backend     | Laravel 12                        |
+| Frontend    | Vue 3.5 + Inertia.js v2 + TypeScript |
+| Package Mgr | Bun                               |
 | Database    | SQLite (local-first)              |
-| Desktop     | NativePHP + Electron              |
 | Styling     | Tailwind CSS 3 (Café Pedagógico)  |
-| Build       | Vite 6                            |
+| Build       | Vite 6 (TypeScript)               |
+| Linter/Fmt  | Biome                             |
 | Auth        | Laravel Breeze (modified)         |
 | Architecture| Service-layer pattern             |
 
 ## Installation
-
-### Desktop Build (Recommended)
-
-```bash
-# Clone the repository
-git clone https://github.com/HoujouSxnnyside/promediatum.git
-cd promediatum
-
-# Install dependencies
-composer install --no-dev
-npm ci
-
-# Environment setup
-cp .env.example .env
-php artisan key:generate
-
-# Build frontend assets
-npm run build
-
-# Build desktop app for current platform
-php artisan native:build
-```
 
 ### Local Development
 
@@ -85,7 +64,7 @@ cd promediatum
 
 # Install dependencies
 composer install
-npm ci
+bun install
 
 # Environment setup
 cp .env.example .env
@@ -95,24 +74,27 @@ php artisan key:generate
 touch database/database.sqlite
 php artisan migrate --seed
 
-# Development servers
-make start
-# or: npm run dev & php artisan serve
+# Fast bootstrap & dev server
+just install
+just dev
 ```
 
 Default seeded credentials:
 - **Email:** `maria@promediatum.test`
 - **Password:** `password1`
 
-## Build Commands
+## Command Surface (`Justfile`)
 
 ```bash
-make native-dev          # Run NativePHP in development mode
-make native-build        # Build for current platform
-make native-build-mac    # Build for macOS (Apple Silicon)
-make native-build-win    # Build for Windows
-make test                # Run full test suite
-make lint                # PHP syntax check
+just install             # Bootstrap dependencies, .env, database, and git hooks
+just dev                 # Start PHP server + Vite HMR
+just build               # Production Vite build
+just test                # Run full PHPUnit test suite
+just typecheck           # TypeScript (vue-tsc) & PHPStan checks
+just lint                # Biome & Pint style audits
+just format              # Automatically format JS, TS, Vue, and PHP files
+just check               # Run full quality gate (format, lint, typecheck, test)
+just clean               # Clear build artifacts and caches
 ```
 
 ## Philosophy

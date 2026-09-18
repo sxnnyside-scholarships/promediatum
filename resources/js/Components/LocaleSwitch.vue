@@ -1,16 +1,20 @@
 <script setup>
 import { router, usePage } from '@inertiajs/vue3';
-import { useTranslations } from '@/composables/useTranslations.js';
+import { useTranslations } from '@/composables/useTranslations';
 
 const { t, locale } = useTranslations();
 
 function switchLocale(newLocale) {
-    router.post(route('locale.update'), {
-        locale: newLocale,
-    }, {
-        preserveState: false,
-        preserveScroll: true,
-    });
+    router.post(
+        route('locale.update'),
+        {
+            locale: newLocale,
+        },
+        {
+            preserveState: false,
+            preserveScroll: true,
+        },
+    );
 }
 </script>
 

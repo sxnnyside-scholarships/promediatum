@@ -13,15 +13,15 @@ class NotificationService
     /**
      * Send a native desktop notification.
      *
-     * @param  string  $title    Notification title.
+     * @param  string  $title  Notification title.
      * @param  string  $message  Notification body text.
-     * @return void
      */
     public function notify(string $title, string $message): void
     {
-        if (!DesktopPathResolver::isDesktop()) {
+        if (! DesktopPathResolver::isDesktop()) {
             // Not running in NativePHP context — log instead
             logger()->info("[Notification] {$title}: {$message}");
+
             return;
         }
 

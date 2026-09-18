@@ -22,8 +22,7 @@ abstract class AutomationRule
     /**
      * Evaluate the rule against the given context and insights.
      *
-     * @param  AutomationContext  $context
-     * @param  InsightResult[]    $insights
+     * @param  InsightResult[]  $insights
      * @return AutomationAction[]
      */
     abstract public function evaluate(AutomationContext $context, array $insights): array;

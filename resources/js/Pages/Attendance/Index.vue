@@ -2,11 +2,12 @@
 /**
  * Attendance Index — Bulk marking by date
  */
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import CpButton from '@/Components/CpButton.vue';
-import { useTranslations } from '@/composables/useTranslations.js';
+
 import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
+import CpButton from '@/Components/CpButton.vue';
+import { useTranslations } from '@/composables/useTranslations';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 
 const { t } = useTranslations();
 
@@ -20,23 +21,29 @@ const selectedDate = ref(props.date);
 
 // Initialize records from existing data
 const records = ref(
-    props.students.map(s => ({
+    props.students.map((s) => ({
         student_id: s.id,
         full_name: s.full_name,
         status: s.status || 'present',
-    }))
+    })),
 );
 
 // When date changes, reload
 watch(selectedDate, (val) => {
-    router.get(route('attendance.index', props.group.slug), { date: val }, {
-        preserveState: true,
-        preserveScroll: true,
-    });
+    router.get(
+        route('attendance.index', props.group.slug),
+        { date: val },
+        {
+            preserveState: true,
+            preserveScroll: true,
+        },
+    );
 });
 
 function setAllStatus(status) {
-    records.value.forEach(r => r.status = status);
+    records.value.forEach((r) => {
+        r.status = status;
+    });
 }
 
 function cycleStatus(record) {
@@ -50,24 +57,32 @@ const saving = ref(false);
 
 function save() {
     saving.value = true;
-    router.post(route('attendance.store', props.group.slug), {
-        date: selectedDate.value,
-        records: records.value.map(r => ({
-            student_id: r.student_id,
-            status: r.status,
-        })),
-    }, {
-        preserveScroll: true,
-        onFinish: () => { saving.value = false; },
-    });
+    router.post(
+        route('attendance.store', props.group.slug),
+        {
+            date: selectedDate.value,
+            records: records.value.map((r) => ({
+                student_id: r.student_id,
+                status: r.status,
+            })),
+        },
+        {
+            preserveScroll: true,
+            onFinish: () => {
+                saving.value = false;
+            },
+        },
+    );
 }
 
 function statusClass(status) {
-    return {
-        present: 'bg-state-success/10 text-state-success',
-        absent: 'bg-state-danger/10 text-state-danger',
-        justified: 'bg-state-warning/10 text-state-warning',
-    }[status] || '';
+    return (
+        {
+            present: 'bg-state-success/10 text-state-success',
+            absent: 'bg-state-danger/10 text-state-danger',
+            justified: 'bg-state-warning/10 text-state-warning',
+        }[status] || ''
+    );
 }
 </script>
 

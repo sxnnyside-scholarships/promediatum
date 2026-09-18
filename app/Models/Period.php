@@ -99,17 +99,41 @@ class Period extends Model
     }
 
     /**
+     * Automatically deactivate any periods whose end_date has passed.
+     */
+    public static function syncAutomaticStatus(): void
+    {
+        $today = now()->startOfDay();
+
+        static::where('is_active', true)
+            ->whereDate('end_date', '<', $today)
+            ->update(['is_active' => false]);
+    }
+
+    /**
+     * Determine if the period has ended based on today's date.
+     */
+    public function getIsPastAttribute(): bool
+    {
+        if (! $this->end_date instanceof \Carbon\Carbon) {
+            return false;
+        }
+
+        return $this->end_date->startOfDay()->lt(now()->startOfDay());
+    }
+
+    /**
      * Append computed attributes to JSON/array.
      */
-    protected $appends = ['days_remaining'];
+    protected $appends = ['days_remaining', 'is_past'];
 
     /**
      * Get the currently active period.
-     *
-     * @return self|null
      */
     public static function active(): ?self
     {
+        static::syncAutomaticStatus();
+
         return static::where('is_active', true)->first();
     }
 

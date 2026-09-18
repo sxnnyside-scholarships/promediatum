@@ -13,11 +13,11 @@ use App\Models\Period;
 final class AutomationContext
 {
     public function __construct(
-        public readonly int    $periodId,
-        public readonly ?int   $groupId = null,
-        public readonly ?int   $studentId = null,
-        public readonly ?int   $daysRemaining = null,
-        public readonly int    $pendingObservations = 0,
+        public readonly int $periodId,
+        public readonly ?int $groupId = null,
+        public readonly ?int $studentId = null,
+        public readonly ?int $daysRemaining = null,
+        public readonly int $pendingObservations = 0,
     ) {}
 
     /**
@@ -35,8 +35,8 @@ final class AutomationContext
         }
 
         return new self(
-            periodId:            $period->id,
-            daysRemaining:       $daysRemaining,
+            periodId: $period->id,
+            daysRemaining: $daysRemaining,
             pendingObservations: $pendingObservations,
         );
     }

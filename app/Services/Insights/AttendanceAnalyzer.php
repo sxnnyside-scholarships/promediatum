@@ -35,7 +35,7 @@ final class AttendanceAnalyzer
     {
         $insights = [];
 
-        $stats  = $this->academic->getAttendanceStats($studentId, $groupId, $periodId);
+        $stats = $this->academic->getAttendanceStats($studentId, $groupId, $periodId);
         $streak = $this->academic->detectConsecutiveAbsences($studentId, $groupId, $periodId);
 
         // Low attendance rate
@@ -45,16 +45,16 @@ final class AttendanceAnalyzer
                 : InsightResult::SEVERITY_MEDIUM;
 
             $insights[] = new InsightResult(
-                type:            InsightResult::TYPE_ATTENDANCE,
-                severity:        $severity,
-                message:         "{$studentName}: " . __('insights.low_attendance', ['rate' => $stats['rate']]),
+                type: InsightResult::TYPE_ATTENDANCE,
+                severity: $severity,
+                message: "{$studentName}: ".__('insights.low_attendance', ['rate' => $stats['rate']]),
                 suggestedAction: __('insights.action_review_attendance'),
-                route:           route('attendance.index', $groupSlug),
-                meta:            [
-                    'student_id'      => $studentId,
-                    'attendance_rate'  => $stats['rate'],
-                    'absent'           => $stats['absent'],
-                    'total'            => $stats['total'],
+                route: route('attendance.index', $groupSlug),
+                meta: [
+                    'student_id' => $studentId,
+                    'attendance_rate' => $stats['rate'],
+                    'absent' => $stats['absent'],
+                    'total' => $stats['total'],
                 ],
             );
         }
@@ -66,13 +66,13 @@ final class AttendanceAnalyzer
                 : InsightResult::SEVERITY_HIGH;
 
             $insights[] = new InsightResult(
-                type:            InsightResult::TYPE_ATTENDANCE,
-                severity:        $severity,
-                message:         "{$studentName}: " . __('insights.consecutive_absences', ['count' => $streak]),
+                type: InsightResult::TYPE_ATTENDANCE,
+                severity: $severity,
+                message: "{$studentName}: ".__('insights.consecutive_absences', ['count' => $streak]),
                 suggestedAction: __('insights.action_contact_guardian'),
-                route:           route('attendance.index', $groupSlug),
-                meta:            [
-                    'student_id'     => $studentId,
+                route: route('attendance.index', $groupSlug),
+                meta: [
+                    'student_id' => $studentId,
                     'absence_streak' => $streak,
                 ],
             );

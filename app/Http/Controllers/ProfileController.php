@@ -17,17 +17,21 @@ class ProfileController extends Controller
      */
     public function index(): Response
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
 
         return Inertia::render('Profile/Index', [
             'user' => [
                 'first_name' => $user->first_name,
                 'last_name' => $user->last_name,
+                'full_name' => $user->full_name,
+                'initials' => $user->initials,
                 'email' => $user->email,
                 'pronoun' => $user->pronoun,
                 'institution' => $user->institution,
                 'educational_area' => $user->educational_area,
                 'educational_level' => $user->educational_level,
+                'unused_recovery_codes_count' => $user->unusedRecoveryCodes()->count(),
             ],
         ]);
     }

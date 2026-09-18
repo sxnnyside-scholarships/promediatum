@@ -3,8 +3,8 @@
 namespace App\Services\Desktop;
 
 use App\Services\Backup\BackupService;
-use Native\Laravel\Facades\Notification;
 use Illuminate\Support\Facades\Log;
+use Native\Laravel\Facades\Notification;
 
 /**
  * UpdateService — Safe auto-update mechanism for the Promediatum desktop app.
@@ -69,7 +69,7 @@ class UpdateService
      */
     public function checkForUpdates(): array
     {
-        if (!$this->isUpdaterEnabled()) {
+        if (! $this->isUpdaterEnabled()) {
             return [
                 'available' => false,
                 'error' => 'Updater is disabled.',
@@ -87,7 +87,7 @@ class UpdateService
                 'current_version' => $this->currentVersion(),
             ];
         } catch (\Throwable $e) {
-            Log::warning('Update check failed: ' . $e->getMessage());
+            Log::warning('Update check failed: '.$e->getMessage());
 
             return [
                 'available' => false,
@@ -112,15 +112,15 @@ class UpdateService
             // Validate the backup was created successfully
             $validation = $this->backupService->validate($result['path']);
 
-            if (!$validation['valid']) {
+            if (! $validation['valid']) {
                 return [
                     'success' => false,
                     'error' => 'Pre-update backup created but validation failed: '
-                        . ($validation['error'] ?? 'unknown'),
+                        .($validation['error'] ?? 'unknown'),
                 ];
             }
 
-            Log::info('Pre-update backup created: ' . $result['filename']);
+            Log::info('Pre-update backup created: '.$result['filename']);
 
             return [
                 'success' => true,
@@ -128,7 +128,7 @@ class UpdateService
                 'filename' => $result['filename'],
             ];
         } catch (\Throwable $e) {
-            Log::error('Pre-update backup failed: ' . $e->getMessage());
+            Log::error('Pre-update backup failed: '.$e->getMessage());
 
             return [
                 'success' => false,
@@ -152,12 +152,12 @@ class UpdateService
         // Step 1: Create a backup before migration
         $backup = $this->createPreUpdateBackup();
 
-        if (!$backup['success']) {
+        if (! $backup['success']) {
             return [
                 'success' => false,
                 'migrated' => false,
                 'restored' => false,
-                'error' => 'Could not create pre-migration backup: ' . ($backup['error'] ?? 'unknown'),
+                'error' => 'Could not create pre-migration backup: '.($backup['error'] ?? 'unknown'),
             ];
         }
 
@@ -170,7 +170,7 @@ class UpdateService
 
             if ($exitCode !== 0) {
                 throw new \RuntimeException(
-                    'Migration exited with code ' . $exitCode . ': ' . \Artisan::output()
+                    'Migration exited with code '.$exitCode.': '.\Artisan::output()
                 );
             }
 
@@ -182,7 +182,7 @@ class UpdateService
                 'restored' => false,
             ];
         } catch (\Throwable $e) {
-            Log::error('Post-update migration failed: ' . $e->getMessage());
+            Log::error('Post-update migration failed: '.$e->getMessage());
 
             // Step 3: Restore backup on failure
             return $this->attemptRestore($backup['path'], $e->getMessage());
@@ -212,8 +212,8 @@ class UpdateService
             ];
         } catch (\Throwable $restoreError) {
             Log::critical('CRITICAL: Both migration and restore failed. '
-                . 'Migration error: ' . $originalError
-                . ' | Restore error: ' . $restoreError->getMessage());
+                .'Migration error: '.$originalError
+                .' | Restore error: '.$restoreError->getMessage());
 
             $this->notifyUser(
                 __('desktop.critical_error_title'),
@@ -224,8 +224,8 @@ class UpdateService
                 'success' => false,
                 'migrated' => false,
                 'restored' => false,
-                'error' => 'Migration failed: ' . $originalError
-                    . ' | Restore also failed: ' . $restoreError->getMessage(),
+                'error' => 'Migration failed: '.$originalError
+                    .' | Restore also failed: '.$restoreError->getMessage(),
             ];
         }
     }
@@ -257,7 +257,7 @@ class UpdateService
                     ->show();
             }
         } catch (\Throwable $e) {
-            Log::warning('Notification failed: ' . $e->getMessage());
+            Log::warning('Notification failed: '.$e->getMessage());
         }
     }
 }

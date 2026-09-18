@@ -37,19 +37,17 @@ final class AutomationEngine
     public function __construct()
     {
         $this->rules = [
-            new HighRiskObservationRule(),
-            new ConsecutiveAbsencesFollowUpRule(),
-            new PeriodEndingExportRule(),
-            new UnresolvedObservationsReviewRule(),
+            new HighRiskObservationRule,
+            new ConsecutiveAbsencesFollowUpRule,
+            new PeriodEndingExportRule,
+            new UnresolvedObservationsReviewRule,
         ];
     }
 
     /**
      * Generate automation actions for the given context and insights.
      *
-     * @param  AutomationContext  $context
-     * @param  InsightResult[]    $insights
-     * @param  int                $limit
+     * @param  InsightResult[]  $insights
      * @return AutomationAction[]
      */
     public function generate(AutomationContext $context, array $insights, int $limit = 5): array
@@ -71,10 +69,7 @@ final class AutomationEngine
     /**
      * Get actions serialized for the frontend.
      *
-     * @param  AutomationContext  $context
-     * @param  InsightResult[]    $insights
-     * @param  int                $limit
-     * @return array
+     * @param  InsightResult[]  $insights
      */
     public function forWorkspace(AutomationContext $context, array $insights, int $limit = 5): array
     {
@@ -89,9 +84,7 @@ final class AutomationEngine
     /**
      * Get high/critical actions suitable for FAB prioritization.
      *
-     * @param  AutomationContext  $context
-     * @param  InsightResult[]    $insights
-     * @param  int                $limit
+     * @param  InsightResult[]  $insights
      * @return AutomationAction[]
      */
     public function forFab(AutomationContext $context, array $insights, int $limit = 3): array
@@ -115,7 +108,7 @@ final class AutomationEngine
      */
     public static function invalidateCache(int $periodId): void
     {
-        Cache::forget(self::CACHE_PREFIX . $periodId);
+        Cache::forget(self::CACHE_PREFIX.$periodId);
     }
 
     /**
@@ -140,6 +133,7 @@ final class AutomationEngine
                     if ($action->severityWeight() > $allActions[$existing]->severityWeight()) {
                         $allActions[$existing] = $action;
                     }
+
                     continue;
                 }
 
@@ -149,8 +143,7 @@ final class AutomationEngine
         }
 
         // Sort by severity descending
-        usort($allActions, fn (AutomationAction $a, AutomationAction $b): int =>
-            $b->severityWeight() <=> $a->severityWeight()
+        usort($allActions, fn (AutomationAction $a, AutomationAction $b): int => $b->severityWeight() <=> $a->severityWeight()
         );
 
         return $allActions;
@@ -158,14 +151,14 @@ final class AutomationEngine
 
     private function cacheKey(AutomationContext $context): string
     {
-        $key = self::CACHE_PREFIX . $context->periodId;
+        $key = self::CACHE_PREFIX.$context->periodId;
 
         if ($context->groupId !== null) {
-            $key .= ':group:' . $context->groupId;
+            $key .= ':group:'.$context->groupId;
         }
 
         if ($context->studentId !== null) {
-            $key .= ':student:' . $context->studentId;
+            $key .= ':student:'.$context->studentId;
         }
 
         return $key;

@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace App\Services\Insights;
 
 use App\Models\Group;
-use App\Models\Student;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 
 /**
@@ -30,17 +28,16 @@ final class InsightEngine
     private const CACHE_PREFIX = 'insights:period:';
 
     public function __construct(
-        private readonly RiskCalculator       $riskCalculator,
-        private readonly TrendAnalyzer        $trendAnalyzer,
-        private readonly AttendanceAnalyzer   $attendanceAnalyzer,
-        private readonly ObservationAnalyzer  $observationAnalyzer,
+        private readonly RiskCalculator $riskCalculator,
+        private readonly TrendAnalyzer $trendAnalyzer,
+        private readonly AttendanceAnalyzer $attendanceAnalyzer,
+        private readonly ObservationAnalyzer $observationAnalyzer,
     ) {}
 
     /**
      * Generate insights for the given context.
      *
-     * @param  InsightContext  $context
-     * @param  int            $limit   Maximum insights to return.
+     * @param  int  $limit  Maximum insights to return.
      * @return InsightResult[]
      */
     public function generate(InsightContext $context, int $limit = 5): array
@@ -55,8 +52,7 @@ final class InsightEngine
         $insights = $this->compute($context);
 
         // Sort by severity (highest first)
-        usort($insights, fn (InsightResult $a, InsightResult $b): int =>
-            $b->severityWeight() <=> $a->severityWeight()
+        usort($insights, fn (InsightResult $a, InsightResult $b): int => $b->severityWeight() <=> $a->severityWeight()
         );
 
         Cache::put($cacheKey, $insights, self::CACHE_TTL);
@@ -84,7 +80,7 @@ final class InsightEngine
      */
     public static function invalidateCache(int $periodId): void
     {
-        Cache::forget(self::CACHE_PREFIX . $periodId);
+        Cache::forget(self::CACHE_PREFIX.$periodId);
     }
 
     /**
@@ -116,10 +112,10 @@ final class InsightEngine
             foreach ($group->students as $student) {
                 /** @var \App\Models\Student $student */
                 $studentName = $student->full_name;
-                $groupSlug   = $group->slug;
-                $studentId   = $student->id;
-                $groupId     = $group->id;
-                $periodId    = $context->periodId;
+                $groupSlug = $group->slug;
+                $studentId = $student->id;
+                $groupId = $group->id;
+                $periodId = $context->periodId;
 
                 // Risk analysis
                 $riskInsight = $this->riskCalculator->analyze(
@@ -156,14 +152,14 @@ final class InsightEngine
 
     private function cacheKey(InsightContext $context): string
     {
-        $key = self::CACHE_PREFIX . $context->periodId;
+        $key = self::CACHE_PREFIX.$context->periodId;
 
         if ($context->groupId !== null) {
-            $key .= ':group:' . $context->groupId;
+            $key .= ':group:'.$context->groupId;
         }
 
         if ($context->studentId !== null) {
-            $key .= ':student:' . $context->studentId;
+            $key .= ':student:'.$context->studentId;
         }
 
         return $key;

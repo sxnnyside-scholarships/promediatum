@@ -14,13 +14,13 @@ class ExportRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'type'            => ['required', 'string', 'in:group,student,period'],
-            'format'          => ['required', 'string', 'in:csv,json,xlsx,pdf'],
-            'period_id'       => ['required', 'integer', 'exists:periods,id'],
-            'group_id'        => ['nullable', 'integer', 'exists:groups,id'],
-            'student_id'      => ['nullable', 'integer', 'exists:students,id'],
-            'template_id'     => ['nullable', 'integer', 'exists:export_templates,id'],
-            'filters'         => ['nullable', 'array'],
+            'type' => ['required', 'string', 'in:group,student,period'],
+            'format' => ['required', 'string', 'in:csv,json,xlsx,pdf'],
+            'period_id' => ['required', 'integer', 'exists:periods,id'],
+            'group_id' => ['nullable', 'integer', 'exists:groups,id'],
+            'student_id' => ['nullable', 'integer', 'exists:students,id'],
+            'template_id' => ['nullable', 'integer', 'exists:export_templates,id'],
+            'filters' => ['nullable', 'array'],
             'delivery_method' => ['sometimes', 'in:download,email'],
             'recipient_email' => ['required_if:delivery_method,email', 'nullable', 'email', 'max:255'],
         ];

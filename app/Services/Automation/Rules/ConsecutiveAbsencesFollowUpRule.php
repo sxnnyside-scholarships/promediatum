@@ -40,17 +40,17 @@ final class ConsecutiveAbsencesFollowUpRule extends AutomationRule
                 : AutomationAction::SEVERITY_HIGH;
 
             $actions[] = new AutomationAction(
-                type:        AutomationAction::TYPE_SUGGEST_FOLLOWUP,
-                severity:    $severity,
-                title:       __('automation.suggest_followup_title'),
+                type: AutomationAction::TYPE_SUGGEST_FOLLOWUP,
+                severity: $severity,
+                title: __('automation.suggest_followup_title'),
                 description: __('automation.suggest_followup_desc', ['count' => $streak]),
-                icon:        'phone',
-                route:       $insight->route ? null : 'observations.index',
-                meta:        [
+                icon: 'phone',
+                route: $insight->route ? null : 'observations.index',
+                meta: [
                     'student_id' => $insight->meta['student_id'] ?? null,
-                    'group_id'   => $insight->meta['group_id'] ?? null,
-                    'streak'     => $streak,
-                    'rule'       => $this->ruleKey(),
+                    'group_id' => $insight->meta['group_id'] ?? null,
+                    'streak' => $streak,
+                    'rule' => $this->ruleKey(),
                 ],
             );
         }

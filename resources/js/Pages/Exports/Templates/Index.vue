@@ -2,10 +2,11 @@
 /**
  * Exports/Templates/Index — Template listing in SCAN-mode table.
  */
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import CpButton from '@/Components/CpButton.vue';
-import { useTranslations } from '@/composables/useTranslations.js';
+
 import { Head, Link, router } from '@inertiajs/vue3';
+import CpButton from '@/Components/CpButton.vue';
+import { useTranslations } from '@/composables/useTranslations';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 
 const { t } = useTranslations();
 

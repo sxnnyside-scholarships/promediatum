@@ -2,15 +2,15 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\Facades\Vite;
-use Illuminate\Support\ServiceProvider;
-use App\Services\Desktop\DesktopPathResolver;
 use App\Models\Attendance;
 use App\Models\Grade;
 use App\Models\Observation;
 use App\Observers\AttendanceObserver;
 use App\Observers\GradeObserver;
 use App\Observers\ObservationObserver;
+use App\Services\Desktop\DesktopPathResolver;
+use Illuminate\Support\Facades\Vite;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -21,7 +21,7 @@ class AppServiceProvider extends ServiceProvider
     {
         // Register DesktopPathResolver as a singleton
         $this->app->singleton(DesktopPathResolver::class, function () {
-            return new DesktopPathResolver();
+            return new DesktopPathResolver;
         });
 
         // When running as a desktop app, override storage & database paths
@@ -69,7 +69,7 @@ class AppServiceProvider extends ServiceProvider
         config([
             'logging.channels.desktop' => [
                 'driver' => 'single',
-                'path' => $resolver->logsPath() . '/promediatum.log',
+                'path' => $resolver->logsPath().'/promediatum.log',
                 'level' => 'debug',
             ],
             'logging.default' => 'desktop',

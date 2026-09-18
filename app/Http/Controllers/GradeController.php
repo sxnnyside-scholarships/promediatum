@@ -69,6 +69,7 @@ class GradeController extends Controller
     public function destroy(Grade $grade): RedirectResponse
     {
         $grade->delete();
+
         return back();
     }
 }

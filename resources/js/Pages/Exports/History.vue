@@ -6,26 +6,27 @@
  * Inline form to generate a new export (group / student / period).
  * Delivery method: Download or Send via Email (requires SMTP config).
  */
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import CpSelect from '@/Components/CpSelect.vue';
-import CpButton from '@/Components/CpButton.vue';
-import CpInput from '@/Components/CpInput.vue';
-import CpIcon from '@/Components/CpIcon.vue';
-import { useTranslations } from '@/composables/useTranslations.js';
-import { useToast } from '@/composables/useToast.js';
+
 import { Head, router, useForm, usePage } from '@inertiajs/vue3';
-import { ref, computed, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
+import CpButton from '@/Components/CpButton.vue';
+import CpIcon from '@/Components/CpIcon.vue';
+import CpInput from '@/Components/CpInput.vue';
+import CpSelect from '@/Components/CpSelect.vue';
+import { useToast } from '@/composables/useToast';
+import { useTranslations } from '@/composables/useTranslations';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 
 const { t } = useTranslations();
 const toast = useToast();
 const page = usePage();
 
 const props = defineProps({
-    exports:        { type: Array, default: () => [] },
-    periods:        { type: Array, default: () => [] },
-    groups:         { type: Array, default: () => [] },
-    students:       { type: Array, default: () => [] },
-    templates:      { type: Array, default: () => [] },
+    exports: { type: Array, default: () => [] },
+    periods: { type: Array, default: () => [] },
+    groups: { type: Array, default: () => [] },
+    students: { type: Array, default: () => [] },
+    templates: { type: Array, default: () => [] },
     smtpConfigured: { type: Boolean, default: false },
 });
 
@@ -57,31 +58,34 @@ const formatOptions = [
 
 const periodOptions = computed(() => [
     { value: '', label: t('exports.select_period') },
-    ...props.periods.map(p => ({ value: String(p.id), label: p.name })),
+    ...props.periods.map((p) => ({ value: String(p.id), label: p.name })),
 ]);
 
 const filteredGroups = computed(() => {
     if (!form.period_id) return [];
-    return props.groups.filter(g => String(g.period_id) === String(form.period_id));
+    return props.groups.filter((g) => String(g.period_id) === String(form.period_id));
 });
 
 const groupOptions = computed(() => [
     { value: '', label: t('exports.select_group') },
-    ...filteredGroups.value.map(g => ({ value: String(g.id), label: g.name })),
+    ...filteredGroups.value.map((g) => ({ value: String(g.id), label: g.name })),
 ]);
 
 const studentOptions = computed(() => [
     { value: '', label: t('exports.select_student') },
-    ...props.students.map(s => ({ value: String(s.id), label: `${s.last_name}, ${s.first_name}` })),
+    ...props.students.map((s) => ({
+        value: String(s.id),
+        label: `${s.last_name}, ${s.first_name}`,
+    })),
 ]);
 
 const filteredTemplates = computed(() => {
-    return props.templates.filter(tmpl => tmpl.type === form.type);
+    return props.templates.filter((tmpl) => tmpl.type === form.type);
 });
 
 const templateOptions = computed(() => [
     { value: '', label: t('exports.no_template') },
-    ...filteredTemplates.value.map(tmpl => ({
+    ...filteredTemplates.value.map((tmpl) => ({
         value: String(tmpl.id),
         label: tmpl.name + (tmpl.is_default ? ` (${t('templates.default_yes')})` : ''),
     })),
@@ -91,20 +95,26 @@ const needsGroup = computed(() => form.type === 'group' || form.type === 'studen
 const needsStudent = computed(() => form.type === 'student');
 
 // Reset dependent fields when type changes
-watch(() => form.type, () => {
-    if (form.type === 'period') {
-        form.group_id = '';
-        form.student_id = '';
-    } else if (form.type === 'group') {
-        form.student_id = '';
-    }
-});
+watch(
+    () => form.type,
+    () => {
+        if (form.type === 'period') {
+            form.group_id = '';
+            form.student_id = '';
+        } else if (form.type === 'group') {
+            form.student_id = '';
+        }
+    },
+);
 
 // Reset group when period changes
-watch(() => form.period_id, () => {
-    form.group_id = '';
-    form.student_id = '';
-});
+watch(
+    () => form.period_id,
+    () => {
+        form.group_id = '';
+        form.student_id = '';
+    },
+);
 
 const smtpAvailable = computed(() => props.smtpConfigured || page.props.smtp_configured);
 
@@ -136,8 +146,9 @@ function submitExport() {
         data.recipient_email = form.recipient_email;
 
         // Email delivery — use JSON response, not blob
-        axios.post(route('exports.store'), data)
-            .then(response => {
+        axios
+            .post(route('exports.store'), data)
+            .then((response) => {
                 if (response.data.success) {
                     toast.success(t('exports.email_queued'));
                 } else {
@@ -145,7 +156,7 @@ function submitExport() {
                 }
                 router.reload({ only: ['exports'] });
             })
-            .catch(err => {
+            .catch((err) => {
                 const msg = err.response?.data?.message || t('exports.email_error');
                 toast.error(msg);
             })
@@ -156,8 +167,9 @@ function submitExport() {
     }
 
     // Download delivery — blob response
-    axios.post(route('exports.store'), data, { responseType: 'blob' })
-        .then(response => {
+    axios
+        .post(route('exports.store'), data, { responseType: 'blob' })
+        .then((response) => {
             // Extract filename from Content-Disposition header
             const disposition = response.headers['content-disposition'];
             let fileName = 'export';

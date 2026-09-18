@@ -16,6 +16,8 @@ class PeriodController extends Controller
      */
     public function index(): Response
     {
+        Period::syncAutomaticStatus();
+
         $periods = Period::orderByDesc('start_date')->get();
 
         return Inertia::render('Periods/Index', [
@@ -62,6 +64,9 @@ class PeriodController extends Controller
      */
     public function show(Period $period): Response
     {
+        Period::syncAutomaticStatus();
+        $period->refresh();
+
         return Inertia::render('Periods/Show', [
             'period' => $period,
         ]);

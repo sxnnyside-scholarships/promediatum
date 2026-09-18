@@ -12,7 +12,7 @@ class DesktopPathResolverTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->resolver = new DesktopPathResolver();
+        $this->resolver = new DesktopPathResolver;
     }
 
     public function test_base_path_returns_string(): void

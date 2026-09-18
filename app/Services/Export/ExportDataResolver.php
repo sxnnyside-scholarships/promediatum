@@ -2,7 +2,6 @@
 
 namespace App\Services\Export;
 
-use App\Models\Attendance;
 use App\Models\Grade;
 use App\Models\GradeCategory;
 use App\Models\Group;
@@ -31,10 +30,10 @@ class ExportDataResolver
     public function resolve(ExportContext $context): array
     {
         return match ($context->type) {
-            'group'   => $this->resolveGroupExport($context),
+            'group' => $this->resolveGroupExport($context),
             'student' => $this->resolveStudentExport($context),
-            'period'  => $this->resolvePeriodExport($context),
-            default   => throw new \InvalidArgumentException("Unknown export type: {$context->type}"),
+            'period' => $this->resolvePeriodExport($context),
+            default => throw new \InvalidArgumentException("Unknown export type: {$context->type}"),
         };
     }
 
@@ -59,42 +58,42 @@ class ExportDataResolver
             $summary = $this->academic->getStudentSummary($student->id, $group->id, $context->periodId);
 
             return [
-                'student_id'      => $student->id,
-                'first_name'      => $student->first_name,
-                'last_name'       => $student->last_name,
-                'full_name'       => $student->full_name,
+                'student_id' => $student->id,
+                'first_name' => $student->first_name,
+                'last_name' => $student->last_name,
+                'full_name' => $student->full_name,
                 'weighted_average' => $summary['average'],
                 'attendance_rate' => $summary['attendance']['rate'],
-                'present'         => $summary['attendance']['present'],
-                'absent'          => $summary['attendance']['absent'],
-                'justified'       => $summary['attendance']['justified'],
-                'total_sessions'  => $summary['attendance']['total'],
-                'at_risk'         => $summary['at_risk'],
-                'absence_streak'  => $summary['absence_streak'],
+                'present' => $summary['attendance']['present'],
+                'absent' => $summary['attendance']['absent'],
+                'justified' => $summary['attendance']['justified'],
+                'total_sessions' => $summary['attendance']['total'],
+                'at_risk' => $summary['at_risk'],
+                'absence_streak' => $summary['absence_streak'],
             ];
         });
 
         $categories = $group->gradeCategories->map(fn (GradeCategory $cat) => [
-            'id'     => $cat->id,
-            'name'   => $cat->name,
+            'id' => $cat->id,
+            'name' => $cat->name,
             'weight' => (float) $cat->weight,
         ]);
 
         return [
             'group' => [
-                'id'               => $group->id,
-                'name'             => $group->name,
-                'subject'          => $group->subject,
+                'id' => $group->id,
+                'name' => $group->name,
+                'subject' => $group->subject,
                 'educational_level' => $group->educational_level,
             ],
             'period' => [
-                'id'         => $period->id,
-                'name'       => $period->name,
+                'id' => $period->id,
+                'name' => $period->name,
                 'start_date' => $period->start_date?->toDateString(),
-                'end_date'   => $period->end_date?->toDateString(),
+                'end_date' => $period->end_date?->toDateString(),
             ],
             'categories' => $categories->toArray(),
-            'students'   => $studentRows->toArray(),
+            'students' => $studentRows->toArray(),
         ];
     }
 
@@ -105,11 +104,11 @@ class ExportDataResolver
     protected function resolveStudentExport(ExportContext $context): array
     {
         $student = Student::findOrFail($context->studentId);
-        $group   = Group::with('period')->findOrFail($context->groupId);
+        $group = Group::with('period')->findOrFail($context->groupId);
         /** @var Period $period */
-        $period  = Period::findOrFail($context->periodId);
+        $period = Period::findOrFail($context->periodId);
 
-        $summary    = $this->academic->getStudentSummary($student->id, $group->id, $period->id);
+        $summary = $this->academic->getStudentSummary($student->id, $group->id, $period->id);
         /** @var \Illuminate\Support\Collection $categories */
         $categories = $this->academic->getCategoryBreakdown($student->id, $group->id, $period->id);
 
@@ -119,51 +118,51 @@ class ExportDataResolver
             ->orderByDesc('created_at')
             ->get()
             ->map(fn (Observation $obs) => [
-                'type'       => $obs->type,
-                'content'    => $obs->content,
-                'status'     => $obs->status,
+                'type' => $obs->type,
+                'content' => $obs->content,
+                'status' => $obs->status,
                 'created_at' => $obs->created_at?->toDateTimeString(),
             ])
             ->toArray();
 
         return [
             'student' => [
-                'id'         => $student->id,
+                'id' => $student->id,
                 'first_name' => $student->first_name,
-                'last_name'  => $student->last_name,
-                'full_name'  => $student->full_name,
+                'last_name' => $student->last_name,
+                'full_name' => $student->full_name,
             ],
             'group' => [
-                'id'      => $group->id,
-                'name'    => $group->name,
+                'id' => $group->id,
+                'name' => $group->name,
                 'subject' => $group->subject,
             ],
             'period' => [
-                'id'         => $period->id,
-                'name'       => $period->name,
+                'id' => $period->id,
+                'name' => $period->name,
                 'start_date' => $period->start_date?->toDateString(),
-                'end_date'   => $period->end_date?->toDateString(),
+                'end_date' => $period->end_date?->toDateString(),
             ],
             'academic' => [
                 'weighted_average' => $summary['average'],
-                'at_risk'          => $summary['at_risk'],
-                'absence_streak'   => $summary['absence_streak'],
+                'at_risk' => $summary['at_risk'],
+                'absence_streak' => $summary['absence_streak'],
                 'has_absence_alert' => $summary['has_absence_alert'],
             ],
             'attendance' => $summary['attendance'],
             'categories' => $categories->map(fn (array $cat) => [
-                'id'                    => $cat['id'],
-                'name'                  => $cat['name'],
-                'weight'                => $cat['weight'],
-                'average'               => $cat['average'],
+                'id' => $cat['id'],
+                'name' => $cat['name'],
+                'weight' => $cat['weight'],
+                'average' => $cat['average'],
                 'weighted_contribution' => $cat['weighted_contribution'],
-                'grades_count'          => $cat['grades']->count(),
-                'grades'                => $cat['grades']->map(fn (Grade $g) => [
-                    'title'      => $g->title,
-                    'score'      => (float) $g->score,
-                    'max_score'  => (float) $g->max_score,
+                'grades_count' => $cat['grades']->count(),
+                'grades' => $cat['grades']->map(fn (Grade $g) => [
+                    'title' => $g->title,
+                    'score' => (float) $g->score,
+                    'max_score' => (float) $g->max_score,
                     'percentage' => $g->percentage,
-                    'date'       => $g->date instanceof \Carbon\Carbon ? $g->date->toDateString() : (string) $g->date,
+                    'date' => $g->date instanceof \Carbon\Carbon ? $g->date->toDateString() : (string) $g->date,
                 ])->toArray(),
             ])->toArray(),
             'observations' => $observations,
@@ -215,31 +214,31 @@ class ExportDataResolver
                 : null;
 
             return [
-                'group_id'            => $group->id,
-                'group_name'          => $group->name,
-                'subject'             => $group->subject,
-                'educational_level'   => $group->educational_level,
-                'students_count'      => $students->count(),
-                'group_average'       => $groupAvg,
-                'group_attendance'    => $groupAttendance,
-                'students_at_risk'    => $riskCount,
-                'categories_count'    => $group->gradeCategories->count(),
-                'total_weight'        => (float) $group->gradeCategories->sum('weight'),
+                'group_id' => $group->id,
+                'group_name' => $group->name,
+                'subject' => $group->subject,
+                'educational_level' => $group->educational_level,
+                'students_count' => $students->count(),
+                'group_average' => $groupAvg,
+                'group_attendance' => $groupAttendance,
+                'students_at_risk' => $riskCount,
+                'categories_count' => $group->gradeCategories->count(),
+                'total_weight' => (float) $group->gradeCategories->sum('weight'),
             ];
         });
 
         return [
             'period' => [
-                'id'         => $period->id,
-                'name'       => $period->name,
+                'id' => $period->id,
+                'name' => $period->name,
                 'start_date' => $period->start_date?->toDateString(),
-                'end_date'   => $period->end_date?->toDateString(),
-                'is_active'  => $period->is_active,
+                'end_date' => $period->end_date?->toDateString(),
+                'is_active' => $period->is_active,
             ],
             'summary' => [
-                'total_groups'   => $groups->count(),
+                'total_groups' => $groups->count(),
                 'total_students' => $groupSummaries->sum('students_count'),
-                'total_at_risk'  => $groupSummaries->sum('students_at_risk'),
+                'total_at_risk' => $groupSummaries->sum('students_at_risk'),
             ],
             'groups' => $groupSummaries->toArray(),
         ];

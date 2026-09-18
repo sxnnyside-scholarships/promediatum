@@ -19,8 +19,8 @@ use Inertia\Response;
 class WorkspaceController extends Controller
 {
     public function __construct(
-        protected InsightEngine       $insightEngine,
-        protected AutomationEngine    $automationEngine,
+        protected InsightEngine $insightEngine,
+        protected AutomationEngine $automationEngine,
         protected NotificationService $notificationService,
     ) {}
 
@@ -35,25 +35,34 @@ class WorkspaceController extends Controller
         $groups = $groupsQuery
             ->withCount('students')
             ->orderBy('name')
-            ->limit(6)
+            ->limit(8)
             ->get()
-            ->map(fn (Group $g) => [
+            ->map(fn (Group $g): array => [
                 'id' => $g->id,
                 'name' => $g->name,
                 'slug' => $g->slug,
                 'subject' => $g->subject,
+                'grade_level' => $g->educational_level,
                 'students_count' => $g->students_count,
             ]);
 
         $pendingObservations = Observation::where('status', 'pending')
-            ->with(['student:id,first_name,last_name,slug', 'group:id,name,slug'])
+            ->with(['student', 'group'])
             ->latest()
             ->limit(5)
             ->get()
             ->map(fn (Observation $obs) => [
                 'id' => $obs->id,
                 'type' => $obs->type,
-                'content' => Str::limit($obs->content, 80),
+                'content' => Str::limit($obs->content, 90),
+                'student' => $obs->student ? [
+                    'id' => $obs->student->id,
+                    'first_name' => $obs->student->first_name,
+                    'last_name' => $obs->student->last_name,
+                    'full_name' => $obs->student->full_name,
+                    'initials' => $obs->student->initials,
+                    'slug' => $obs->student->slug,
+                ] : null,
                 'student_name' => $obs->student?->full_name,
                 'student_slug' => $obs->student?->slug,
                 'group_name' => $obs->group?->name,
@@ -61,15 +70,23 @@ class WorkspaceController extends Controller
                 'created_at' => $obs->created_at?->diffForHumans(),
             ]);
 
-        $recentActivity = Observation::with(['student:id,first_name,last_name', 'group:id,name'])
+        $recentActivity = Observation::with(['student', 'group'])
             ->latest()
-            ->limit(8)
+            ->limit(6)
             ->get()
             ->map(fn (Observation $obs) => [
                 'id' => $obs->id,
                 'type' => $obs->type,
                 'status' => $obs->status,
-                'content' => Str::limit($obs->content, 60),
+                'content' => Str::limit($obs->content, 75),
+                'student' => $obs->student ? [
+                    'id' => $obs->student->id,
+                    'first_name' => $obs->student->first_name,
+                    'last_name' => $obs->student->last_name,
+                    'full_name' => $obs->student->full_name,
+                    'initials' => $obs->student->initials,
+                    'slug' => $obs->student->slug,
+                ] : null,
                 'student_name' => $obs->student?->full_name,
                 'group_name' => $obs->group?->name,
                 'created_at' => $obs->created_at?->diffForHumans(),
@@ -79,6 +96,17 @@ class WorkspaceController extends Controller
         $totalGroups = Group::where('is_archived', false)->count();
         // Reuse pendingObservations query result to avoid duplicate COUNT query
         $pendingCount = Observation::where('status', 'pending')->count();
+
+        // Calculate period progress percentage
+        $periodProgress = 0;
+        if ($activePeriod !== null && $activePeriod->start_date && $activePeriod->end_date) {
+            $start = $activePeriod->start_date->startOfDay();
+            $end = $activePeriod->end_date->startOfDay();
+            $today = now()->startOfDay();
+            $totalDays = max(1, (int) $start->diffInDays($end));
+            $elapsedDays = min($totalDays, max(0, (int) $start->diffInDays($today)));
+            $periodProgress = min(100, (int) round(($elapsedDays / $totalDays) * 100));
+        }
 
         // ── Insights Engine ──
         $insights = [];
@@ -119,6 +147,7 @@ class WorkspaceController extends Controller
                     ? $activePeriod->end_date->format('Y-m-d')
                     : $activePeriod->end_date,
                 'days_remaining' => $activePeriod->days_remaining,
+                'progress_percent' => $periodProgress,
             ] : null,
             'groups' => $groups,
             'pendingObservations' => $pendingObservations,

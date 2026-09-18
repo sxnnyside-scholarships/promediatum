@@ -72,8 +72,8 @@ class Group extends Model
     public function students(): BelongsToMany
     {
         return $this->belongsToMany(Student::class, 'group_student')
-                    ->withPivot('period_id')
-                    ->withTimestamps();
+            ->withPivot('period_id')
+            ->withTimestamps();
     }
 
     public function attendances(): HasMany

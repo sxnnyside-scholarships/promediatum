@@ -15,7 +15,7 @@ use App\Models\Period;
 final class InsightContext
 {
     public function __construct(
-        public readonly int  $periodId,
+        public readonly int $periodId,
         public readonly ?int $groupId = null,
         public readonly ?int $studentId = null,
     ) {}
@@ -37,13 +37,13 @@ final class InsightContext
     /**
      * Build from an array (e.g. request input).
      *
-     * @param array{period_id: int, group_id?: int, student_id?: int} $data
+     * @param  array{period_id: int, group_id?: int, student_id?: int}  $data
      */
     public static function fromArray(array $data): self
     {
         return new self(
-            periodId:  (int) $data['period_id'],
-            groupId:   isset($data['group_id']) ? (int) $data['group_id'] : null,
+            periodId: (int) $data['period_id'],
+            groupId: isset($data['group_id']) ? (int) $data['group_id'] : null,
             studentId: isset($data['student_id']) ? (int) $data['student_id'] : null,
         );
     }

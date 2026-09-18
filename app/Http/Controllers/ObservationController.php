@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Observation;
 use App\Models\Group;
+use App\Models\Observation;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -12,30 +12,28 @@ use Inertia\Response;
 class ObservationController extends Controller
 {
     /**
-     * List all observations (scan mode) with filters.
+     * List all observations (scan mode) with filters and group students.
      */
     public function index(Request $request): Response
     {
-        $query = Observation::with(['student', 'group', 'period'])
-            ->orderByDesc('created_at');
+        $observations = Observation::with(['student', 'group.period', 'period'])
+            ->orderByDesc('created_at')
+            ->get();
 
-        if ($request->filled('status')) {
-            $query->where('status', $request->input('status'));
-        }
+        $groups = Group::with(['period', 'students' => function ($q) {
+            $q->orderBy('first_name')->orderBy('last_name');
+        }])
+            ->orderBy('name')
+            ->get();
 
-        if ($request->filled('type')) {
-            $query->where('type', $request->input('type'));
-        }
-
-        if ($request->filled('group_id')) {
-            $query->where('group_id', $request->input('group_id'));
-        }
-
-        $observations = $query->get();
+        $students = \App\Models\Student::orderBy('first_name')
+            ->orderBy('last_name')
+            ->get();
 
         return Inertia::render('Observations/Index', [
             'observations' => $observations,
-            'groups' => Group::orderBy('name')->get(['id', 'name']),
+            'groups' => $groups,
+            'students' => $students,
             'filters' => $request->only(['status', 'type', 'group_id']),
         ]);
     }
@@ -89,6 +87,7 @@ class ObservationController extends Controller
     public function destroy(Observation $observation): RedirectResponse
     {
         $observation->delete();
+
         return back();
     }
 }

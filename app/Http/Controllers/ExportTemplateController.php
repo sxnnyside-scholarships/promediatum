@@ -21,11 +21,11 @@ class ExportTemplateController extends Controller
             ->orderBy('name')
             ->get()
             ->map(fn (ExportTemplate $t) => [
-                'id'         => $t->id,
-                'name'       => $t->name,
-                'type'       => $t->type,
+                'id' => $t->id,
+                'name' => $t->name,
+                'type' => $t->type,
                 'is_default' => $t->is_default,
-                'config'     => $t->normalized_config,
+                'config' => $t->normalized_config,
                 'created_at' => $t->created_at->toDateTimeString(),
                 'updated_at' => $t->updated_at->toDateTimeString(),
             ]);
@@ -61,11 +61,11 @@ class ExportTemplateController extends Controller
         }
 
         ExportTemplate::create([
-            'user_id'    => Auth::id(),
-            'name'       => $data['name'],
-            'type'       => $data['type'],
+            'user_id' => Auth::id(),
+            'name' => $data['name'],
+            'type' => $data['type'],
             'is_default' => $data['is_default'] ?? false,
-            'config'     => $data['config'],
+            'config' => $data['config'],
         ]);
 
         return redirect()->route('exports.templates.index')
@@ -83,12 +83,12 @@ class ExportTemplateController extends Controller
         }
 
         return Inertia::render('Exports/Templates/Edit', [
-            'template'      => [
-                'id'         => $exportTemplate->id,
-                'name'       => $exportTemplate->name,
-                'type'       => $exportTemplate->type,
+            'template' => [
+                'id' => $exportTemplate->id,
+                'name' => $exportTemplate->name,
+                'type' => $exportTemplate->type,
                 'is_default' => $exportTemplate->is_default,
-                'config'     => $exportTemplate->normalized_config,
+                'config' => $exportTemplate->normalized_config,
             ],
             'defaultConfig' => ExportTemplate::defaultConfig(),
         ]);
@@ -115,10 +115,10 @@ class ExportTemplateController extends Controller
         }
 
         $exportTemplate->update([
-            'name'       => $data['name'],
-            'type'       => $data['type'],
+            'name' => $data['name'],
+            'type' => $data['type'],
             'is_default' => $data['is_default'] ?? false,
-            'config'     => $data['config'],
+            'config' => $data['config'],
         ]);
 
         return redirect()->route('exports.templates.index')

@@ -11,10 +11,11 @@
  * - Max 3 contextual actions, priority-ordered
  * - Badge support for state-aware alerts (pending observations)
  */
-import CpIcon from '@/Components/CpIcon.vue';
-import { useTranslations } from '@/composables/useTranslations.js';
+
 import { Link, usePage } from '@inertiajs/vue3';
-import { ref, computed } from 'vue';
+import { computed, ref } from 'vue';
+import CpIcon from '@/Components/CpIcon.vue';
+import { useTranslations } from '@/composables/useTranslations';
 
 const { t } = useTranslations();
 const page = usePage();
@@ -44,7 +45,7 @@ const actions = computed(() => {
     const serverActions = page.props.fab;
 
     if (Array.isArray(serverActions) && serverActions.length > 0) {
-        return serverActions.map(action => ({
+        return serverActions.map((action) => ({
             label: t(action.label),
             icon: action.icon,
             href: resolveActionRoute(action),
@@ -87,36 +88,32 @@ const fallbackActions = computed(() => {
     }
 
     if (current('groups.index')) {
-        return [
-            { label: t('fab.new_group'), href: route('groups.create'), icon: 'users' },
-        ];
+        return [{ label: t('fab.new_group'), href: route('groups.create'), icon: 'users' }];
     }
 
     if (current('groups.show')) {
         const groupSlug = page.props.group?.slug;
         if (groupSlug) {
             return [
-                { label: t('fab.take_attendance'), href: route('attendance.index', groupSlug), icon: 'clipboard' },
+                {
+                    label: t('fab.take_attendance'),
+                    href: route('attendance.index', groupSlug),
+                    icon: 'clipboard',
+                },
             ];
         }
     }
 
     if (current('students.index')) {
-        return [
-            { label: t('fab.new_student'), href: route('students.create'), icon: 'user' },
-        ];
+        return [{ label: t('fab.new_student'), href: route('students.create'), icon: 'user' }];
     }
 
     if (current('periods.index') || current('periods.*')) {
-        return [
-            { label: t('fab.new_period'), href: route('periods.create'), icon: 'calendar' },
-        ];
+        return [{ label: t('fab.new_period'), href: route('periods.create'), icon: 'calendar' }];
     }
 
     if (current('exports.*')) {
-        return [
-            { label: t('fab.new_export'), href: route('exports.history'), icon: 'download' },
-        ];
+        return [{ label: t('fab.new_export'), href: route('exports.history'), icon: 'download' }];
     }
 
     return [

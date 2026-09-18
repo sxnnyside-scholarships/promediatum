@@ -43,15 +43,15 @@ final class ObservationAnalyzer
                 : InsightResult::SEVERITY_MEDIUM;
 
             $insights[] = new InsightResult(
-                type:            InsightResult::TYPE_OBSERVATION,
-                severity:        $severity,
-                message:         "{$studentName}: " . __('insights.unresolved_observations', ['count' => $count]),
+                type: InsightResult::TYPE_OBSERVATION,
+                severity: $severity,
+                message: "{$studentName}: ".__('insights.unresolved_observations', ['count' => $count]),
                 suggestedAction: __('insights.action_resolve_observations'),
-                route:           route('observations.index'),
-                meta:            [
-                    'student_id'       => $studentId,
+                route: route('observations.index'),
+                meta: [
+                    'student_id' => $studentId,
                     'unresolved_count' => $count,
-                    'has_behavior'     => $hasBehavior,
+                    'has_behavior' => $hasBehavior,
                 ],
             );
         }

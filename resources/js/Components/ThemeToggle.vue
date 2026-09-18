@@ -1,7 +1,7 @@
 <script setup>
-import { useTheme } from '@/composables/useTheme.js';
-import { useTranslations } from '@/composables/useTranslations.js';
 import CpIcon from '@/Components/CpIcon.vue';
+import { useTheme } from '@/composables/useTheme';
+import { useTranslations } from '@/composables/useTranslations';
 
 const { isDark, toggle } = useTheme();
 const { t } = useTranslations();

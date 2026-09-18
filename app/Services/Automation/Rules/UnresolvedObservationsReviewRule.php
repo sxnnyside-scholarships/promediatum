@@ -7,7 +7,6 @@ namespace App\Services\Automation\Rules;
 use App\Services\Automation\AutomationAction;
 use App\Services\Automation\AutomationContext;
 use App\Services\Automation\AutomationRule;
-use App\Services\Insights\InsightResult;
 
 /**
  * UnresolvedObservationsReviewRule — When >5 unresolved observations exist,
@@ -35,15 +34,15 @@ final class UnresolvedObservationsReviewRule extends AutomationRule
 
         return [
             new AutomationAction(
-                type:        AutomationAction::TYPE_SUGGEST_REVIEW,
-                severity:    $severity,
-                title:       __('automation.suggest_review_title'),
+                type: AutomationAction::TYPE_SUGGEST_REVIEW,
+                severity: $severity,
+                title: __('automation.suggest_review_title'),
                 description: __('automation.suggest_review_desc', ['count' => $context->pendingObservations]),
-                icon:        'clipboard',
-                route:       'observations.index',
-                meta:        [
+                icon: 'clipboard',
+                route: 'observations.index',
+                meta: [
                     'pending_count' => $context->pendingObservations,
-                    'rule'          => $this->ruleKey(),
+                    'rule' => $this->ruleKey(),
                 ],
             ),
         ];

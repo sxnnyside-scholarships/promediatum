@@ -38,12 +38,7 @@
 @layer components {
     /* ── Café Pedagógico: Form Inputs ── */
     .cp-input {
-        @apply w-full rounded-subtle border border-cafe-300 bg-white px-3 py-2
-               text-cafe-800 placeholder-cafe-400
-               transition-colors duration-150
-               focus:border-accent-400 focus:ring-1 focus:ring-accent-400
-               dark:border-cafe-700 dark:bg-surface-dark-2 dark:text-cafe-100
-               dark:placeholder-cafe-500 dark:focus:border-accent-400;
+        @apply w-full rounded-subtle border border-cafe-300 bg-white px-3 py-2 text-cafe-800 placeholder-cafe-400 transition-colors duration-150 focus:border-accent-400 focus:ring-1 focus:ring-accent-400 dark:border-cafe-700 dark:bg-surface-dark-2 dark:text-cafe-100 dark:placeholder-cafe-500 dark:focus:border-accent-400;
     }
 
     select.cp-input {
@@ -68,27 +63,15 @@
 
     /* ── Buttons ── */
     .cp-btn-primary {
-        @apply inline-flex items-center rounded-subtle px-4 py-2
-               bg-accent-400 text-white font-medium text-sm
-               transition-colors duration-150
-               hover:bg-accent-500 active:bg-accent-600
-               disabled:opacity-50 disabled:cursor-not-allowed;
+        @apply inline-flex items-center rounded-subtle px-4 py-2 bg-accent-400 text-white font-medium text-sm transition-colors duration-150 hover:bg-accent-500 active:bg-accent-600 disabled:opacity-50 disabled:cursor-not-allowed;
     }
 
     .cp-btn-secondary {
-        @apply inline-flex items-center rounded-subtle px-4 py-2
-               bg-cafe-200 text-cafe-700 font-medium text-sm
-               transition-colors duration-150
-               hover:bg-cafe-300
-               dark:bg-surface-dark-3 dark:text-cafe-200 dark:hover:bg-cafe-700;
+        @apply inline-flex items-center rounded-subtle px-4 py-2 bg-cafe-200 text-cafe-700 font-medium text-sm transition-colors duration-150 hover:bg-cafe-300 dark:bg-surface-dark-3 dark:text-cafe-200 dark:hover:bg-cafe-700;
     }
 
     .cp-btn-ghost {
-        @apply inline-flex items-center rounded-subtle px-3 py-1.5
-               text-cafe-600 text-sm
-               transition-colors duration-150
-               hover:bg-cafe-100 hover:text-cafe-800
-               dark:text-cafe-300 dark:hover:bg-surface-dark-2 dark:hover:text-cafe-100;
+        @apply inline-flex items-center rounded-subtle px-3 py-1.5 text-cafe-600 text-sm transition-colors duration-150 hover:bg-cafe-100 hover:text-cafe-800 dark:text-cafe-300 dark:hover:bg-surface-dark-2 dark:hover:text-cafe-100;
     }
 
     /* ── Horizontal rule separator ── */

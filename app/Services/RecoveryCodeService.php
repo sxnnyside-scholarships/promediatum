@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Models\RecoveryCode;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 class RecoveryCodeService
 {
@@ -76,6 +75,7 @@ class RecoveryCodeService
         foreach ($unusedCodes as $recoveryCode) {
             if (Hash::check($code, $recoveryCode->code_hash)) {
                 $recoveryCode->markAsUsed();
+
                 return true;
             }
         }
@@ -127,7 +127,7 @@ class RecoveryCodeService
         $header .= "Store these codes in a safe place.\n";
         $header .= "Each code can only be used ONCE.\n";
         $header .= "These codes will NOT be shown again.\n\n";
-        $header .= "Generated: " . now()->format('Y-m-d H:i:s') . "\n\n";
+        $header .= 'Generated: '.now()->format('Y-m-d H:i:s')."\n\n";
 
         $body = '';
         foreach ($codes as $i => $code) {
@@ -139,6 +139,6 @@ class RecoveryCodeService
         $footer .= "If you lose all codes and forget your password,\n";
         $footer .= "you will not be able to recover your account.\n";
 
-        return $header . $body . $footer;
+        return $header.$body.$footer;
     }
 }

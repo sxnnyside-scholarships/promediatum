@@ -34,6 +34,11 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Prevent duplicate seeding if data already exists
+        if (User::where('email', 'maria@promediatum.test')->exists()) {
+            return;
+        }
+
         // ── Teacher User ──
         $user = User::create([
             'first_name' => 'María',

@@ -34,8 +34,7 @@ final class NotificationService
      * Process automation actions and emit notifications for high/critical severity.
      *
      * @param  AutomationAction[]  $actions
-     * @param  int                 $userId
-     * @return int  Number of new notifications emitted
+     * @return int Number of new notifications emitted
      */
     public function processActions(array $actions, int $userId): int
     {
@@ -74,7 +73,7 @@ final class NotificationService
      */
     public function getNotifications(int $userId, int $limit = 10): array
     {
-        $notifications = Cache::get(self::STORAGE_PREFIX . $userId, []);
+        $notifications = Cache::get(self::STORAGE_PREFIX.$userId, []);
 
         return array_slice($notifications, 0, $limit);
     }
@@ -84,7 +83,7 @@ final class NotificationService
      */
     public function unreadCount(int $userId): int
     {
-        $notifications = Cache::get(self::STORAGE_PREFIX . $userId, []);
+        $notifications = Cache::get(self::STORAGE_PREFIX.$userId, []);
 
         return count(array_filter($notifications, fn (array $n): bool => ! $n['read']));
     }
@@ -94,13 +93,13 @@ final class NotificationService
      */
     public function markAllRead(int $userId): void
     {
-        $notifications = Cache::get(self::STORAGE_PREFIX . $userId, []);
+        $notifications = Cache::get(self::STORAGE_PREFIX.$userId, []);
 
         foreach ($notifications as &$notification) {
             $notification['read'] = true;
         }
 
-        Cache::put(self::STORAGE_PREFIX . $userId, $notifications, self::COOLDOWN_SECONDS * 7);
+        Cache::put(self::STORAGE_PREFIX.$userId, $notifications, self::COOLDOWN_SECONDS * 7);
     }
 
     /**
@@ -108,7 +107,7 @@ final class NotificationService
      */
     public function clear(int $userId): void
     {
-        Cache::forget(self::STORAGE_PREFIX . $userId);
+        Cache::forget(self::STORAGE_PREFIX.$userId);
     }
 
     /**
@@ -116,24 +115,24 @@ final class NotificationService
      */
     private function store(int $userId, AutomationAction $action): void
     {
-        $notifications = Cache::get(self::STORAGE_PREFIX . $userId, []);
+        $notifications = Cache::get(self::STORAGE_PREFIX.$userId, []);
 
         array_unshift($notifications, [
-            'type'        => $action->type,
-            'severity'    => $action->severity,
-            'title'       => $action->title,
+            'type' => $action->type,
+            'severity' => $action->severity,
+            'title' => $action->title,
             'description' => $action->description,
-            'icon'        => $action->icon,
-            'route'       => $action->route,
-            'created_at'  => now()->toIso8601String(),
-            'read'        => false,
+            'icon' => $action->icon,
+            'route' => $action->route,
+            'created_at' => now()->toIso8601String(),
+            'read' => false,
         ]);
 
         // Trim to max stored
         $notifications = array_slice($notifications, 0, self::MAX_STORED);
 
         // Store for 7 days
-        Cache::put(self::STORAGE_PREFIX . $userId, $notifications, self::COOLDOWN_SECONDS * 7);
+        Cache::put(self::STORAGE_PREFIX.$userId, $notifications, self::COOLDOWN_SECONDS * 7);
     }
 
     /**
@@ -141,7 +140,7 @@ final class NotificationService
      */
     private function isOnCooldown(string $contextKey): bool
     {
-        return Cache::has(self::COOLDOWN_PREFIX . $contextKey);
+        return Cache::has(self::COOLDOWN_PREFIX.$contextKey);
     }
 
     /**
@@ -149,7 +148,7 @@ final class NotificationService
      */
     private function setCooldown(string $contextKey): void
     {
-        Cache::put(self::COOLDOWN_PREFIX . $contextKey, true, self::COOLDOWN_SECONDS);
+        Cache::put(self::COOLDOWN_PREFIX.$contextKey, true, self::COOLDOWN_SECONDS);
     }
 
     /**
@@ -160,13 +159,13 @@ final class NotificationService
         $parts = [$ruleKey];
 
         if (isset($meta['student_id'])) {
-            $parts[] = 'stu' . $meta['student_id'];
+            $parts[] = 'stu'.$meta['student_id'];
         }
         if (isset($meta['group_id'])) {
-            $parts[] = 'grp' . $meta['group_id'];
+            $parts[] = 'grp'.$meta['group_id'];
         }
         if (isset($meta['period_id'])) {
-            $parts[] = 'per' . $meta['period_id'];
+            $parts[] = 'per'.$meta['period_id'];
         }
 
         return implode(':', $parts);

@@ -67,10 +67,10 @@ class CSVExporter implements ExporterInterface
     protected function flatten(array $data, ExportContext $context): array
     {
         return match ($context->type) {
-            'group'   => $this->flattenGroup($data),
+            'group' => $this->flattenGroup($data),
             'student' => $this->flattenStudent($data),
-            'period'  => $this->flattenPeriod($data),
-            default   => [],
+            'period' => $this->flattenPeriod($data),
+            default => [],
         };
     }
 
@@ -82,18 +82,18 @@ class CSVExporter implements ExporterInterface
 
         foreach ($data['students'] as $student) {
             $rows[] = [
-                'Group'            => $group['name'],
-                'Subject'          => $group['subject'] ?? '',
-                'Period'           => $period['name'],
-                'Student'          => $student['full_name'],
+                'Group' => $group['name'],
+                'Subject' => $group['subject'] ?? '',
+                'Period' => $period['name'],
+                'Student' => $student['full_name'],
                 'Weighted Average' => $student['weighted_average'] ?? '',
-                'Attendance Rate'  => $student['attendance_rate'] !== null ? $student['attendance_rate'] . '%' : '',
-                'Present'          => $student['present'],
-                'Absent'           => $student['absent'],
-                'Justified'        => $student['justified'],
-                'Total Sessions'   => $student['total_sessions'],
-                'At Risk'          => $student['at_risk'] ? 'Yes' : 'No',
-                'Absence Streak'   => $student['absence_streak'],
+                'Attendance Rate' => $student['attendance_rate'] !== null ? $student['attendance_rate'].'%' : '',
+                'Present' => $student['present'],
+                'Absent' => $student['absent'],
+                'Justified' => $student['justified'],
+                'Total Sessions' => $student['total_sessions'],
+                'At Risk' => $student['at_risk'] ? 'Yes' : 'No',
+                'Absence Streak' => $student['absence_streak'],
             ];
         }
 
@@ -111,36 +111,36 @@ class CSVExporter implements ExporterInterface
 
         // Summary row
         $rows[] = [
-            'Student'            => $student['full_name'],
-            'Group'              => $group['name'],
-            'Subject'            => $group['subject'] ?? '',
-            'Period'             => $period['name'],
-            'Category'           => '— SUMMARY —',
-            'Grade Title'        => '',
-            'Score'              => '',
-            'Max Score'          => '',
-            'Percentage'         => '',
-            'Weighted Average'   => $academic['weighted_average'] ?? '',
-            'Attendance Rate'    => $attendance['rate'] !== null ? $attendance['rate'] . '%' : '',
-            'At Risk'            => $academic['at_risk'] ? 'Yes' : 'No',
+            'Student' => $student['full_name'],
+            'Group' => $group['name'],
+            'Subject' => $group['subject'] ?? '',
+            'Period' => $period['name'],
+            'Category' => '— SUMMARY —',
+            'Grade Title' => '',
+            'Score' => '',
+            'Max Score' => '',
+            'Percentage' => '',
+            'Weighted Average' => $academic['weighted_average'] ?? '',
+            'Attendance Rate' => $attendance['rate'] !== null ? $attendance['rate'].'%' : '',
+            'At Risk' => $academic['at_risk'] ? 'Yes' : 'No',
         ];
 
         // Grade rows per category
         foreach ($data['categories'] as $category) {
             foreach ($category['grades'] as $grade) {
                 $rows[] = [
-                    'Student'            => $student['full_name'],
-                    'Group'              => $group['name'],
-                    'Subject'            => $group['subject'] ?? '',
-                    'Period'             => $period['name'],
-                    'Category'           => $category['name'] . ' (' . $category['weight'] . '%)',
-                    'Grade Title'        => $grade['title'],
-                    'Score'              => $grade['score'],
-                    'Max Score'          => $grade['max_score'],
-                    'Percentage'         => $grade['percentage'] . '%',
-                    'Weighted Average'   => '',
-                    'Attendance Rate'    => '',
-                    'At Risk'            => '',
+                    'Student' => $student['full_name'],
+                    'Group' => $group['name'],
+                    'Subject' => $group['subject'] ?? '',
+                    'Period' => $period['name'],
+                    'Category' => $category['name'].' ('.$category['weight'].'%)',
+                    'Grade Title' => $grade['title'],
+                    'Score' => $grade['score'],
+                    'Max Score' => $grade['max_score'],
+                    'Percentage' => $grade['percentage'].'%',
+                    'Weighted Average' => '',
+                    'Attendance Rate' => '',
+                    'At Risk' => '',
                 ];
             }
         }
@@ -155,16 +155,16 @@ class CSVExporter implements ExporterInterface
 
         foreach ($data['groups'] as $group) {
             $rows[] = [
-                'Period'            => $period['name'],
-                'Group'             => $group['group_name'],
-                'Subject'           => $group['subject'] ?? '',
+                'Period' => $period['name'],
+                'Group' => $group['group_name'],
+                'Subject' => $group['subject'] ?? '',
                 'Educational Level' => $group['educational_level'] ?? '',
-                'Students'          => $group['students_count'],
-                'Group Average'     => $group['group_average'] ?? '',
-                'Attendance Rate'   => $group['group_attendance'] !== null ? $group['group_attendance'] . '%' : '',
-                'Students At Risk'  => $group['students_at_risk'],
-                'Categories'        => $group['categories_count'],
-                'Total Weight'      => $group['total_weight'] . '%',
+                'Students' => $group['students_count'],
+                'Group Average' => $group['group_average'] ?? '',
+                'Attendance Rate' => $group['group_attendance'] !== null ? $group['group_attendance'].'%' : '',
+                'Students At Risk' => $group['students_at_risk'],
+                'Categories' => $group['categories_count'],
+                'Total Weight' => $group['total_weight'].'%',
             ];
         }
 

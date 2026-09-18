@@ -17,12 +17,12 @@ class JSONExporter implements ExporterInterface
         $output = [
             'meta' => [
                 'generated_at' => now()->toIso8601String(),
-                'type'         => $context->type,
-                'format'       => 'json',
-                'version'      => '1.0',
+                'type' => $context->type,
+                'format' => 'json',
+                'version' => '1.0',
             ],
             'context' => $this->buildContextBlock($context),
-            'data'    => $data,
+            'data' => $data,
         ];
 
         // Add template info to meta if a template was used

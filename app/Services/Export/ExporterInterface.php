@@ -14,9 +14,9 @@ interface ExporterInterface
     /**
      * Generate the export file and return its absolute path.
      *
-     * @param  array        $data           Resolved dataset from ExportDataResolver.
-     * @param  ExportContext $context        Export parameters.
-     * @param  array        $templateConfig Normalized template configuration (optional).
+     * @param  array  $data  Resolved dataset from ExportDataResolver.
+     * @param  ExportContext  $context  Export parameters.
+     * @param  array  $templateConfig  Normalized template configuration (optional).
      */
     public function export(array $data, ExportContext $context, array $templateConfig = []): string;
 }

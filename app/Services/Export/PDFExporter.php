@@ -19,20 +19,20 @@ class PDFExporter implements ExporterInterface
         $config = array_merge(\App\Models\ExportTemplate::defaultConfig(), $templateConfig);
 
         $viewData = [
-            'data'    => $data,
+            'data' => $data,
             'context' => $context,
-            'config'  => $config,
-            'meta'    => [
-                'generated_at' => now()->format($config['date_format'] . ' H:i:s'),
-                'type'         => $context->type,
+            'config' => $config,
+            'meta' => [
+                'generated_at' => now()->format($config['date_format'].' H:i:s'),
+                'type' => $context->type,
             ],
         ];
 
         $view = match ($context->type) {
-            'group'   => 'exports.pdf.group',
+            'group' => 'exports.pdf.group',
             'student' => 'exports.pdf.student',
-            'period'  => 'exports.pdf.period',
-            default   => throw new \InvalidArgumentException("Unknown export type: {$context->type}"),
+            'period' => 'exports.pdf.period',
+            default => throw new \InvalidArgumentException("Unknown export type: {$context->type}"),
         };
 
         $orientation = $config['orientation'] === 'landscape' ? 'landscape' : 'portrait';
@@ -61,15 +61,15 @@ class PDFExporter implements ExporterInterface
         ];
 
         if ($context->groupId) {
-            $parts[] = 'g' . $context->groupId;
+            $parts[] = 'g'.$context->groupId;
         }
 
         if ($context->studentId) {
-            $parts[] = 's' . $context->studentId;
+            $parts[] = 's'.$context->studentId;
         }
 
         $parts[] = now()->format('Ymd_His');
 
-        return implode('_', $parts) . '.pdf';
+        return implode('_', $parts).'.pdf';
     }
 }

@@ -1,0 +1,70 @@
+{
+    "$schema": "https://biomejs.dev/schemas/2.5.14/schema.json",
+    "vcs": {
+        "enabled": true,
+        "clientKind": "git",
+        "useIgnoreFile": true
+    },
+    "files": {
+        "ignoreUnknown": true,
+        "includes": [
+            "resources/js/**/*",
+            "resources/css/**/*",
+            "vite.config.ts",
+            "tsconfig.json",
+            "package.json",
+            "biome.json"
+        ]
+    },
+    "formatter": {
+        "enabled": true,
+        "indentStyle": "space",
+        "indentWidth": 4,
+        "lineWidth": 100
+    },
+    "javascript": {
+        "formatter": {
+            "quoteStyle": "single",
+            "jsxQuoteStyle": "double",
+            "semicolons": "always",
+            "trailingCommas": "all",
+            "arrowParentheses": "always"
+        }
+    },
+    "css": {
+        "parser": {
+            "tailwindDirectives": true
+        }
+    },
+    "linter": {
+        "enabled": true,
+        "rules": {
+            "preset": "recommended",
+            "suspicious": {
+                "noExplicitAny": "off",
+                "noUnknownAtRules": "off"
+            },
+            "correctness": {
+                "noUnusedVariables": "warn",
+                "noUnusedImports": "warn"
+            },
+            "style": {
+                "useConst": "warn",
+                "useVueMultiWordComponentNames": "off"
+            }
+        }
+    },
+    "overrides": [
+        {
+            "includes": ["**/*.vue"],
+            "linter": {
+                "rules": {
+                    "correctness": {
+                        "noUnusedImports": "off",
+                        "noUnusedVariables": "off"
+                    }
+                }
+            }
+        }
+    ]
+}

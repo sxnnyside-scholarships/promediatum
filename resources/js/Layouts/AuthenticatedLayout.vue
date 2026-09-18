@@ -1,28 +1,43 @@
 <script setup>
 /**
- * AuthenticatedLayout — Café Pedagógico AppShell
+ * AuthenticatedLayout — Educator Digital Workspace AppShell
  *
- * Structure: Top bar + NavigationColumn sidebar + main content + footer.
- * Top bar: logo, locale switch, theme toggle, user dropdown.
- * Sidebar: Dashboard, Periodos, Grupos*, Estudiantes*, Observaciones*, Ajustes.
- * (* = placeholder for future modules)
+ * Structure: Fixed top bar + full-height sidebar + scrollable main viewport + pinned footer.
+ * The footer is permanently fixed at the bottom of the content column and never collides with the sidebar.
  */
-import PromediatumLogo from '@/Components/PromediatumLogo.vue';
-import ThemeToggle from '@/Components/ThemeToggle.vue';
-import LocaleSwitch from '@/Components/LocaleSwitch.vue';
-import CpIcon from '@/Components/CpIcon.vue';
+
+import { Link, router, usePage } from '@inertiajs/vue3';
+import {
+    CalendarMonthRegular,
+    ClipboardRegular,
+    DownloadRegular,
+    DownSmallRegular,
+    ExternalLinkRegular,
+    GroupRegular,
+    Home4Regular,
+    MenuRegular,
+    Settings3Regular,
+    User4Regular,
+} from '@mingcute/vue/core-regular';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import CpFab from '@/Components/CpFab.vue';
 import CpToast from '@/Components/CpToast.vue';
-import { useTranslations } from '@/composables/useTranslations.js';
-import { router, usePage, Link } from '@inertiajs/vue3';
-import { ref, computed, onMounted, onUnmounted } from 'vue';
+import LocaleSwitch from '@/Components/LocaleSwitch.vue';
+import PromediatumLogo from '@/Components/PromediatumLogo.vue';
+import ThemeToggle from '@/Components/ThemeToggle.vue';
+import { useTranslations } from '@/composables/useTranslations';
 
-const { t } = useTranslations();
+const { t, locale } = useTranslations();
 const page = usePage();
 
 const dropdownOpen = ref(false);
 const dropdownRef = ref(null);
 const sidebarOpen = ref(true);
+
+const sxnnysideUrl = computed(() => {
+    const loc = locale.value === 'en' ? 'en' : 'es';
+    return `https://sxnnysideproject.com/${loc}/realms/sxnnyside-scholarships/`;
+});
 
 // UI preferences from DB
 const userSettings = computed(() => page.props.auth.user?.settings ?? {});
@@ -60,32 +75,72 @@ function logout() {
 }
 
 const navItems = computed(() => [
-    { label: t('nav.dashboard'), href: route('workspace'), active: route().current('workspace'), icon: 'home' },
-    { label: t('nav.periods'), href: route('periods.index'), active: route().current('periods.*'), icon: 'calendar' },
-    { label: t('nav.groups'), href: route('groups.index'), active: route().current('groups.*') || route().current('attendance.*') || route().current('categories.*') || route().current('grades.*'), icon: 'users' },
-    { label: t('nav.students'), href: route('students.index'), active: route().current('students.*'), icon: 'user' },
-    { label: t('nav.observations'), href: route('observations.index'), active: route().current('observations.*'), icon: 'clipboard' },
-    { label: t('nav.exports'), href: route('exports.history'), active: route().current('exports.*'), icon: 'download' },
-    { label: t('nav.settings'), href: route('settings.index'), active: route().current('settings.*'), icon: 'settings' },
+    {
+        label: t('nav.dashboard'),
+        href: route('workspace'),
+        active: route().current('workspace'),
+        icon: Home4Regular,
+    },
+    {
+        label: t('nav.periods'),
+        href: route('periods.index'),
+        active: route().current('periods.*'),
+        icon: CalendarMonthRegular,
+    },
+    {
+        label: t('nav.groups'),
+        href: route('groups.index'),
+        active:
+            route().current('groups.*') ||
+            route().current('attendance.*') ||
+            route().current('categories.*') ||
+            route().current('grades.*'),
+        icon: GroupRegular,
+    },
+    {
+        label: t('nav.students'),
+        href: route('students.index'),
+        active: route().current('students.*'),
+        icon: User4Regular,
+    },
+    {
+        label: t('nav.observations'),
+        href: route('observations.index'),
+        active: route().current('observations.*'),
+        icon: ClipboardRegular,
+    },
+    {
+        label: t('nav.exports'),
+        href: route('exports.history'),
+        active: route().current('exports.*'),
+        icon: DownloadRegular,
+    },
+    {
+        label: t('nav.settings'),
+        href: route('settings.index'),
+        active: route().current('settings.*'),
+        icon: Settings3Regular,
+    },
 ]);
 </script>
 
 <template>
-    <div class="min-h-screen bg-cafe-50 dark:bg-surface-dark flex flex-col" :class="[textWeightClass, { 'hide-decorative-icons': iconsHidden }]">
+    <div class="h-screen w-full flex flex-col overflow-hidden bg-cafe-50 dark:bg-surface-dark text-cafe-800 dark:text-cafe-100 selection:bg-accent-400 selection:text-white" :class="[textWeightClass, { 'hide-decorative-icons': iconsHidden }]">
         <!-- Top bar -->
-        <header class="border-b border-cafe-200 dark:border-cafe-800 bg-cafe-100 dark:bg-surface-dark-1 z-30">
+        <header class="shrink-0 border-b border-cafe-200 dark:border-cafe-800 bg-cafe-100 dark:bg-surface-dark-1 z-30">
             <div class="flex items-center justify-between px-6 py-3">
                 <div class="flex items-center gap-3">
-                    <!-- Sidebar toggle -->
+                    <!-- Sidebar toggle for mobile/responsive -->
                     <button
                         type="button"
                         @click="sidebarOpen = !sidebarOpen"
                         class="p-1 text-cafe-500 hover:text-cafe-700 dark:text-cafe-400 dark:hover:text-cafe-200 transition-colors duration-150 lg:hidden"
+                        aria-label="Toggle Navigation"
                     >
-                        <CpIcon name="menu" :size="20" />
+                        <MenuRegular class="w-5 h-5" />
                     </button>
-                    <Link :href="route('workspace')" class="flex items-center gap-3">
-                        <PromediatumLogo class="h-7 w-7 text-cafe-600 dark:text-cafe-300" />
+                    <Link :href="route('workspace')" class="flex items-center gap-2.5">
+                        <PromediatumLogo class="h-7 w-7 text-cafe-600 dark:text-cafe-300 drop-shadow-sm" />
                         <span class="text-base font-semibold tracking-tight text-cafe-800 dark:text-cafe-100 font-serif">
                             Promediatum
                         </span>
@@ -104,7 +159,7 @@ const navItems = computed(() => [
                             class="flex items-center gap-1.5 text-sm text-cafe-600 dark:text-cafe-300 hover:text-cafe-800 dark:hover:text-cafe-100 transition-colors duration-150"
                         >
                             <span>{{ page.props.auth.user?.full_name }}</span>
-                            <CpIcon name="chevron-down" :size="16" class-name="transition-transform duration-150" :class="{ 'rotate-180': dropdownOpen }" />
+                            <DownSmallRegular class="w-4 h-4 transition-transform duration-150" :class="{ 'rotate-180': dropdownOpen }" />
                         </button>
 
                         <Transition
@@ -117,7 +172,7 @@ const navItems = computed(() => [
                         >
                             <div
                                 v-if="dropdownOpen"
-                                class="absolute right-0 mt-2 w-48 bg-white dark:bg-surface-dark-2 border border-cafe-200 dark:border-cafe-700 rounded-subtle shadow-lg py-1 z-50"
+                                class="absolute right-0 mt-2 w-48 bg-white dark:bg-surface-dark-2 border border-cafe-200 dark:border-cafe-700 rounded-xl shadow-lg py-1 z-50"
                             >
                                 <Link
                                     :href="route('profile.index')"
@@ -151,10 +206,11 @@ const navItems = computed(() => [
             </div>
         </header>
 
-        <div class="flex flex-1" :class="{ 'flex-row-reverse': sidebarTrailing }">
-            <!-- NavigationColumn sidebar -->
+        <!-- Body viewport: Sidebar + Main Content Column -->
+        <div class="flex flex-1 min-h-0 overflow-hidden" :class="{ 'flex-row-reverse': sidebarTrailing }">
+            <!-- NavigationColumn sidebar: full-height, cleanly isolated from footer -->
             <aside
-                class="w-56 shrink-0 bg-cafe-100/50 dark:bg-surface-dark-1/50 transition-all duration-200"
+                class="w-56 shrink-0 h-full overflow-y-auto bg-cafe-100/60 dark:bg-surface-dark-1/60 transition-all duration-200 z-20 flex flex-col justify-between"
                 :class="[
                     sidebarOpen ? 'translate-x-0' : '-translate-x-full absolute lg:relative lg:translate-x-0',
                     sidebarTrailing
@@ -167,51 +223,50 @@ const navItems = computed(() => [
                         <Link
                             v-if="!item.disabled"
                             :href="item.href"
-                            class="flex items-center gap-2.5 px-3 py-2 rounded-subtle text-sm transition-colors duration-150"
+                            class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors duration-150"
                             :class="item.active
                                 ? 'bg-accent-100 dark:bg-accent-900/30 text-accent-700 dark:text-accent-300 font-medium'
                                 : 'text-cafe-600 dark:text-cafe-300 hover:bg-cafe-200/60 dark:hover:bg-surface-dark-2 hover:text-cafe-800 dark:hover:text-cafe-100'"
                         >
-                            <CpIcon
-                                :name="item.icon"
-                                :size="16"
-                                :stroke-width="item.active ? 2 : 1.5"
-                                class-name="shrink-0 decorative-icon"
+                            <component
+                                :is="item.icon"
+                                class="w-4 h-4 shrink-0 decorative-icon"
+                                :class="{ 'stroke-2': item.active }"
                             />
                             <span>{{ item.label }}</span>
                         </Link>
                         <span
                             v-else
-                            class="flex items-center gap-2.5 px-3 py-2 rounded-subtle text-sm text-cafe-400 dark:text-cafe-600 cursor-default"
+                            class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-cafe-400 dark:text-cafe-600 cursor-default"
                         >
-                            <CpIcon :name="item.icon" :size="16" :stroke-width="1.5" class-name="shrink-0 decorative-icon" />
+                            <component :is="item.icon" class="w-4 h-4 shrink-0 decorative-icon" />
                             <span>{{ item.label }}</span>
                         </span>
                     </template>
                 </nav>
             </aside>
 
-            <!-- Main content -->
-            <main class="flex-1 px-6 py-8 min-w-0">
-                <slot />
-            </main>
-        </div>
+            <!-- Main viewport container: holds scrollable view and pinned footer -->
+            <div class="flex-1 flex flex-col min-w-0 h-full overflow-hidden relative">
+                <!-- Main scrollable content -->
+                <main class="flex-1 overflow-y-auto px-6 py-8 min-w-0">
+                    <slot />
+                </main>
 
-        <!-- Footer -->
-        <footer class="px-6 py-4 text-center border-t border-cafe-200 dark:border-cafe-800">
-            <p class="text-xs text-cafe-400 dark:text-cafe-500">
-                {{ t('brand.credit') }}
-                <span class="mx-1">·</span>
-                <a
-                    href="https://www.sxnnysideproject.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="underline underline-offset-2 hover:text-cafe-600 dark:hover:text-cafe-300 transition-colors duration-150"
-                >
-                    {{ t('brand.project') }}
-                </a>
-            </p>
-        </footer>
+                <!-- Fixed footer pinned at bottom of content viewport (never collides with sidebar) -->
+                <footer class="shrink-0 px-6 py-2.5 border-t border-cafe-200/80 dark:border-cafe-800/80 bg-cafe-100/90 dark:bg-surface-dark-1/90 backdrop-blur-sm text-center z-10">
+                    <a
+                        :href="sxnnysideUrl"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="inline-flex items-center justify-center gap-1.5 text-[11px] font-medium text-cafe-500 hover:text-accent-600 dark:text-cafe-400 dark:hover:text-accent-300 transition-colors group"
+                    >
+                        <span>{{ t('brand.credit') }}</span>
+                        <ExternalLinkRegular class="w-3.5 h-3.5 opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
+                    </a>
+                </footer>
+            </div>
+        </div>
 
         <!-- Intelligent FAB -->
         <CpFab v-if="userSettings.fab_enabled !== false" />

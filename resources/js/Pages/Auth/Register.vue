@@ -1,10 +1,10 @@
 <script setup>
-import GuestLayout from '@/Layouts/GuestLayout.vue';
+import { Head, Link, useForm } from '@inertiajs/vue3';
+import CpButton from '@/Components/CpButton.vue';
 import CpInput from '@/Components/CpInput.vue';
 import CpSelect from '@/Components/CpSelect.vue';
-import CpButton from '@/Components/CpButton.vue';
-import { useTranslations } from '@/composables/useTranslations.js';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { useTranslations } from '@/composables/useTranslations';
+import GuestLayout from '@/Layouts/GuestLayout.vue';
 
 const { t } = useTranslations();
 

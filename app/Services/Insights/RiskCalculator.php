@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Services\Insights;
 
-use App\Models\Observation;
-
 /**
  * RiskCalculator — Generates risk-type insights from composite scores.
  *
@@ -21,12 +19,12 @@ final class RiskCalculator
     /**
      * Analyze risk for a single student and return an InsightResult if at-risk.
      *
-     * @return InsightResult|null  Null if student is not at risk (score < 26).
+     * @return InsightResult|null Null if student is not at risk (score < 26).
      */
     public function analyze(int $studentId, int $groupId, int $periodId, string $studentName, string $groupSlug): ?InsightResult
     {
         $result = $this->scorer->calculate($studentId, $groupId, $periodId);
-        $score  = $result['score'];
+        $score = $result['score'];
 
         // Only produce insights for medium+ severity
         if ($score < 26) {
@@ -34,20 +32,20 @@ final class RiskCalculator
         }
 
         $severity = $result['severity'];
-        $message  = $this->buildMessage($studentName, $score, $severity);
-        $action   = $this->buildAction($severity, $result['factors']);
+        $message = $this->buildMessage($studentName, $score, $severity);
+        $action = $this->buildAction($severity, $result['factors']);
 
         return new InsightResult(
-            type:            InsightResult::TYPE_RISK,
-            severity:        $severity,
-            message:         $message,
+            type: InsightResult::TYPE_RISK,
+            severity: $severity,
+            message: $message,
             suggestedAction: $action,
-            route:           route('groups.show', $groupSlug),
-            meta:            [
+            route: route('groups.show', $groupSlug),
+            meta: [
                 'student_id' => $studentId,
-                'group_id'   => $groupId,
-                'score'      => $score,
-                'factors'    => $result['factors'],
+                'group_id' => $groupId,
+                'score' => $score,
+                'factors' => $result['factors'],
             ],
         );
     }
@@ -56,8 +54,8 @@ final class RiskCalculator
     {
         $label = match ($severity) {
             InsightResult::SEVERITY_CRITICAL => __('insights.risk_critical'),
-            InsightResult::SEVERITY_HIGH     => __('insights.risk_high'),
-            default                          => __('insights.risk_medium'),
+            InsightResult::SEVERITY_HIGH => __('insights.risk_high'),
+            default => __('insights.risk_medium'),
         };
 
         return "{$studentName}: {$label} ({$score}/100)";
@@ -69,11 +67,11 @@ final class RiskCalculator
         $dominant = array_keys($factors, max($factors))[0] ?? 'academic';
 
         return match ($dominant) {
-            'academic'     => __('insights.action_review_grades'),
-            'attendance'   => __('insights.action_review_attendance'),
-            'absences'     => __('insights.action_contact_guardian'),
+            'academic' => __('insights.action_review_grades'),
+            'attendance' => __('insights.action_review_attendance'),
+            'absences' => __('insights.action_contact_guardian'),
             'observations' => __('insights.action_resolve_observations'),
-            default        => __('insights.action_review_student'),
+            default => __('insights.action_review_student'),
         };
     }
 }

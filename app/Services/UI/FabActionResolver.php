@@ -5,7 +5,6 @@ namespace App\Services\UI;
 use App\Models\Group;
 use App\Models\Observation;
 use App\Models\Period;
-use App\Services\Automation\AutomationAction;
 use App\Services\Automation\AutomationContext;
 use App\Services\Automation\AutomationEngine;
 use App\Services\Insights\InsightContext;
@@ -31,9 +30,9 @@ class FabActionResolver
     /**
      * Resolve actions for a given route context.
      *
-     * @param  string      $currentRoute  Named route (e.g. 'workspace', 'groups.show')
-     * @param  array       $params        Route parameters (group slug, etc.)
-     * @param  array       $appState      Pre-fetched state: pending_observations, active_period, etc.
+     * @param  string  $currentRoute  Named route (e.g. 'workspace', 'groups.show')
+     * @param  array  $params  Route parameters (group slug, etc.)
+     * @param  array  $appState  Pre-fetched state: pending_observations, active_period, etc.
      * @return array<int, array{label: string, icon: string, route: string, params?: array, priority: int}>
      */
     public function resolve(string $currentRoute, array $params = [], array $appState = []): array
@@ -70,10 +69,10 @@ class FabActionResolver
         $activePeriod = Period::where('is_active', true)->first();
 
         return [
-            'active_period_id'      => $activePeriod?->id,
-            'active_period_name'    => $activePeriod?->name,
-            'pending_observations'  => Observation::where('status', 'pending')->count(),
-            'group_count'           => Group::count(),
+            'active_period_id' => $activePeriod?->id,
+            'active_period_name' => $activePeriod?->name,
+            'pending_observations' => Observation::where('status', 'pending')->count(),
+            'group_count' => Group::count(),
         ];
     }
 
@@ -149,11 +148,11 @@ class FabActionResolver
         $pending = $appState['pending_observations'] ?? 0;
         if ($pending > 0 && str_starts_with($currentRoute, 'workspace')) {
             $actions[] = [
-                'label'    => 'fab.pending_observations',
-                'icon'     => 'alert-triangle',
-                'route'    => 'observations.index',
+                'label' => 'fab.pending_observations',
+                'icon' => 'alert-triangle',
+                'route' => 'observations.index',
                 'priority' => 1, // Highest priority — alerts first
-                'badge'    => $pending,
+                'badge' => $pending,
             ];
         }
 
@@ -200,11 +199,11 @@ class FabActionResolver
             $fabActions = [];
             foreach ($urgentActions as $action) {
                 $fabActions[] = [
-                    'label'    => $action->title,
-                    'icon'     => $action->icon,
-                    'route'    => $action->route ?? 'workspace',
+                    'label' => $action->title,
+                    'icon' => $action->icon,
+                    'route' => $action->route ?? 'workspace',
                     'priority' => $action->severityWeight() <= 3 ? 0 : -1, // Higher severity = lower priority number
-                    'badge'    => null,
+                    'badge' => null,
                 ];
             }
 

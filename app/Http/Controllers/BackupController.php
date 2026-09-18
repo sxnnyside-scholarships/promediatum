@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Services\Backup\BackupService;
-use App\Services\Desktop\DesktopPathResolver;
 use App\Services\Desktop\NotificationService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -27,7 +26,7 @@ class BackupController extends Controller
         // For restore/validate: file must exist, be inside backups dir, and have .pdbk extension
         if ($resolved === false
             || $backupsDir === false
-            || ! str_starts_with($resolved, $backupsDir . DIRECTORY_SEPARATOR)
+            || ! str_starts_with($resolved, $backupsDir.DIRECTORY_SEPARATOR)
             || ! str_ends_with($resolved, '.pdbk')
         ) {
             abort(403, 'Invalid backup path.');
@@ -124,6 +123,7 @@ class BackupController extends Controller
         $path = $this->validateBackupPath($request->input('backup_path'));
 
         unlink($path);
+
         return back()->with('success', __('backup.deleted_successfully'));
     }
 

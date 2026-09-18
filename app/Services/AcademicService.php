@@ -104,6 +104,7 @@ class AcademicService
     public function isAtRisk(int $studentId, int $groupId, int $periodId, float $threshold = 60): bool
     {
         $average = $this->calculateWeightedAverage($studentId, $groupId, $periodId);
+
         return $average !== null && $average < $threshold;
     }
 

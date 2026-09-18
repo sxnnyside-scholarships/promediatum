@@ -55,14 +55,14 @@ class BackupService
     {
         $dbPath = $this->pathResolver->databasePath();
 
-        if (!file_exists($dbPath)) {
-            throw new \RuntimeException('Database file does not exist: ' . $dbPath);
+        if (! file_exists($dbPath)) {
+            throw new \RuntimeException('Database file does not exist: '.$dbPath);
         }
 
         $timestamp = Carbon::now()->format('Y-m-d_His');
         $unique = substr(bin2hex(random_bytes(3)), 0, 6);
-        $filename = "promediatum_backup_{$timestamp}_{$unique}." . self::EXTENSION;
-        $backupPath = $this->pathResolver->backupsPath() . DIRECTORY_SEPARATOR . $filename;
+        $filename = "promediatum_backup_{$timestamp}_{$unique}.".self::EXTENSION;
+        $backupPath = $this->pathResolver->backupsPath().DIRECTORY_SEPARATOR.$filename;
 
         // Read the database
         $plaintext = file_get_contents($dbPath);
@@ -92,14 +92,13 @@ class BackupService
      *
      * @param  string  $backupPath  Absolute path to the .pdbk file.
      * @param  string|null  $password  Password used during backup creation.
-     * @return bool
      *
      * @throws \RuntimeException If decryption or validation fails.
      */
     public function restore(string $backupPath, ?string $password = null): bool
     {
-        if (!file_exists($backupPath)) {
-            throw new \RuntimeException('Backup file does not exist: ' . $backupPath);
+        if (! file_exists($backupPath)) {
+            throw new \RuntimeException('Backup file does not exist: '.$backupPath);
         }
 
         $encrypted = file_get_contents($backupPath);
@@ -109,14 +108,14 @@ class BackupService
         }
 
         // Validate the format before attempting decryption
-        if (!$this->isValidFormat($encrypted)) {
+        if (! $this->isValidFormat($encrypted)) {
             throw new \RuntimeException('Invalid backup file format.');
         }
 
         $plaintext = $this->decrypt($encrypted, $password);
 
         // Validate that the decrypted content looks like a SQLite database
-        if (!$this->isSQLiteData($plaintext)) {
+        if (! $this->isSQLiteData($plaintext)) {
             throw new \RuntimeException('Decrypted data is not a valid SQLite database. Wrong password?');
         }
 
@@ -124,7 +123,7 @@ class BackupService
 
         // Create a safety copy of the current database before restoring
         if (file_exists($dbPath)) {
-            $safetyCopy = $dbPath . '.pre-restore.' . time();
+            $safetyCopy = $dbPath.'.pre-restore.'.time();
             copy($dbPath, $safetyCopy);
         }
 
@@ -143,20 +142,20 @@ class BackupService
     public function validate(string $backupPath, ?string $password = null): array
     {
         try {
-            if (!file_exists($backupPath)) {
+            if (! file_exists($backupPath)) {
                 return ['valid' => false, 'size' => 0, 'error' => 'File does not exist.'];
             }
 
             $encrypted = file_get_contents($backupPath);
             $size = strlen($encrypted);
 
-            if (!$this->isValidFormat($encrypted)) {
+            if (! $this->isValidFormat($encrypted)) {
                 return ['valid' => false, 'size' => $size, 'error' => 'Invalid .pdbk format.'];
             }
 
             $plaintext = $this->decrypt($encrypted, $password);
 
-            if (!$this->isSQLiteData($plaintext)) {
+            if (! $this->isSQLiteData($plaintext)) {
                 return ['valid' => false, 'size' => $size, 'error' => 'Decrypted data is not valid SQLite.'];
             }
 
@@ -183,11 +182,11 @@ class BackupService
     {
         $dir = $this->pathResolver->backupsPath();
 
-        if (!is_dir($dir)) {
+        if (! is_dir($dir)) {
             return [];
         }
 
-        $pattern = $dir . DIRECTORY_SEPARATOR . '*.' . self::EXTENSION;
+        $pattern = $dir.DIRECTORY_SEPARATOR.'*.'.self::EXTENSION;
         $matches = glob($pattern) ?: [];
 
         $files = array_map(function (string $path) {
@@ -200,7 +199,7 @@ class BackupService
         }, $matches);
 
         // Sort newest first
-        usort($files, fn($a, $b) => strcmp($b['created_at'], $a['created_at']));
+        usort($files, fn ($a, $b) => strcmp($b['created_at'], $a['created_at']));
 
         return array_values($files);
     }
@@ -247,18 +246,18 @@ class BackupService
         );
 
         if ($ciphertext === false) {
-            throw new \RuntimeException('Encryption failed: ' . openssl_error_string());
+            throw new \RuntimeException('Encryption failed: '.openssl_error_string());
         }
 
         // HMAC for integrity verification (encrypt-then-MAC)
-        $hmac = hash_hmac('sha256', $iv . $ciphertext, $key, true);
+        $hmac = hash_hmac('sha256', $iv.$ciphertext, $key, true);
 
         // Pack: magic(4B) + version(1B) + iv(16B) + hmac(32B) + ciphertext
         return self::MAGIC_HEADER
-            . chr(self::FORMAT_VERSION)
-            . $iv
-            . $hmac
-            . $ciphertext;
+            .chr(self::FORMAT_VERSION)
+            .$iv
+            .$hmac
+            .$ciphertext;
     }
 
     /**
@@ -277,9 +276,9 @@ class BackupService
         $ciphertext = substr($data, $offset);
 
         // Verify HMAC integrity
-        $computedHmac = hash_hmac('sha256', $iv . $ciphertext, $key, true);
+        $computedHmac = hash_hmac('sha256', $iv.$ciphertext, $key, true);
 
-        if (!hash_equals($storedHmac, $computedHmac)) {
+        if (! hash_equals($storedHmac, $computedHmac)) {
             throw new \RuntimeException('Backup integrity check failed. The file may be corrupted or the password is wrong.');
         }
 
@@ -292,7 +291,7 @@ class BackupService
         );
 
         if ($plaintext === false) {
-            throw new \RuntimeException('Decryption failed: ' . openssl_error_string());
+            throw new \RuntimeException('Decryption failed: '.openssl_error_string());
         }
 
         return $plaintext;

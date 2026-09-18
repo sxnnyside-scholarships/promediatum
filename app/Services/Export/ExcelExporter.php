@@ -3,12 +3,12 @@
 namespace App\Services\Export;
 
 use Illuminate\Support\Facades\Storage;
-use Maatwebsite\Excel\Facades\Excel;
-use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 use Maatwebsite\Excel\Concerns\FromArray;
-use Maatwebsite\Excel\Concerns\WithHeadings;
-use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithMultipleSheets;
+use Maatwebsite\Excel\Concerns\WithTitle;
+use Maatwebsite\Excel\Facades\Excel;
 
 /**
  * ExcelExporter — Generates XLSX files with multiple sheets.
@@ -43,10 +43,10 @@ class ExcelExporter implements ExporterInterface
     protected function buildSheets(array $data, ExportContext $context, array $templateConfig = []): array
     {
         return match ($context->type) {
-            'group'   => $this->groupSheets($data, $templateConfig),
+            'group' => $this->groupSheets($data, $templateConfig),
             'student' => $this->studentSheets($data, $templateConfig),
-            'period'  => $this->periodSheets($data, $templateConfig),
-            default   => [],
+            'period' => $this->periodSheets($data, $templateConfig),
+            default => [],
         };
     }
 
@@ -63,7 +63,7 @@ class ExcelExporter implements ExporterInterface
         $rows = array_map(fn ($s) => [
             $s['full_name'],
             $s['weighted_average'] ?? '',
-            $s['attendance_rate'] !== null ? $s['attendance_rate'] . '%' : '',
+            $s['attendance_rate'] !== null ? $s['attendance_rate'].'%' : '',
             $s['present'],
             $s['absent'],
             $s['justified'],
@@ -105,7 +105,7 @@ class ExcelExporter implements ExporterInterface
             ['Weighted Average', $academic['weighted_average'] ?? 'N/A'],
             ['At Risk', $academic['at_risk'] ? 'Yes' : 'No'],
             ['Absence Streak', $academic['absence_streak']],
-            ['Attendance Rate', $attendance['rate'] !== null ? $attendance['rate'] . '%' : 'N/A'],
+            ['Attendance Rate', $attendance['rate'] !== null ? $attendance['rate'].'%' : 'N/A'],
             ['Present', $attendance['present']],
             ['Absent', $attendance['absent']],
             ['Justified', $attendance['justified']],
@@ -124,7 +124,7 @@ class ExcelExporter implements ExporterInterface
                     $grade['title'],
                     $grade['score'],
                     $grade['max_score'],
-                    $grade['percentage'] . '%',
+                    $grade['percentage'].'%',
                     $grade['date'],
                 ];
             }
@@ -178,10 +178,10 @@ class ExcelExporter implements ExporterInterface
             $g['educational_level'] ?? '',
             $g['students_count'],
             $g['group_average'] ?? 'N/A',
-            $g['group_attendance'] !== null ? $g['group_attendance'] . '%' : 'N/A',
+            $g['group_attendance'] !== null ? $g['group_attendance'].'%' : 'N/A',
             $g['students_at_risk'],
             $g['categories_count'],
-            $g['total_weight'] . '%',
+            $g['total_weight'].'%',
         ], $data['groups']);
         $sheets[] = ['title' => 'Groups Summary', 'headings' => $groupHeadings, 'rows' => $groupRows];
 
@@ -212,12 +212,12 @@ class MultiSheetExport implements WithMultipleSheets
 /**
  * SimpleSheet — Single sheet with headings and data rows.
  */
-class SimpleSheet implements FromArray, WithHeadings, WithTitle, ShouldAutoSize
+class SimpleSheet implements FromArray, ShouldAutoSize, WithHeadings, WithTitle
 {
     public function __construct(
         protected string $title,
-        protected array  $headings,
-        protected array  $rows,
+        protected array $headings,
+        protected array $rows,
     ) {}
 
     public function array(): array
