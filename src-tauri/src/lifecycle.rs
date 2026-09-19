@@ -133,6 +133,25 @@ impl ServerManager {
                 if res.join("artisan").is_file() {
                     return res;
                 }
+                if res.join("_up_").join("artisan").is_file() {
+                    return res.join("_up_");
+                }
+            }
+        }
+
+        // 3. Fallback: check ../Resources/_up_ relative to current executable
+        if let Ok(exe) = std::env::current_exe() {
+            if let Some(macos_dir) = exe.parent() {
+                if let Some(contents_dir) = macos_dir.parent() {
+                    let res_up = contents_dir.join("Resources").join("_up_");
+                    if res_up.join("artisan").is_file() {
+                        return res_up;
+                    }
+                    let res = contents_dir.join("Resources");
+                    if res.join("artisan").is_file() {
+                        return res;
+                    }
+                }
             }
         }
 
@@ -158,6 +177,26 @@ impl ServerManager {
         base.join("database").join("database.sqlite")
     }
 
+    /// Resolve log file path in OS user log directory
+    fn resolve_log_path() -> PathBuf {
+        let base = if cfg!(target_os = "macos") {
+            dirs::home_dir()
+                .map(|h| {
+                    h.join("Library")
+                        .join("Logs")
+                        .join("com.sxnnyside.promediatum.desktop")
+                })
+                .unwrap_or_else(|| PathBuf::from("/tmp/Promediatum"))
+        } else {
+            dirs::data_dir()
+                .map(|d| d.join("Promediatum").join("logs"))
+                .unwrap_or_else(|| PathBuf::from("/tmp/Promediatum"))
+        };
+
+        let _ = std::fs::create_dir_all(&base);
+        base.join("laravel.log")
+    }
+
     /// Ensure backend is ready. If not running, launches local FrankenPHP/PHP supervisor
     pub fn ensure_backend_ready(&self, app: Option<&AppHandle>, host: &str, port: u16) -> bool {
         if self.is_server_listening(host, port) {
@@ -181,6 +220,7 @@ impl ServerManager {
 
         let app_root = Self::resolve_app_root(app);
         let db_path = Self::resolve_database_path();
+        let log_path = Self::resolve_log_path();
 
         // Ensure database directory exists
         if let Some(db_dir) = db_path.parent() {
@@ -215,7 +255,18 @@ impl ServerManager {
             .env("DB_CONNECTION", "sqlite")
             .env("DB_DATABASE", db_path.to_string_lossy().as_ref());
 
-        let _ = migrate_cmd.output();
+        if let Ok(f_out) = std::fs::OpenOptions::new()
+            .create(true)
+            .append(true)
+            .open(&log_path)
+        {
+            if let Ok(f_err) = f_out.try_clone() {
+                migrate_cmd.stdout(std::process::Stdio::from(f_out));
+                migrate_cmd.stderr(std::process::Stdio::from(f_err));
+            }
+        }
+
+        let _ = migrate_cmd.status();
 
         // Spawn server process
         let mut server_cmd = match &runtime {
@@ -241,9 +292,18 @@ impl ServerManager {
         server_cmd
             .current_dir(&app_root)
             .env("DB_CONNECTION", "sqlite")
-            .env("DB_DATABASE", db_path.to_string_lossy().as_ref())
-            .stdout(std::process::Stdio::null())
-            .stderr(std::process::Stdio::null());
+            .env("DB_DATABASE", db_path.to_string_lossy().as_ref());
+
+        if let Ok(f_out) = std::fs::OpenOptions::new()
+            .create(true)
+            .append(true)
+            .open(&log_path)
+        {
+            if let Ok(f_err) = f_out.try_clone() {
+                server_cmd.stdout(std::process::Stdio::from(f_out));
+                server_cmd.stderr(std::process::Stdio::from(f_err));
+            }
+        }
 
         match server_cmd.spawn() {
             Ok(child_proc) => {

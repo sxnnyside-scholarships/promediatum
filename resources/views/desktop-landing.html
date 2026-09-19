@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Promediatum</title>
+  <meta http-equiv="refresh" content="0; url=http://127.0.0.1:8000">
+  <script>
+    if (window.location.protocol !== 'http:') {
+      window.location.replace("http://127.0.0.1:8000");
+    }
+  </script>
+  <style>
+    body {
+      margin: 0;
+      background: #fbf8f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      font-family: system-ui, -apple-system, sans-serif;
+      color: #402d24;
+    }
+    .spinner {
+      width: 28px;
+      height: 28px;
+      border: 3px solid #e7d8ce;
+      border-top-color: #0d9488;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 12px auto;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div style="text-align: center;">
+    <div class="spinner"></div>
+    <h2 style="margin: 0 0 6px 0; font-size: 18px; font-weight: 700;">Promediatum</h2>
+    <p style="margin: 0; font-size: 13px; color: #856453;">Iniciando entorno local...</p>
+  </div>
+</body>
+</html>

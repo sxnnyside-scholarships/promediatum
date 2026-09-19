@@ -4,6 +4,7 @@ mod menu;
 mod tray;
 
 use lifecycle::ServerManager;
+use tauri::Manager;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -41,6 +42,13 @@ pub fn run() {
 
             // Supervise backend readiness
             server_manager_clone.ensure_backend_ready(Some(app_handle), "127.0.0.1", 8000);
+
+            // Navigate window to local backend server
+            if let Some(window) = app.get_webview_window("main") {
+                if let Ok(target_url) = "http://127.0.0.1:8000".parse() {
+                    let _ = window.navigate(target_url);
+                }
+            }
 
             Ok(())
         })

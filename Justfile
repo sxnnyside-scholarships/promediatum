@@ -24,6 +24,7 @@ build: build-frontend build-rust
 
 build-frontend:
     bun run build
+    @cp resources/views/desktop-landing.html public/build/index.html
 
 build-rust:
     cargo build --manifest-path src-tauri/Cargo.toml --release

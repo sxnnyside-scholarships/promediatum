@@ -48,6 +48,12 @@
       "../vendor",
       "../artisan"
     ],
+    "macOS": {
+      "minimumSystemVersion": "11.0",
+      "signingIdentity": null,
+      "providerShortName": null,
+      "entitlements": null
+    },
     "android": {
       "debugApplicationIdSuffix": ".debug"
     }
