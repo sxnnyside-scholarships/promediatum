@@ -16,11 +16,20 @@ jobs:
       matrix:
         include:
           - platform: 'macos-latest'
-            args: '--target universal-apple-darwin'
+            target: 'aarch64-apple-darwin'
+            args: '--target aarch64-apple-darwin'
+            sidecar_url: 'https://github.com/php/frankenphp/releases/download/v1.12.7/frankenphp-mac-arm64'
+            sidecar_dest: 'src-tauri/binaries/frankenphp-aarch64-apple-darwin'
           - platform: 'ubuntu-22.04'
-            args: ''
+            target: 'x86_64-unknown-linux-gnu'
+            args: '--target x86_64-unknown-linux-gnu'
+            sidecar_url: 'https://github.com/php/frankenphp/releases/download/v1.12.7/frankenphp-linux-x86_64'
+            sidecar_dest: 'src-tauri/binaries/frankenphp-x86_64-unknown-linux-gnu'
           - platform: 'windows-latest'
-            args: ''
+            target: 'x86_64-pc-windows-msvc'
+            args: '--target x86_64-pc-windows-msvc'
+            sidecar_url: 'https://github.com/php/frankenphp/releases/download/v1.12.7/frankenphp-windows-x86_64.zip'
+            sidecar_dest: 'src-tauri/binaries/frankenphp-x86_64-pc-windows-msvc.exe'
 
     runs-on: ${{ matrix.platform }}
 
@@ -45,7 +54,7 @@ jobs:
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+          targets: ${{ matrix.target }}
 
       - name: Setup Just
         uses: extractions/setup-just@v2
@@ -58,6 +67,19 @@ jobs:
 
       - name: Install Project Dependencies
         run: just install
+
+      - name: Setup FrankenPHP Sidecar
+        shell: bash
+        run: |
+          mkdir -p src-tauri/binaries
+          if [[ "${{ matrix.platform }}" == "windows-latest" ]]; then
+            curl -fSL -o frankenphp.zip "${{ matrix.sidecar_url }}"
+            unzip frankenphp.zip frankenphp.exe
+            mv frankenphp.exe "${{ matrix.sidecar_dest }}"
+          else
+            curl -fSL -o "${{ matrix.sidecar_dest }}" "${{ matrix.sidecar_url }}"
+            chmod +x "${{ matrix.sidecar_dest }}"
+          fi
 
       - name: Build Desktop Application and Create Release
         uses: tauri-apps/tauri-action@v0

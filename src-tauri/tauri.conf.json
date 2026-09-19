@@ -33,6 +33,21 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
+    "externalBin": [
+      "binaries/frankenphp"
+    ],
+    "resources": [
+      "../app",
+      "../bootstrap",
+      "../config",
+      "../database",
+      "../lang",
+      "../public",
+      "../resources/views",
+      "../routes",
+      "../vendor",
+      "../artisan"
+    ],
     "android": {
       "debugApplicationIdSuffix": ".debug"
     }

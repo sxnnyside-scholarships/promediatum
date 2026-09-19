@@ -108,11 +108,29 @@ serve:
 
 # ── Desktop Application ──
 
+# Download FrankenPHP standalone runtime sidecar for local desktop bundling (macOS arm64 or Linux x64)
+setup-sidecar:
+    @mkdir -p src-tauri/binaries
+    @case "$$(uname -s)-$$(uname -m)" in \
+        Darwin-arm64) \
+            if [ ! -f src-tauri/binaries/frankenphp-aarch64-apple-darwin ]; then \
+                echo "Downloading FrankenPHP for macOS Apple Silicon..."; \
+                curl -fSL -o src-tauri/binaries/frankenphp-aarch64-apple-darwin https://github.com/php/frankenphp/releases/download/v1.12.7/frankenphp-mac-arm64; \
+                chmod +x src-tauri/binaries/frankenphp-aarch64-apple-darwin; \
+            fi ;; \
+        Linux-x86_64) \
+            if [ ! -f src-tauri/binaries/frankenphp-x86_64-unknown-linux-gnu ]; then \
+                echo "Downloading FrankenPHP for Linux x86_64..."; \
+                curl -fSL -o src-tauri/binaries/frankenphp-x86_64-unknown-linux-gnu https://github.com/php/frankenphp/releases/download/v1.12.7/frankenphp-linux-x86_64; \
+                chmod +x src-tauri/binaries/frankenphp-x86_64-unknown-linux-gnu; \
+            fi ;; \
+    esac
+
 # Run desktop app via Tauri
 tauri-dev:
     bunx @tauri-apps/cli dev
 
 # Build standalone desktop bundle via Tauri
-tauri-build:
+tauri-build: setup-sidecar
     bun run build
     bunx @tauri-apps/cli build

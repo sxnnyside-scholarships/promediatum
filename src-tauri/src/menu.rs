@@ -4,6 +4,7 @@ use tauri::{
 };
 
 pub fn build_menu(app: &AppHandle) -> tauri::Result<Menu<Wry>> {
+    #[allow(unused_mut)]
     let mut builder = MenuBuilder::new(app);
 
     // App menu (macOS standard)

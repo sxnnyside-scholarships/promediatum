@@ -40,7 +40,7 @@ pub fn run() {
             let _ = tray::build_tray(app_handle);
 
             // Supervise backend readiness
-            server_manager_clone.ensure_backend_ready("127.0.0.1", 8000);
+            server_manager_clone.ensure_backend_ready(Some(app_handle), "127.0.0.1", 8000);
 
             Ok(())
         })
