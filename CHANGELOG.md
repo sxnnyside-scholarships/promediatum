@@ -15,6 +15,9 @@ and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Standalone zero-dependency runtime bundling via FrankenPHP sidecar binary, enabling Promediatum to run completely offline without pre-installed PHP, Rust, or development tooling.
+- Single-command local desktop development environment (`just tauri-dev`) running both Laravel backend and Tauri native window concurrently.
+- User-friendly desktop environment card in Settings matching the Café Pedagógico design system.
 - Native desktop shell powered by Tauri v2 and Rust, replacing legacy wrapper layers.
 - Native IPC commands in Rust (`get_system_info`, `get_app_paths`, `open_path_in_file_manager`, `ping_backend`).
 - Official Tauri v2 desktop plugins (`dialog`, `notification`, `window-state`, `fs`, `shell`, `process`).
