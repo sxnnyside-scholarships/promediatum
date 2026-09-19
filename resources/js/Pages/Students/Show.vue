@@ -753,7 +753,7 @@ function submitEditProfile() {
                                 <span
                                     class="text-xs font-bold px-2.5 py-0.5 rounded-lg"
                                     :class="{
-                                        'bg-accent-100 dark:bg-accent-950/40 text-accent-700 dark:text-accent-300': obs.type === 'achievement',
+                                        'bg-amber-100 dark:bg-amber-950/60 text-amber-900 dark:text-amber-200 border border-amber-300/80 dark:border-amber-700': obs.type === 'achievement',
                                         'bg-state-warning/15 text-state-warning': obs.type === 'behavior',
                                         'bg-cafe-200 dark:bg-surface-dark-3 text-cafe-700 dark:text-cafe-300': obs.type === 'performance',
                                         'bg-state-info/15 text-state-info': obs.type === 'followup',

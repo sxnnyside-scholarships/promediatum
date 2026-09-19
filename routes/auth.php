@@ -38,6 +38,16 @@ Route::middleware('guest')->group(function () {
 
     Route::post('reset-password', [PasswordRecoveryController::class, 'reset'])
         ->name('password.store');
+
+    // Two-Factor Challenge (when logging in with 2FA enabled)
+    Route::get('two-factor-challenge', [\App\Http\Controllers\Auth\TwoFactorChallengeController::class, 'create'])
+        ->name('two-factor.login');
+
+    Route::post('two-factor-challenge', [\App\Http\Controllers\Auth\TwoFactorChallengeController::class, 'store'])
+        ->name('two-factor.challenge');
+
+    Route::post('two-factor-challenge/cancel', [\App\Http\Controllers\Auth\TwoFactorChallengeController::class, 'destroy'])
+        ->name('two-factor.cancel');
 });
 
 /*

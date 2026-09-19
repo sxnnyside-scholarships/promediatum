@@ -1,110 +1,111 @@
 # Promediatum
 
-[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/HoujouSxnnyside/promediatum/releases)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![License](https://img.shields.io/badge/License-MIT-green)
+[![CI](https://github.com/sxnnyside-scholarships/promediatum/workflows/CI/badge.svg)](https://github.com/sxnnyside-scholarships/promediatum/actions)
 
-Personal academic workspace for independent educators.
+<p align="center">
+  <strong>Local-First ✦ Café Pedagógico ✦ Zero Cloud Dependencies</strong><br>
+  <em>Personal academic workspace for independent educators.</em>
+</p>
 
-**Website:** [sxnnysideproject.com](https://www.sxnnysideproject.com)
-**Support:** support.sxnnyside@sxnnysideproject.com
-**Security:** security.sxnnyside@sxnnysideproject.com
-**Repository:** [github.com/HoujouSxnnyside/promediatum](https://github.com/HoujouSxnnyside/promediatum)
+<p align="center">
+  <a href="#about">About</a> ✦
+  <a href="#features">Features</a> ✦
+  <a href="#installation">Installation</a> ✦
+  <a href="#usage">Usage</a> ✦
+  <a href="#architecture">Architecture</a> ✦
+  <a href="#contributing">Contributing</a>
+</p>
 
-## Overview
+---
 
-Promediatum is a local-first, single-user academic workspace designed for teachers who manage their own grading, attendance, and student observation workflows. It provides a structured, calm interface built around the Café Pedagógico design system.
+## About
 
-This is not a SaaS. It runs entirely on your machine with a local SQLite database — no cloud dependencies, no external accounts, no data leaves your device.
+**Promediatum** is a local-first academic desktop workspace designed for independent educators who manage attendance, weighted grading, observations, and exports with zero cognitive friction.
 
-## Core Features
+It exists to free teachers from convoluted cloud spreadsheets and monolithic school management systems. All pedagogical data, student profiles, and historical records remain strictly on the local machine with an SQLite database and encrypted backups.
 
-- **Period management** — Academic term tracking with activation control
-- **Groups** — Course/class organization linked to periods
-- **Students** — Student registry with multi-group membership per period
-- **Attendance** — Daily attendance tracking with consecutive absence detection
-- **Weighted grades** — Category-based grading with configurable weights
-- **Observations** — Typed notes (performance, behavior, achievement, follow-up) with resolution tracking
-- **Export engine** — PDF, Excel, CSV, and JSON exports with customizable templates
-- **SMTP integration** — Email report delivery with per-user encrypted configuration
-- **Workspace** — Contextual landing page with insights and suggested actions
-- **Intelligent FAB** — Context-aware floating action button adapting to current view
-- **Insights engine** — Risk detection, trend analysis, and attendance pattern recognition
-- **Automation engine** — Rule-based suggested actions with notification integration
-- **Desktop packaging** — Standalone macOS and Windows desktop app via NativePHP
-- **Encrypted backups** — AES-256-CBC encrypted .pdbk backup files
-- **Auto-update** — GitHub Releases-based update system with safe migration
-- **Customizable UI** — Text weight, theme (light/dark/system), sidebar position, locale (ES/EN)
+Promediatum couples a high-performance native desktop shell in Rust (Tauri v2) with an encapsulated Laravel 12 backend engine and a calm Vue 3.5 interface.
 
-## Local-Only Philosophy
+### Philosophy
 
-Promediatum stores all data in a local SQLite database. There are no cloud services, no telemetry, no external API calls. Your academic data stays on your machine. Password recovery uses locally-stored recovery codes instead of email-based flows.
+> *"Pedagogical clarity over administrative clutter. Local-first, private by default, and crafted to reduce cognitive fatigue."*
 
-## Tech Stack
+This is a Sxnnyside Scholarships release, part of the Sxnnyside Project ecosystem.
 
-| Layer       | Technology                        |
-|-------------|-----------------------------------|
-| Backend     | Laravel 12                        |
-| Frontend    | Vue 3.5 + Inertia.js v2 + TypeScript |
-| Package Mgr | Bun                               |
-| Database    | SQLite (local-first)              |
-| Styling     | Tailwind CSS 3 (Café Pedagógico)  |
-| Build       | Vite 6 (TypeScript)               |
-| Linter/Fmt  | Biome                             |
-| Auth        | Laravel Breeze (modified)         |
-| Architecture| Service-layer pattern             |
+## Features
+
+- **Academic Workspace**: Contextual command center with attendance KPIs, performance trends, and action suggestions.
+- **Period & Group Tracking**: Comprehensive academic term scheduling with course assignment and group archiving.
+- **Student Registry & Attendance**: Multi-group enrollment with single-click attendance capturing and consecutive absence alerts.
+- **Weighted Grading Engine**: Configurable category weighting, automatic grade normalization, and student summary calculations.
+- **Qualitative Observations**: Structured student progress tracking with severity categorization and resolution status.
+- **Multi-Format Exports**: PDF, Excel, CSV, and JSON report generation with user-defined templates and email delivery.
+- **Encrypted Local Backups**: AES-256-CBC encrypted `.pdbk` backup files with native dialog picking and restoration verification.
+- **Native Desktop Shell**: Tauri v2 integration providing OS menus, system tray, notifications, and window state persistence.
 
 ## Installation
 
-### Local Development
+### Prerequisites
+
+- PHP (>= 8.4)
+- Composer (>= 2.0)
+- Bun (>= 1.4)
+- Rust & Cargo (>= 1.80, stable)
+- Just (>= 1.0)
+
+### From Source
 
 ```bash
-# Clone the repository
-git clone https://github.com/HoujouSxnnyside/promediatum.git
+git clone https://github.com/sxnnyside-scholarships/promediatum.git
 cd promediatum
 
-# Install dependencies
-composer install
-bun install
-
-# Environment setup
-cp .env.example .env
-php artisan key:generate
-
-# Database
-touch database/database.sqlite
-php artisan migrate --seed
-
-# Fast bootstrap & dev server
+# Single-command bootstrap (installs PHP, Bun, Cargo dependencies, .env, DB, and git hooks)
 just install
-just dev
+
+# Launch desktop development application
+just tauri-dev
 ```
 
-Default seeded credentials:
-- **Email:** `maria@promediatum.test`
-- **Password:** `password1`
-
-## Command Surface (`Justfile`)
+## Usage
 
 ```bash
-just install             # Bootstrap dependencies, .env, database, and git hooks
-just dev                 # Start PHP server + Vite HMR
-just build               # Production Vite build
-just test                # Run full PHPUnit test suite
-just typecheck           # TypeScript (vue-tsc) & PHPStan checks
-just lint                # Biome & Pint style audits
-just format              # Automatically format JS, TS, Vue, and PHP files
-just check               # Run full quality gate (format, lint, typecheck, test)
-just clean               # Clear build artifacts and caches
+# Launch desktop development application (Tauri + Vite HMR + Laravel backend)
+just tauri-dev
+
+# Or run in standard web mode
+just dev
+
+# Run the unified quality check across all 3 stacks (format, lint, typecheck, test)
+just check
 ```
 
-## Philosophy
+## Architecture
 
-Promediatum follows the **Café Pedagógico** design system — a warm, earthy visual language designed to reduce cognitive load in academic tools. It favors muted tones, generous spacing, and predictable interaction patterns over flashy interfaces. Every element serves the teacher's workflow, not the other way around.
+```
+promediatum/
+├── app/          # Backend Laravel 12 domain services, models, and controllers
+├── resources/    # Frontend Vue 3.5, Inertia.js v2 pages, and TypeScript composables
+├── src-tauri/    # Native desktop shell, Rust IPC commands, system tray, and menus
+├── database/     # SQLite database, migrations, factories, and development seeders
+├── config/       # Application, database WAL, and version configurations
+└── tests/        # Backend PHPUnit tests and frontend Bun test suites
+```
 
-## Security
+## Contributing
 
-For security vulnerabilities, please see [SECURITY.md](SECURITY.md).
+Contributions are accepted. See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+Before contributing, read the [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## License
 
-[MIT](LICENSE) — Copyright © 2026 Sxnnyside Scholarships
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+
+---
+
+<p align="center">
+  <strong>Promediatum</strong> — A Sxnnyside Scholarships Release<br>
+  <em>&copy; 2026 Sxnnyside Project</em>
+</p>

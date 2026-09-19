@@ -1,11 +1,20 @@
-<script setup>
+<script setup lang="ts">
 /**
  * Exports/Templates/Create — Create a new export template.
  *
- * 70/30 grid layout. Form sections: General, Content Options, Formatting.
+ * 70/30 grid layout with Café Pedagógico design.
  */
 
 import { Head, Link, useForm } from '@inertiajs/vue3';
+import {
+    CheckRegular,
+    DocRegular,
+    FileCertificateRegular,
+    InformationRegular,
+    Layout11Regular,
+    LeftRegular,
+    Settings1Regular,
+} from '@mingcute/vue/core-regular';
 import CpButton from '@/Components/CpButton.vue';
 import CpInput from '@/Components/CpInput.vue';
 import CpSelect from '@/Components/CpSelect.vue';
@@ -14,8 +23,12 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 
 const { t } = useTranslations();
 
-const props = defineProps({
-    defaultConfig: { type: Object, default: () => ({}) },
+interface Props {
+    defaultConfig?: Record<string, any>;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+    defaultConfig: () => ({}),
 });
 
 const form = useForm({
@@ -50,16 +63,15 @@ const orientationOptions = [
 ];
 
 const precisionOptions = [
-    { value: '0', label: '0' },
-    { value: '1', label: '1' },
-    { value: '2', label: '2' },
-    { value: '3', label: '3' },
-    { value: '4', label: '4' },
+    { value: '0', label: t('templates.decimals_0') },
+    { value: '1', label: t('templates.decimals_1') },
+    { value: '2', label: t('templates.decimals_2') },
+    { value: '3', label: t('templates.decimals_3') },
+    { value: '4', label: t('templates.decimals_4') },
 ];
 
 function submit() {
-    // Ensure numeric_precision is an integer
-    form.config.numeric_precision = parseInt(form.config.numeric_precision, 10) || 2;
+    form.config.numeric_precision = parseInt(String(form.config.numeric_precision), 10) || 2;
     form.post(route('exports.templates.store'));
 }
 </script>
@@ -68,174 +80,247 @@ function submit() {
     <AuthenticatedLayout>
         <Head :title="t('templates.create')" />
 
-        <div>
-            <div class="mb-6">
+        <div class="space-y-6 pb-12">
+            <div>
                 <Link
                     :href="route('exports.templates.index')"
-                    class="text-sm text-cafe-500 hover:text-cafe-700 dark:text-cafe-400 dark:hover:text-cafe-200 underline underline-offset-2 transition-colors duration-150"
+                    class="inline-flex items-center gap-1.5 text-xs font-semibold text-cafe-600 hover:text-accent-700 dark:text-cafe-400 dark:hover:text-accent-300 transition-colors"
                 >
-                    ← {{ t('templates.back') }}
+                    <LeftRegular class="w-3.5 h-3.5" />
+                    <span>{{ t('templates.back') }}</span>
                 </Link>
             </div>
 
-            <h1 class="font-serif mb-6">{{ t('templates.create') }}</h1>
+            <div class="border-b border-cafe-200/80 dark:border-cafe-800/80 pb-5">
+                <div class="flex items-center gap-3">
+                    <div class="p-2.5 rounded-2xl bg-accent-100 dark:bg-accent-950/40 text-accent-700 dark:text-accent-300">
+                        <FileCertificateRegular class="w-6 h-6" />
+                    </div>
+                    <div>
+                        <h1 class="font-serif text-2xl font-bold text-cafe-900 dark:text-cafe-100 tracking-tight">
+                            {{ t('templates.create') }}
+                        </h1>
+                        <p class="text-xs text-cafe-600 dark:text-cafe-400 mt-0.5">
+                            {{ t('templates.subtitle_create') }}
+                        </p>
+                    </div>
+                </div>
+            </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-10 gap-8">
+            <div class="grid grid-cols-1 lg:grid-cols-10 gap-8 items-start">
                 <!-- Form (70%) -->
                 <div class="lg:col-span-7">
-                    <form @submit.prevent="submit" class="space-y-8">
+                    <form @submit.prevent="submit" class="space-y-6">
 
                         <!-- Section: General -->
-                        <fieldset class="space-y-4">
-                            <legend class="text-sm font-semibold text-cafe-700 dark:text-cafe-200 border-b border-cafe-200 dark:border-cafe-700 pb-2 mb-4 w-full">
-                                {{ t('templates.section_general') }}
-                            </legend>
-
-                            <CpInput
-                                id="name"
-                                v-model="form.name"
-                                :label="t('templates.name')"
-                                :error="form.errors.name"
-                                required
-                            />
-
-                            <CpSelect
-                                id="type"
-                                v-model="form.type"
-                                :label="t('templates.type')"
-                                :options="typeOptions"
-                                :error="form.errors.type"
-                                required
-                            />
-
-                            <div class="flex items-center gap-2">
-                                <input
-                                    id="is_default"
-                                    type="checkbox"
-                                    v-model="form.is_default"
-                                    class="rounded border-cafe-300 dark:border-cafe-600 text-accent-600 focus:ring-accent-500 dark:bg-surface-dark-2"
-                                />
-                                <label for="is_default" class="text-sm text-cafe-700 dark:text-cafe-200">
-                                    {{ t('templates.set_default') }}
-                                </label>
+                        <div class="rounded-2xl border border-cafe-200/90 dark:border-cafe-700/80 bg-white dark:bg-surface-dark-1 p-6 sm:p-7 shadow-sm space-y-5">
+                            <div class="flex items-center gap-2.5 border-b border-cafe-100 dark:border-cafe-800 pb-3">
+                                <div class="p-1.5 rounded-xl bg-accent-50 dark:bg-accent-950/40 text-accent-600">
+                                    <Settings1Regular class="w-4 h-4" />
+                                </div>
+                                <h3 class="text-sm font-bold text-cafe-900 dark:text-cafe-100 uppercase tracking-wider">
+                                    {{ t('templates.section_general') }}
+                                </h3>
                             </div>
-                        </fieldset>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div class="sm:col-span-2">
+                                    <CpInput
+                                        id="name"
+                                        v-model="form.name"
+                                        :label="t('templates.name')"
+                                        :error="form.errors.name"
+                                        placeholder="Ej. Acta Oficial Institucional"
+                                        required
+                                    />
+                                </div>
+
+                                <div>
+                                    <CpSelect
+                                        id="type"
+                                        v-model="form.type"
+                                        :label="t('templates.type')"
+                                        :options="typeOptions"
+                                        :error="form.errors.type"
+                                        required
+                                    />
+                                </div>
+
+                                <div class="flex items-center pt-6">
+                                    <label class="relative flex items-center gap-2.5 cursor-pointer select-none">
+                                        <input
+                                            id="is_default"
+                                            type="checkbox"
+                                            v-model="form.is_default"
+                                            class="w-4 h-4 rounded border-cafe-300 dark:border-cafe-600 text-accent-600 focus:ring-accent-500 dark:bg-surface-dark-2"
+                                        />
+                                        <span class="text-xs font-medium text-cafe-800 dark:text-cafe-200">
+                                            {{ t('templates.set_default') }}
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
 
                         <!-- Section: Content Options -->
-                        <fieldset class="space-y-4">
-                            <legend class="text-sm font-semibold text-cafe-700 dark:text-cafe-200 border-b border-cafe-200 dark:border-cafe-700 pb-2 mb-4 w-full">
-                                {{ t('templates.section_content') }}
-                            </legend>
+                        <div class="rounded-2xl border border-cafe-200/90 dark:border-cafe-700/80 bg-white dark:bg-surface-dark-1 p-6 sm:p-7 shadow-sm space-y-5">
+                            <div class="flex items-center gap-2.5 border-b border-cafe-100 dark:border-cafe-800 pb-3">
+                                <div class="p-1.5 rounded-xl bg-accent-50 dark:bg-accent-950/40 text-accent-600">
+                                    <DocRegular class="w-4 h-4" />
+                                </div>
+                                <h3 class="text-sm font-bold text-cafe-900 dark:text-cafe-100 uppercase tracking-wider">
+                                    {{ t('templates.section_content') }}
+                                </h3>
+                            </div>
 
-                            <div class="space-y-3">
-                                <div class="flex items-center gap-2">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                                <label class="p-3.5 rounded-xl border border-cafe-200/80 dark:border-cafe-800 bg-cafe-50/50 dark:bg-surface-dark-2 flex items-center gap-3 cursor-pointer hover:bg-cafe-100/70 dark:hover:bg-surface-dark-3 transition-colors">
                                     <input
-                                        id="include_attendance"
                                         type="checkbox"
                                         v-model="form.config.include_attendance_summary"
-                                        class="rounded border-cafe-300 dark:border-cafe-600 text-accent-600 focus:ring-accent-500 dark:bg-surface-dark-2"
+                                        class="w-4 h-4 rounded border-cafe-300 text-accent-600 focus:ring-accent-500 dark:bg-surface-dark-3"
                                     />
-                                    <label for="include_attendance" class="text-sm text-cafe-700 dark:text-cafe-200">
+                                    <span class="text-xs font-semibold text-cafe-800 dark:text-cafe-200">
                                         {{ t('templates.include_attendance') }}
-                                    </label>
-                                </div>
+                                    </span>
+                                </label>
 
-                                <div class="flex items-center gap-2">
+                                <label class="p-3.5 rounded-xl border border-cafe-200/80 dark:border-cafe-800 bg-cafe-50/50 dark:bg-surface-dark-2 flex items-center gap-3 cursor-pointer hover:bg-cafe-100/70 dark:hover:bg-surface-dark-3 transition-colors">
                                     <input
-                                        id="include_observations"
                                         type="checkbox"
                                         v-model="form.config.include_observations_summary"
-                                        class="rounded border-cafe-300 dark:border-cafe-600 text-accent-600 focus:ring-accent-500 dark:bg-surface-dark-2"
+                                        class="w-4 h-4 rounded border-cafe-300 text-accent-600 focus:ring-accent-500 dark:bg-surface-dark-3"
                                     />
-                                    <label for="include_observations" class="text-sm text-cafe-700 dark:text-cafe-200">
+                                    <span class="text-xs font-semibold text-cafe-800 dark:text-cafe-200">
                                         {{ t('templates.include_observations') }}
-                                    </label>
-                                </div>
+                                    </span>
+                                </label>
 
-                                <div class="flex items-center gap-2">
+                                <label class="p-3.5 rounded-xl border border-cafe-200/80 dark:border-cafe-800 bg-cafe-50/50 dark:bg-surface-dark-2 flex items-center gap-3 cursor-pointer hover:bg-cafe-100/70 dark:hover:bg-surface-dark-3 transition-colors">
                                     <input
-                                        id="include_categories"
                                         type="checkbox"
                                         v-model="form.config.include_category_breakdown"
-                                        class="rounded border-cafe-300 dark:border-cafe-600 text-accent-600 focus:ring-accent-500 dark:bg-surface-dark-2"
+                                        class="w-4 h-4 rounded border-cafe-300 text-accent-600 focus:ring-accent-500 dark:bg-surface-dark-3"
                                     />
-                                    <label for="include_categories" class="text-sm text-cafe-700 dark:text-cafe-200">
+                                    <span class="text-xs font-semibold text-cafe-800 dark:text-cafe-200">
                                         {{ t('templates.include_categories') }}
-                                    </label>
-                                </div>
+                                    </span>
+                                </label>
 
-                                <div class="flex items-center gap-2">
+                                <label class="p-3.5 rounded-xl border border-cafe-200/80 dark:border-cafe-800 bg-cafe-50/50 dark:bg-surface-dark-2 flex items-center gap-3 cursor-pointer hover:bg-cafe-100/70 dark:hover:bg-surface-dark-3 transition-colors">
                                     <input
-                                        id="include_signature"
                                         type="checkbox"
                                         v-model="form.config.include_signature_line"
-                                        class="rounded border-cafe-300 dark:border-cafe-600 text-accent-600 focus:ring-accent-500 dark:bg-surface-dark-2"
+                                        class="w-4 h-4 rounded border-cafe-300 text-accent-600 focus:ring-accent-500 dark:bg-surface-dark-3"
                                     />
-                                    <label for="include_signature" class="text-sm text-cafe-700 dark:text-cafe-200">
+                                    <span class="text-xs font-semibold text-cafe-800 dark:text-cafe-200">
                                         {{ t('templates.include_signature') }}
-                                    </label>
-                                </div>
+                                    </span>
+                                </label>
                             </div>
-                        </fieldset>
+                        </div>
 
                         <!-- Section: Formatting -->
-                        <fieldset class="space-y-4">
-                            <legend class="text-sm font-semibold text-cafe-700 dark:text-cafe-200 border-b border-cafe-200 dark:border-cafe-700 pb-2 mb-4 w-full">
-                                {{ t('templates.section_formatting') }}
-                            </legend>
+                        <div class="rounded-2xl border border-cafe-200/90 dark:border-cafe-700/80 bg-white dark:bg-surface-dark-1 p-6 sm:p-7 shadow-sm space-y-5">
+                            <div class="flex items-center gap-2.5 border-b border-cafe-100 dark:border-cafe-800 pb-3">
+                                <div class="p-1.5 rounded-xl bg-accent-50 dark:bg-accent-950/40 text-accent-600">
+                                    <Layout11Regular class="w-4 h-4" />
+                                </div>
+                                <h3 class="text-sm font-bold text-cafe-900 dark:text-cafe-100 uppercase tracking-wider">
+                                    {{ t('templates.section_formatting') }}
+                                </h3>
+                            </div>
 
-                            <CpSelect
-                                id="orientation"
-                                v-model="form.config.orientation"
-                                :label="t('templates.orientation')"
-                                :options="orientationOptions"
-                            />
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <CpSelect
+                                        id="orientation"
+                                        v-model="form.config.orientation"
+                                        :label="t('templates.orientation')"
+                                        :options="orientationOptions"
+                                    />
+                                </div>
 
-                            <CpSelect
-                                id="numeric_precision"
-                                v-model="form.config.numeric_precision"
-                                :label="t('templates.numeric_precision')"
-                                :options="precisionOptions"
-                            />
+                                <div>
+                                    <CpSelect
+                                        id="numeric_precision"
+                                        v-model="form.config.numeric_precision"
+                                        :label="t('templates.numeric_precision')"
+                                        :options="precisionOptions"
+                                    />
+                                </div>
 
-                            <CpInput
-                                id="date_format"
-                                v-model="form.config.date_format"
-                                :label="t('templates.date_format')"
-                                placeholder="Y-m-d"
-                            />
+                                <div class="sm:col-span-2">
+                                    <CpInput
+                                        id="date_format"
+                                        v-model="form.config.date_format"
+                                        :label="t('templates.date_format')"
+                                        placeholder="Y-m-d"
+                                    />
+                                </div>
 
-                            <CpInput
-                                id="header_text"
-                                v-model="form.config.include_header_text"
-                                :label="t('templates.header_text')"
-                                :placeholder="t('templates.header_text_placeholder')"
-                            />
+                                <div class="sm:col-span-2">
+                                    <CpInput
+                                        id="header_text"
+                                        v-model="form.config.include_header_text"
+                                        :label="t('templates.header_text')"
+                                        :placeholder="t('templates.header_text_placeholder')"
+                                    />
+                                </div>
 
-                            <CpInput
-                                id="footer_text"
-                                v-model="form.config.include_footer_text"
-                                :label="t('templates.footer_text')"
-                                :placeholder="t('templates.footer_text_placeholder')"
-                            />
-                        </fieldset>
+                                <div class="sm:col-span-2">
+                                    <CpInput
+                                        id="footer_text"
+                                        v-model="form.config.include_footer_text"
+                                        :label="t('templates.footer_text')"
+                                        :placeholder="t('templates.footer_text_placeholder')"
+                                    />
+                                </div>
+                            </div>
+                        </div>
 
-                        <CpButton :disabled="form.processing">
-                            {{ t('templates.submit') }}
-                        </CpButton>
+                        <!-- Actions -->
+                        <div class="flex items-center justify-end gap-3 pt-2">
+                            <Link :href="route('exports.templates.index')">
+                                <button
+                                    type="button"
+                                    class="px-4 py-2 text-xs font-medium text-cafe-600 hover:text-cafe-900 dark:text-cafe-300 dark:hover:text-white transition-colors"
+                                >
+                                    {{ t('common.cancel') }}
+                                </button>
+                            </Link>
+
+                            <CpButton :disabled="form.processing" class="inline-flex items-center gap-2">
+                                <CheckRegular class="w-4 h-4" />
+                                <span>{{ t('templates.submit') }}</span>
+                            </CpButton>
+                        </div>
                     </form>
                 </div>
 
                 <!-- Context panel (30%) -->
-                <aside class="lg:col-span-3">
-                    <div class="rounded-subtle bg-cafe-100/60 dark:bg-surface-dark-1 p-5 space-y-3">
-                        <h3 class="text-sm font-semibold text-cafe-700 dark:text-cafe-200">
-                            {{ t('templates.tips_title') }}
-                        </h3>
-                        <ul class="space-y-2 text-sm text-cafe-500 dark:text-cafe-400">
-                            <li>{{ t('templates.tip_1') }}</li>
-                            <li>{{ t('templates.tip_2') }}</li>
-                            <li>{{ t('templates.tip_3') }}</li>
+                <aside class="lg:col-span-3 space-y-4">
+                    <div class="rounded-2xl bg-gradient-to-br from-amber-50/80 to-cafe-50/50 dark:from-surface-dark-2 dark:to-surface-dark-1 border border-amber-200/80 dark:border-amber-900/40 p-6 space-y-4 shadow-sm">
+                        <div class="flex items-center gap-2 text-accent-700 dark:text-accent-300">
+                            <InformationRegular class="w-5 h-5" />
+                            <h3 class="text-sm font-bold">
+                                {{ t('templates.tips_title') }}
+                            </h3>
+                        </div>
+
+                        <ul class="space-y-3 text-xs text-cafe-600 dark:text-cafe-400 leading-relaxed">
+                            <li class="flex items-start gap-2">
+                                <span class="text-accent-600 font-bold">•</span>
+                                <span>{{ t('templates.tip_1') }}</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-accent-600 font-bold">•</span>
+                                <span>{{ t('templates.tip_2') }}</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-accent-600 font-bold">•</span>
+                                <span>{{ t('templates.tip_3') }}</span>
+                            </li>
                         </ul>
                     </div>
                 </aside>

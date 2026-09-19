@@ -1,15 +1,18 @@
-<script setup>
+<script setup lang="ts">
 import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import CpButton from '@/Components/CpButton.vue';
 import CpInput from '@/Components/CpInput.vue';
 import { useTranslations } from '@/composables/useTranslations';
 import GuestLayout from '@/Layouts/GuestLayout.vue';
+import type { User } from '@/types';
 
 const { t } = useTranslations();
 
-const props = defineProps({
-    user: Object,
-});
+interface Props {
+    user?: User | null;
+}
+
+const props = defineProps<Props>();
 
 const form = useForm({
     password: '',
@@ -26,7 +29,7 @@ function logout() {
 }
 
 // Greeting based on pronoun: "Bienvenido" / "Bienvenida" / "Bienvenide"
-const greeting = props.user?.greeting || `Bienvenido/a, ${props.user?.first_name}`;
+const greeting = props.user?.greeting || `Bienvenido/a, ${props.user?.first_name ?? ''}`;
 </script>
 
 <template>

@@ -124,4 +124,77 @@ class StudentTest extends TestCase
         $this->assertSame('anasofia@estudiante.test', $student->email);
         $this->assertSame('Roberto Martínez', $student->guardian_name);
     }
+
+    public function test_students_index_calculates_batched_metrics_with_grades_and_alerts(): void
+    {
+        $user = User::factory()->create();
+        $period = Period::create([
+            'name' => '2026-B',
+            'slug' => '2026-b',
+            'start_date' => '2026-01-01',
+            'end_date' => '2026-06-30',
+            'is_active' => true,
+        ]);
+
+        $group = Group::create([
+            'period_id' => $period->id,
+            'name' => 'Historia Universal',
+            'subject' => 'Historia',
+            'slug' => 'historia-universal',
+            'grade_level' => 'Secundaria',
+            'is_archived' => false,
+        ]);
+
+        $category = \App\Models\GradeCategory::create([
+            'group_id' => $group->id,
+            'name' => 'Exámenes',
+            'weight' => 100,
+        ]);
+
+        $student = Student::create([
+            'first_name' => 'Lucía',
+            'last_name' => 'Gómez',
+            'slug' => Student::generateSlug('Lucía', 'Gómez'),
+            'email' => 'lucia@estudiante.test',
+        ]);
+
+        $student->groups()->attach($group->id, ['period_id' => $period->id]);
+
+        \App\Models\Grade::create([
+            'student_id' => $student->id,
+            'group_id' => $group->id,
+            'period_id' => $period->id,
+            'category_id' => $category->id,
+            'title' => 'Parcial 1',
+            'score' => 50,
+            'max_score' => 100,
+            'date' => '2026-03-01',
+        ]);
+
+        // 3 consecutive absences
+        for ($i = 1; $i <= 3; $i++) {
+            \App\Models\Attendance::create([
+                'student_id' => $student->id,
+                'group_id' => $group->id,
+                'period_id' => $period->id,
+                'date' => "2026-03-0{$i}",
+                'status' => 'absent',
+            ]);
+        }
+
+        $response = $this
+            ->actingAs($user)
+            ->get('/students');
+
+        $response->assertOk();
+        $response->assertInertia(fn (\Inertia\Testing\AssertableInertia $page) => $page
+            ->component('Students/Index')
+            ->has('metrics.'.$student->id, fn (\Inertia\Testing\AssertableInertia $metric) => $metric
+                ->where('average', 50)
+                ->where('at_risk', true)
+                ->where('has_absence_alert', true)
+                ->where('groups_count', 1)
+            )
+        );
+    }
 }

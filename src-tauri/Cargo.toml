@@ -1,10 +1,10 @@
 [package]
 name = "app"
-version = "0.1.0"
-description = "A Tauri App"
-authors = ["you"]
-license = ""
-repository = ""
+version = "1.0.0"
+description = "Personal academic workspace for independent educators"
+authors = ["HoujouSxnnyside", "Sxnnyside Scholarships"]
+license = "MIT"
+repository = "https://github.com/sxnnyside-scholarships/promediatum.git"
 edition = "2021"
 rust-version = "1.77.2"
 
@@ -21,5 +21,12 @@ tauri-build = { version = "2.6.3", features = [] }
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 log = "0.4"
-tauri = { version = "2.11.3", features = [] }
+dirs = "6.0"
+tauri = { version = "2.11.3", features = ["tray-icon"] }
 tauri-plugin-log = "2"
+tauri-plugin-dialog = "2"
+tauri-plugin-notification = "2"
+tauri-plugin-window-state = "2"
+tauri-plugin-fs = "2"
+tauri-plugin-shell = "2"
+tauri-plugin-process = "2"

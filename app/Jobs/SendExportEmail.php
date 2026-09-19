@@ -11,6 +11,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * SendExportEmail — Queued job to email an export file.
@@ -47,7 +48,7 @@ class SendExportEmail implements ShouldQueue
             return;
         }
 
-        $fullPath = storage_path('app/'.$history->file_path);
+        $fullPath = Storage::disk('local')->path($history->file_path);
 
         if (! file_exists($fullPath)) {
             Log::warning('SendExportEmail: file not found', [

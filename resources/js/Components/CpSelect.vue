@@ -1,25 +1,26 @@
-<script setup>
-defineProps({
-    modelValue: String,
-    label: String,
-    error: String,
-    id: String,
-    options: {
-        type: Array,
-        default: () => [],
-        // Each option: { value: '', label: '' }
-    },
-    required: {
-        type: Boolean,
-        default: false,
-    },
-    placeholder: {
-        type: String,
-        default: '',
-    },
+<script setup lang="ts">
+export interface SelectOption {
+    value: string | number;
+    label: string;
+}
+
+interface Props {
+    modelValue?: string | number | null;
+    label?: string;
+    error?: string;
+    id?: string;
+    options?: SelectOption[];
+    required?: boolean;
+    placeholder?: string;
+}
+
+withDefaults(defineProps<Props>(), {
+    options: () => [],
+    required: false,
+    placeholder: '',
 });
 
-defineEmits(['update:modelValue']);
+defineEmits<(e: 'update:modelValue', value: string) => void>();
 </script>
 
 <template>
@@ -33,7 +34,7 @@ defineEmits(['update:modelValue']);
             :value="modelValue"
             :required="required"
             class="cp-input"
-            @change="$emit('update:modelValue', $event.target.value)"
+            @change="$emit('update:modelValue', ($event.target as HTMLSelectElement).value)"
         >
             <option v-if="placeholder" value="" disabled>{{ placeholder }}</option>
             <option

@@ -87,6 +87,11 @@ Route::middleware(['auth', 'session.unlocked'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.update-password');
+
+    // Two-Factor Authentication (MFA)
+    Route::post('/profile/two-factor/setup', [\App\Http\Controllers\Auth\TwoFactorAuthenticationController::class, 'setup'])->name('two-factor.setup');
+    Route::post('/profile/two-factor/confirm', [\App\Http\Controllers\Auth\TwoFactorAuthenticationController::class, 'confirm'])->name('two-factor.confirm');
+    Route::delete('/profile/two-factor/disable', [\App\Http\Controllers\Auth\TwoFactorAuthenticationController::class, 'disable'])->name('two-factor.disable');
 });
 
 /*
@@ -140,6 +145,7 @@ Route::middleware(['auth', 'session.unlocked'])->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'session.unlocked'])->group(function () {
+    Route::get('/attendance', [AttendanceController::class, 'dashboard'])->name('attendance.dashboard');
     Route::get('/groups/{group}/attendance', [AttendanceController::class, 'index'])->name('attendance.index');
     Route::post('/groups/{group}/attendance', [AttendanceController::class, 'store'])->name('attendance.store');
     Route::put('/attendance/{attendance}', [AttendanceController::class, 'update'])->name('attendance.update');

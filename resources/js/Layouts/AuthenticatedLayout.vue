@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * AuthenticatedLayout — Educator Digital Workspace AppShell
  *
@@ -17,6 +17,7 @@ import {
     Home4Regular,
     MenuRegular,
     Settings3Regular,
+    Task2Regular,
     User4Regular,
 } from '@mingcute/vue/core-regular';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
@@ -26,12 +27,13 @@ import LocaleSwitch from '@/Components/LocaleSwitch.vue';
 import PromediatumLogo from '@/Components/PromediatumLogo.vue';
 import ThemeToggle from '@/Components/ThemeToggle.vue';
 import { useTranslations } from '@/composables/useTranslations';
+import type { PageProps } from '@/types';
 
 const { t, locale } = useTranslations();
-const page = usePage();
+const page = usePage<PageProps>();
 
 const dropdownOpen = ref(false);
-const dropdownRef = ref(null);
+const dropdownRef = ref<HTMLElement | null>(null);
 const sidebarOpen = ref(true);
 
 const sxnnysideUrl = computed(() => {
@@ -40,11 +42,13 @@ const sxnnysideUrl = computed(() => {
 });
 
 // UI preferences from DB
-const userSettings = computed(() => page.props.auth.user?.settings ?? {});
+const userSettings = computed(
+    () => (page.props.auth.user?.settings ?? {}) as Record<string, unknown>,
+);
 const sidebarTrailing = computed(() => userSettings.value.sidebar_position === 'trailing');
 const iconsHidden = computed(() => userSettings.value.icons_enabled === false);
 const textWeightClass = computed(() => {
-    const w = userSettings.value.text_weight;
+    const w = String(userSettings.value.text_weight ?? '');
     if (w === '300') return 'font-light';
     if (w === '500') return 'font-medium';
     if (w === '600') return 'font-semibold';
@@ -55,8 +59,8 @@ function toggleDropdown() {
     dropdownOpen.value = !dropdownOpen.value;
 }
 
-function closeDropdown(e) {
-    if (dropdownRef.value && !dropdownRef.value.contains(e.target)) {
+function closeDropdown(e: MouseEvent) {
+    if (dropdownRef.value && !dropdownRef.value.contains(e.target as Node)) {
         dropdownOpen.value = false;
     }
 }
@@ -74,7 +78,15 @@ function logout() {
     router.post(route('logout'));
 }
 
-const navItems = computed(() => [
+interface NavItem {
+    label: string;
+    href: string;
+    active: boolean;
+    icon: any;
+    disabled?: boolean;
+}
+
+const navItems = computed<NavItem[]>(() => [
     {
         label: t('nav.dashboard'),
         href: route('workspace'),
@@ -92,10 +104,15 @@ const navItems = computed(() => [
         href: route('groups.index'),
         active:
             route().current('groups.*') ||
-            route().current('attendance.*') ||
             route().current('categories.*') ||
             route().current('grades.*'),
         icon: GroupRegular,
+    },
+    {
+        label: t('nav.attendance'),
+        href: route('attendance.dashboard'),
+        active: route().current('attendance.*'),
+        icon: Task2Regular,
     },
     {
         label: t('nav.students'),

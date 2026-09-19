@@ -1,35 +1,28 @@
-<script setup>
+<script setup lang="ts">
 import { computed, ref } from 'vue';
 import CpIcon from '@/Components/CpIcon.vue';
 
-const props = defineProps({
-    modelValue: String,
-    type: {
-        type: String,
-        default: 'text',
-    },
-    label: String,
-    error: String,
-    id: String,
-    placeholder: {
-        type: String,
-        default: '',
-    },
-    required: {
-        type: Boolean,
-        default: false,
-    },
-    autofocus: {
-        type: Boolean,
-        default: false,
-    },
-    autocomplete: {
-        type: String,
-        default: '',
-    },
+interface Props {
+    modelValue?: string | number | null;
+    type?: string;
+    label?: string;
+    error?: string;
+    id?: string;
+    placeholder?: string;
+    required?: boolean;
+    autofocus?: boolean;
+    autocomplete?: string;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+    type: 'text',
+    placeholder: '',
+    required: false,
+    autofocus: false,
+    autocomplete: '',
 });
 
-defineEmits(['update:modelValue']);
+defineEmits<(e: 'update:modelValue', value: string) => void>();
 
 const showPassword = ref(false);
 const isPasswordType = computed(() => props.type === 'password');
@@ -56,7 +49,7 @@ const resolvedType = computed(() => {
                 :autocomplete="autocomplete"
                 class="cp-input"
                 :class="{ 'pr-10': isPasswordType }"
-                @input="$emit('update:modelValue', $event.target.value)"
+                @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)"
             />
             <button
                 v-if="isPasswordType"

@@ -54,8 +54,26 @@ class ExportDataResolver
             ->orderBy('first_name')
             ->get();
 
-        $studentRows = $students->map(function (Student $student) use ($group, $context) {
-            $summary = $this->academic->getStudentSummary($student->id, $group->id, $context->periodId);
+        $studentSummaries = $this->academic->getGroupStudentSummaries(
+            $students->pluck('id')->all(),
+            $group->id,
+            $context->periodId
+        );
+
+        $studentRows = $students->map(function (Student $student) use ($studentSummaries) {
+            $summary = $studentSummaries[$student->id] ?? [
+                'average' => null,
+                'attendance' => [
+                    'total' => 0,
+                    'present' => 0,
+                    'absent' => 0,
+                    'justified' => 0,
+                    'rate' => null,
+                ],
+                'absence_streak' => 0,
+                'has_absence_alert' => false,
+                'at_risk' => false,
+            ];
 
             return [
                 'student_id' => $student->id,

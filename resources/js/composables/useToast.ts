@@ -20,6 +20,22 @@ export function useToast() {
                     detail: { type, message, duration },
                 }),
             );
+
+            // If running inside desktop app and window is in background, notify OS
+            if (('__TAURI_INTERNALS__' in window || '__TAURI__' in window) && document.hidden) {
+                import('@tauri-apps/plugin-notification')
+                    .then(({ sendNotification, isPermissionGranted }) => {
+                        isPermissionGranted().then((granted) => {
+                            if (granted) {
+                                sendNotification({
+                                    title: 'Promediatum',
+                                    body: message,
+                                });
+                            }
+                        });
+                    })
+                    .catch(() => {});
+            }
         }
     }
 

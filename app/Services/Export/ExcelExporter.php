@@ -34,7 +34,7 @@ class ExcelExporter implements ExporterInterface
             'local'
         );
 
-        return storage_path("app/{$relativePath}");
+        return Storage::disk('local')->path($relativePath);
     }
 
     /**

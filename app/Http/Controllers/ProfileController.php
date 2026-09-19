@@ -32,6 +32,8 @@ class ProfileController extends Controller
                 'educational_area' => $user->educational_area,
                 'educational_level' => $user->educational_level,
                 'unused_recovery_codes_count' => $user->unusedRecoveryCodes()->count(),
+                'two_factor_enabled' => $user->hasEnabledTwoFactorAuthentication(),
+                'two_factor_confirmed_at' => $user->two_factor_confirmed_at?->format('d/m/Y H:i'),
             ],
         ]);
     }

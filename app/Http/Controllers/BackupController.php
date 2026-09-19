@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Services\Backup\BackupService;
 use App\Services\Desktop\NotificationService;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
 
 class BackupController extends Controller
 {
@@ -36,13 +35,11 @@ class BackupController extends Controller
     }
 
     /**
-     * Display the backup management page.
+     * Display the backup management page (redirects to unified Settings).
      */
     public function index()
     {
-        return Inertia::render('Backups/Index', [
-            'backups' => $this->backupService->list(),
-        ]);
+        return redirect()->to(route('settings.index').'#backups');
     }
 
     /**
@@ -61,7 +58,7 @@ class BackupController extends Controller
 
             return back()->with('success', __('backup.created_successfully'));
         } catch (\Throwable $e) {
-            return back()->with('error', __('backup.creation_failed', ['error' => $e->getMessage()]));
+            return back()->withErrors(['backup' => __('backup.creation_failed', ['error' => $e->getMessage()])]);
         }
     }
 
@@ -87,7 +84,7 @@ class BackupController extends Controller
 
             return back()->with('success', __('backup.restored_successfully'));
         } catch (\Throwable $e) {
-            return back()->with('error', __('backup.restore_failed', ['error' => $e->getMessage()]));
+            return back()->withErrors(['backup' => __('backup.restore_failed', ['error' => $e->getMessage()])]);
         }
     }
 
@@ -120,11 +117,15 @@ class BackupController extends Controller
             'backup_path' => ['required', 'string'],
         ]);
 
-        $path = $this->validateBackupPath($request->input('backup_path'));
+        try {
+            $path = $this->validateBackupPath($request->input('backup_path'));
 
-        unlink($path);
+            unlink($path);
 
-        return back()->with('success', __('backup.deleted_successfully'));
+            return back()->with('success', __('backup.deleted_successfully'));
+        } catch (\Throwable $e) {
+            return back()->withErrors(['backup' => __('backup.delete_failed')]);
+        }
     }
 
     /**
@@ -132,10 +133,14 @@ class BackupController extends Controller
      */
     public function prune(Request $request)
     {
-        $keep = $request->input('keep', 5);
-        $deleted = $this->backupService->prune($keep);
+        try {
+            $keep = (int) $request->input('keep', 5);
+            $deleted = $this->backupService->prune($keep);
 
-        return back()->with('success', __('backup.pruned_successfully', ['count' => $deleted]));
+            return back()->with('success', __('backup.pruned_successfully', ['count' => $deleted]));
+        } catch (\Throwable $e) {
+            return back()->withErrors(['backup' => $e->getMessage()]);
+        }
     }
 
     /**

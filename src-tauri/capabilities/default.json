@@ -6,6 +6,12 @@
     "main"
   ],
   "permissions": [
-    "core:default"
+    "core:default",
+    "dialog:default",
+    "notification:default",
+    "window-state:default",
+    "fs:default",
+    "shell:default",
+    "process:default"
   ]
 }

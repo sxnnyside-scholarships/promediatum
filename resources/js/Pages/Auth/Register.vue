@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import CpButton from '@/Components/CpButton.vue';
 import CpInput from '@/Components/CpInput.vue';

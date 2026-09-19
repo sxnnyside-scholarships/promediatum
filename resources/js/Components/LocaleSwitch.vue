@@ -1,10 +1,11 @@
-<script setup>
-import { router, usePage } from '@inertiajs/vue3';
+<script setup lang="ts">
+import { router } from '@inertiajs/vue3';
+import type { SupportedLocale } from '@/composables/useTranslations';
 import { useTranslations } from '@/composables/useTranslations';
 
-const { t, locale } = useTranslations();
+const { locale } = useTranslations();
 
-function switchLocale(newLocale) {
+function switchLocale(newLocale: SupportedLocale) {
     router.post(
         route('locale.update'),
         {

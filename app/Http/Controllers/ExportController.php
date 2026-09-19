@@ -107,8 +107,8 @@ class ExportController extends Controller
         // Provide reference data for the export form
         $periods = Period::orderByDesc('start_date')->get(['id', 'name']);
         $groups = Group::orderBy('name')->get(['id', 'name', 'period_id']);
-        $students = Student::orderBy('last_name')->orderBy('first_name')->get(['id', 'first_name', 'last_name']);
-        $templates = ExportTemplate::where('user_id', Auth::id())->orderBy('name')->get(['id', 'name', 'type', 'is_default']);
+        $students = Student::with('groups:id,period_id')->orderBy('last_name')->orderBy('first_name')->get(['id', 'first_name', 'last_name', 'email']);
+        $templates = ExportTemplate::where('user_id', Auth::id())->orderBy('name')->get(['id', 'name', 'type', 'is_default', 'config']);
 
         return Inertia::render('Exports/History', [
             'exports' => $exports,
@@ -117,6 +117,14 @@ class ExportController extends Controller
             'students' => $students,
             'templates' => $templates,
             'smtpConfigured' => SmtpSetting::where('user_id', Auth::id())->where('verified', true)->exists(),
+            'prefill' => [
+                'type' => $request->query('type'),
+                'period_id' => $request->query('period_id'),
+                'group_id' => $request->query('group_id'),
+                'student_id' => $request->query('student_id'),
+                'format' => $request->query('format'),
+                'template_id' => $request->query('template_id'),
+            ],
         ]);
     }
 
@@ -130,7 +138,7 @@ class ExportController extends Controller
             abort(403);
         }
 
-        $fullPath = storage_path('app/'.$exportHistory->file_path);
+        $fullPath = Storage::disk('local')->path($exportHistory->file_path);
 
         if (! file_exists($fullPath)) {
             abort(404, 'Export file no longer exists.');

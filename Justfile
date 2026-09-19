@@ -2,10 +2,13 @@
 default:
     @just --list
 
-# Bootstrap all project dependencies and environment
+# ── Primary Polyglot Command Surface (PHP + TypeScript + Rust) ──
+
+# Bootstrap all project dependencies and environments
 install:
     composer install --no-interaction
     bun install
+    @cargo fetch --manifest-path src-tauri/Cargo.toml 2>/dev/null || true
     @git config core.hooksPath .githooks 2>/dev/null || true
     @if [ ! -f .env ]; then cp .env.example .env && php artisan key:generate; fi
     @if [ ! -f database/database.sqlite ]; then touch database/database.sqlite; fi
@@ -17,35 +20,73 @@ dev:
     bunx concurrently -k -n "vite,php" -c "cyan,green" "bun run dev" "php artisan serve"
 
 # Produce production build artifacts
-build:
+build: build-frontend build-rust
+
+build-frontend:
     bun run build
 
-# Run automated test suites
-test:
+build-rust:
+    cargo build --manifest-path src-tauri/Cargo.toml --release
+
+# Run all automated test suites (Frontend + Backend + Rust)
+test: test-frontend test-backend test-rust
+
+# Run frontend tests via Bun
+test-frontend:
+    bun test
+
+# Run backend tests via PHPUnit
+test-backend:
     php artisan test
 
-# Run static correctness and type checks
-typecheck:
+# Run Rust unit and integration tests
+test-rust:
+    cargo test --manifest-path src-tauri/Cargo.toml
+
+# Run static correctness and type checks across all stacks
+typecheck: typecheck-frontend typecheck-backend typecheck-rust
+
+typecheck-frontend:
     bun run typecheck
+
+typecheck-backend:
     ./vendor/bin/phpstan analyse --memory-limit=512M
 
-# Run static analysis and style audits
-lint:
+typecheck-rust:
+    cargo check --manifest-path src-tauri/Cargo.toml
+
+# Run static analysis and style audits across all stacks
+lint: lint-frontend lint-backend lint-rust
+
+lint-frontend:
     bun run lint
+
+lint-backend:
     ./vendor/bin/pint --test
 
-# Automatically apply formatters
-format:
+lint-rust:
+    cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings
+
+# Automatically apply formatters across all stacks
+format: format-frontend format-backend format-rust
+
+format-frontend:
     bun run format
+
+format-backend:
     ./vendor/bin/pint
 
-# Run full quality gate
+format-rust:
+    cargo fmt --manifest-path src-tauri/Cargo.toml
+
+# Run full quality gate across all stacks
 check: format lint typecheck test
 
-# Remove build artifacts, caches, and temporary files
+# Remove build artifacts, caches, and temporary files across all stacks
 clean:
     rm -rf public/build public/hot node_modules/.vite
-    php artisan optimize:clear
+    cargo clean --manifest-path src-tauri/Cargo.toml
+    @if [ -f vendor/autoload.php ]; then php artisan optimize:clear; fi
 
 # ── Database & Artisan Helpers ──
 
@@ -65,13 +106,13 @@ seed:
 serve:
     php artisan serve
 
-# ── Tauri Desktop App ──
+# ── Desktop Application ──
 
 # Run desktop app via Tauri
 tauri-dev:
-    bunx tauri dev
+    bunx @tauri-apps/cli dev
 
-# Build standalone desktop binary via Tauri
+# Build standalone desktop bundle via Tauri
 tauri-build:
     bun run build
-    bunx tauri build
+    bunx @tauri-apps/cli build

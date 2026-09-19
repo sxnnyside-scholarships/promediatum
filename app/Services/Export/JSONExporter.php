@@ -47,7 +47,7 @@ class JSONExporter implements ExporterInterface
 
         Storage::disk('local')->makeDirectory($directory);
 
-        $filePath = storage_path("app/{$directory}/{$fileName}");
+        $filePath = Storage::disk('local')->path("{$directory}/{$fileName}");
 
         file_put_contents($filePath, $json);
 

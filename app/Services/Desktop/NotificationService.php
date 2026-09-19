@@ -2,36 +2,23 @@
 
 namespace App\Services\Desktop;
 
-use Native\Laravel\Facades\Notification;
+use Illuminate\Support\Facades\Log;
 
 /**
- * Desktop notification service — wraps NativePHP's Notification facade
- * with a simple API and graceful fallback for non-desktop contexts.
+ * Desktop notification service — provides logging and dispatch
+ * with a clean API for background desktop events.
  */
 class NotificationService
 {
     /**
-     * Send a native desktop notification.
+     * Send or record a notification.
      *
      * @param  string  $title  Notification title.
      * @param  string  $message  Notification body text.
      */
     public function notify(string $title, string $message): void
     {
-        if (! DesktopPathResolver::isDesktop()) {
-            // Not running in NativePHP context — log instead
-            logger()->info("[Notification] {$title}: {$message}");
-
-            return;
-        }
-
-        try {
-            Notification::title($title)
-                ->message($message)
-                ->show();
-        } catch (\Throwable $e) {
-            logger()->warning("Notification failed: {$e->getMessage()}");
-        }
+        Log::info("[Notification] {$title}: {$message}");
     }
 
     /**

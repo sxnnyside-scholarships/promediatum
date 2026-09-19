@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import CpButton from '@/Components/CpButton.vue';
 import CpInput from '@/Components/CpInput.vue';
@@ -7,9 +7,11 @@ import GuestLayout from '@/Layouts/GuestLayout.vue';
 
 const { t } = useTranslations();
 
-defineProps({
-    status: String,
-});
+interface Props {
+    status?: string | null;
+}
+
+defineProps<Props>();
 
 const form = useForm({
     email: '',

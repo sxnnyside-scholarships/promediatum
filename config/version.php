@@ -5,9 +5,8 @@
  *
  * This file provides the single source of truth for the application's
  * version identity. It is used by:
- *   - NativePHP (config/nativephp.php references NATIVEPHP_APP_VERSION)
- *   - The About menu item
- *   - The auto-updater comparison logic
+ *   - The About dialog/screen
+ *   - Diagnostic reporting
  *   - The safe migration flow (to detect post-update state)
  *
  * Increment `version` with every GitHub Release.
@@ -25,7 +24,7 @@ return [
     | - MINOR: New features, backward-compatible
     | - PATCH: Bug fixes, refinements
     */
-    'version' => env('NATIVEPHP_APP_VERSION', '1.0.0'),
+    'version' => env('APP_VERSION', '1.0.0'),
 
     /*
     |--------------------------------------------------------------------------
@@ -54,7 +53,7 @@ return [
     |--------------------------------------------------------------------------
     | ISO 8601 date of this release. Useful for About screen display.
     */
-    'release_date' => '2026-02-17',
+    'release_date' => '2026-09-19',
 
     /*
     |--------------------------------------------------------------------------
@@ -64,7 +63,7 @@ return [
     'app_id' => 'com.sxnnyside.promediatum.desktop',
     'organization' => 'Sxnnyside Scholarships',
     'website' => 'https://www.sxnnysideproject.com',
-    'repository' => 'https://github.com/HoujouSxnnyside/promediatum',
+    'repository' => 'https://github.com/sxnnyside-scholarships/promediatum',
     'support_email' => 'support.sxnnyside@sxnnysideproject.com',
     'security_email' => 'security.sxnnyside@sxnnysideproject.com',
 

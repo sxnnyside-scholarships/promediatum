@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use App\Services\RecoveryCodeService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -23,7 +25,7 @@ class RecoveryCodeController extends Controller
         $codes = session('recovery_codes');
 
         if (! $codes) {
-            return redirect()->route('workspace');
+            return redirect()->route('profile.index');
         }
 
         return Inertia::render('Auth/RecoveryCodes', [
@@ -35,15 +37,27 @@ class RecoveryCodeController extends Controller
     /**
      * Regenerate recovery codes (authenticated users only).
      */
-    public function regenerate(Request $request): RedirectResponse
+    public function regenerate(Request $request): RedirectResponse|JsonResponse
     {
         $request->validate([
             'password' => 'required|string|current_password',
         ]);
 
-        $codes = $this->recoveryCodeService->generate($request->user());
+        /** @var User $user */
+        $user = $request->user();
+        $codes = $this->recoveryCodeService->generate($user);
+        $downloadContent = $this->recoveryCodeService->formatForDownload($codes);
 
         session(['recovery_codes' => $codes]);
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'codes' => $codes,
+                'download_content' => $downloadContent,
+                'remaining_count' => count($codes),
+                'message' => __('auth.recovery_codes_regenerated_success'),
+            ]);
+        }
 
         return redirect()->route('recovery-codes.show');
     }
@@ -51,10 +65,10 @@ class RecoveryCodeController extends Controller
     /**
      * Clear recovery codes from session (user confirmed they saved them).
      */
-    public function acknowledge(): RedirectResponse
+    public function acknowledge(Request $request): RedirectResponse
     {
         session()->forget('recovery_codes');
 
-        return redirect()->route('workspace');
+        return redirect()->route('profile.index');
     }
 }

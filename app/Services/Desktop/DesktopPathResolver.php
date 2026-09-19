@@ -150,21 +150,19 @@ class DesktopPathResolver
     }
 
     /**
-     * Check if we're running inside a NativePHP desktop context.
+     * Check if we're running inside a desktop context (Tauri, embedded desktop environment).
      */
     public static function isDesktop(): bool
     {
-        // Check via environment first (no container dependency)
+        if (getenv('TAURI_ENV_PLATFORM') || getenv('TAURI_PLATFORM') || env('APP_ENV') === 'desktop' || getenv('PROMEDIATUM_DESKTOP')) {
+            return true;
+        }
+
         if (getenv('NATIVEPHP_RUNNING')) {
             return true;
         }
 
-        // Check via config if the application container is available
-        try {
-            return config('nativephp-internal.running', false);
-        } catch (\Throwable) {
-            return false;
-        }
+        return false;
     }
 
     /**

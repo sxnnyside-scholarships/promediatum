@@ -37,7 +37,7 @@ class CSVExporter implements ExporterInterface
 
         Storage::disk('local')->makeDirectory($directory);
 
-        $filePath = storage_path("app/{$directory}/{$fileName}");
+        $filePath = Storage::disk('local')->path("{$directory}/{$fileName}");
 
         $handle = fopen($filePath, 'w');
 

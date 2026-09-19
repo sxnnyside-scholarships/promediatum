@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import CpIcon from '@/Components/CpIcon.vue';
 import { useTheme } from '@/composables/useTheme';
 import { useTranslations } from '@/composables/useTranslations';

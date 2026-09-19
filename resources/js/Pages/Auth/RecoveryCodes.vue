@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { Head, router } from '@inertiajs/vue3';
 import CpButton from '@/Components/CpButton.vue';
 import { useTranslations } from '@/composables/useTranslations';
@@ -6,16 +6,12 @@ import GuestLayout from '@/Layouts/GuestLayout.vue';
 
 const { t } = useTranslations();
 
-const props = defineProps({
-    codes: {
-        type: Array,
-        required: true,
-    },
-    downloadContent: {
-        type: String,
-        required: true,
-    },
-});
+interface Props {
+    codes: string[];
+    downloadContent: string;
+}
+
+const props = defineProps<Props>();
 
 function downloadCodes() {
     const blob = new Blob([props.downloadContent], { type: 'text/plain' });

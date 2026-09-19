@@ -13,18 +13,29 @@
     "homepage": "https://www.sxnnysideproject.com",
     "authors": [
         {
+            "name": "HoujouSxnnyside",
+            "homepage": "https://github.com/HoujouSxnnyside",
+            "role": "Maintainer"
+        },
+        {
             "name": "Sxnnyside Scholarships",
             "homepage": "https://www.sxnnysideproject.com"
         }
     ],
+    "support": {
+        "issues": "https://github.com/sxnnyside-scholarships/promediatum/issues",
+        "source": "https://github.com/sxnnyside-scholarships/promediatum.git"
+    },
     "require": {
         "php": "^8.2",
+        "bacon/bacon-qr-code": "^3.1",
         "barryvdh/laravel-dompdf": "^3.1",
         "inertiajs/inertia-laravel": "^2.0",
         "laravel/framework": "^12.0",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
         "maatwebsite/excel": "^3.1",
+        "pragmarx/google2fa": "^9.1",
         "tightenco/ziggy": "^2.0"
     },
     "require-dev": {
@@ -69,10 +80,6 @@
         "dev": [
             "Composer\\Config::disableProcessTimeout",
             "bunx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --tries=1\" \"php artisan pail --timeout=0\" \"bun run dev\" --names=server,queue,logs,vite"
-        ],
-        "native:dev": [
-            "Composer\\Config::disableProcessTimeout",
-            "bunx concurrently -k -c \"#93c5fd,#c4b5fd\" \"php artisan native:serve --no-interaction\" \"bun run dev\" --names=app,vite"
         ]
     },
     "extra": {
@@ -81,6 +88,9 @@
         }
     },
     "config": {
+        "platform": {
+            "php": "8.4.3"
+        },
         "optimize-autoloader": true,
         "preferred-install": "dist",
         "sort-packages": true,

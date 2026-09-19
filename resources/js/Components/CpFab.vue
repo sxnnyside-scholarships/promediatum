@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * CpFab — Advanced Intelligent Floating Action Button
  *
@@ -16,9 +16,17 @@ import { Link, usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import CpIcon from '@/Components/CpIcon.vue';
 import { useTranslations } from '@/composables/useTranslations';
+import type { PageProps } from '@/types';
+
+interface ActionItem {
+    label: string;
+    icon: string;
+    href: string;
+    badge?: string | number | null;
+}
 
 const { t } = useTranslations();
-const page = usePage();
+const page = usePage<PageProps>();
 const open = ref(false);
 
 function toggle() {
@@ -34,18 +42,18 @@ function close() {
  */
 const visualEffectsEnabled = computed(() => {
     const settings = page.props.auth.user?.settings ?? {};
-    return settings.visual_effects_enabled !== false;
+    return (settings as Record<string, unknown>).visual_effects_enabled !== false;
 });
 
 /**
  * Server-resolved FAB actions (from FabActionResolver via Inertia shared props).
  * Falls back to client-side route detection if unavailable.
  */
-const actions = computed(() => {
-    const serverActions = page.props.fab;
+const actions = computed<ActionItem[]>(() => {
+    const serverActions = (page.props as Record<string, any>).fab;
 
     if (Array.isArray(serverActions) && serverActions.length > 0) {
-        return serverActions.map((action) => ({
+        return serverActions.map((action: any) => ({
             label: t(action.label),
             icon: action.icon,
             href: resolveActionRoute(action),
@@ -60,14 +68,14 @@ const actions = computed(() => {
 /**
  * Resolve a named route from the server action data.
  */
-function resolveActionRoute(action) {
+function resolveActionRoute(action: any): string {
     try {
         if (action.params && Object.keys(action.params).length > 0) {
             // Extract the first param value for simple route resolution
             const paramValues = Object.values(action.params);
-            return route(action.route, ...paramValues);
+            return String((route as any)(action.route, ...(paramValues as [any])));
         }
-        return route(action.route);
+        return String((route as any)(action.route));
     } catch {
         return '#';
     }
@@ -76,8 +84,8 @@ function resolveActionRoute(action) {
 /**
  * Fallback client-side actions (legacy behavior, simplified).
  */
-const fallbackActions = computed(() => {
-    const current = route().current;
+const fallbackActions = computed<ActionItem[]>(() => {
+    const current = (route() as any).current;
 
     if (current('workspace')) {
         return [
@@ -92,7 +100,7 @@ const fallbackActions = computed(() => {
     }
 
     if (current('groups.show')) {
-        const groupSlug = page.props.group?.slug;
+        const groupSlug = (page.props as Record<string, any>).group?.slug;
         if (groupSlug) {
             return [
                 {

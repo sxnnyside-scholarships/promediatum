@@ -44,7 +44,7 @@ class AppServiceProvider extends ServiceProvider
     }
 
     /**
-     * Configure application paths for the desktop (NativePHP) context.
+     * Configure application paths for the desktop (Tauri / Local) context.
      * Overrides database, storage, exports, and log paths to use the
      * OS-specific application data directory.
      */

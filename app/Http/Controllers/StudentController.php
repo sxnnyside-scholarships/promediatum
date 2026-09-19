@@ -31,36 +31,8 @@ class StudentController extends Controller
             ->orderBy('name')
             ->get();
 
-        // Calculate summary metrics for each student for smart filtering and badges
-        $metrics = $students->mapWithKeys(function (Student $student) {
-            $totalAvg = 0;
-            $avgCount = 0;
-            $hasAlert = false;
-            $atRisk = false;
-
-            foreach ($student->groups as $group) {
-                $periodId = $group->pivot->period_id ?? $group->period_id;
-                $summary = $this->academic->getStudentSummary($student->id, $group->id, $periodId);
-
-                if ($summary['average'] !== null) {
-                    $totalAvg += $summary['average'];
-                    $avgCount++;
-                }
-                if ($summary['at_risk']) {
-                    $atRisk = true;
-                }
-                if ($summary['has_absence_alert']) {
-                    $hasAlert = true;
-                }
-            }
-
-            return [$student->id => [
-                'average' => $avgCount > 0 ? round($totalAvg / $avgCount, 1) : null,
-                'at_risk' => $atRisk,
-                'has_absence_alert' => $hasAlert,
-                'groups_count' => $student->groups->count(),
-            ]];
-        });
+        // Calculate summary metrics with batching (prevents N+1 queries)
+        $metrics = $this->academic->getBulkStudentMetrics($students);
 
         return Inertia::render('Students/Index', [
             'students' => $students,

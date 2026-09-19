@@ -66,10 +66,24 @@ class AuthenticatedSessionController extends Controller
     {
         $request->authenticate();
 
+        /** @var User $user */
+        $user = $request->user();
+
+        if ($user->hasEnabledTwoFactorAuthentication()) {
+            Auth::guard('web')->logout();
+
+            $request->session()->put([
+                'login.id' => $user->id,
+                'login.remember' => $request->boolean('remember'),
+            ]);
+
+            return redirect()->route('two-factor.login');
+        }
+
         $request->session()->regenerate();
 
         // Ensure session is unlocked on login
-        $request->user()->update(['is_locked' => false]);
+        $user->update(['is_locked' => false]);
 
         return redirect()->intended(route('workspace', absolute: false));
     }

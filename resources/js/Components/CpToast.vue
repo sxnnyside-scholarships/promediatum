@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * CpToast — Lightweight notification system.
  *
@@ -17,25 +17,35 @@
 import { onMounted, onUnmounted, ref } from 'vue';
 import CpIcon from '@/Components/CpIcon.vue';
 
-const toasts = ref([]);
+export type ToastType = 'success' | 'error' | 'info' | 'warning';
+
+interface ToastItem {
+    id: number;
+    type: ToastType;
+    message: string;
+    visible: boolean;
+}
+
+const toasts = ref<ToastItem[]>([]);
 let nextId = 0;
 
-const iconMap = {
+const iconMap: Record<ToastType, string> = {
     success: 'check-circle',
     error: 'x-circle',
     info: 'info',
     warning: 'alert-triangle',
 };
 
-const colorMap = {
+const colorMap: Record<ToastType, string> = {
     success: 'text-state-success bg-state-success/10 border-state-success/30',
     error: 'text-state-danger bg-state-danger/10 border-state-danger/30',
     info: 'text-state-info bg-state-info/10 border-state-info/30',
     warning: 'text-state-warning bg-state-warning/10 border-state-warning/30',
 };
 
-function addToast(event) {
-    const { type = 'info', message = '', duration = 4000 } = event.detail || event;
+function addToast(event: Event | CustomEvent) {
+    const detail = (event as CustomEvent).detail || event;
+    const { type = 'info', message = '', duration = 4000 } = detail;
     const id = nextId++;
     toasts.value.push({ id, type, message, visible: true });
 
@@ -45,7 +55,7 @@ function addToast(event) {
     }
 }
 
-function removeToast(id) {
+function removeToast(id: number) {
     const idx = toasts.value.findIndex((t) => t.id === id);
     if (idx !== -1) {
         toasts.value[idx].visible = false;
@@ -56,11 +66,11 @@ function removeToast(id) {
 }
 
 onMounted(() => {
-    window.addEventListener('cp-toast', addToast);
+    window.addEventListener('cp-toast', addToast as EventListener);
 });
 
 onUnmounted(() => {
-    window.removeEventListener('cp-toast', addToast);
+    window.removeEventListener('cp-toast', addToast as EventListener);
 });
 </script>
 

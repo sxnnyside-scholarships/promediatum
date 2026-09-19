@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\Backup\BackupService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -9,6 +10,10 @@ use Inertia\Response;
 
 class SettingsController extends Controller
 {
+    public function __construct(
+        protected BackupService $backupService
+    ) {}
+
     /**
      * Show the settings page.
      */
@@ -16,6 +21,7 @@ class SettingsController extends Controller
     {
         return Inertia::render('Settings/Index', [
             'settings' => auth()->user()->settings ?? [],
+            'backups' => $this->backupService->list(),
         ]);
     }
 

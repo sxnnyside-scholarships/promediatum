@@ -1,57 +1,52 @@
-# Security Policy
+# Security
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability in Promediatum, please report it responsibly.
+If you find a security vulnerability in **Promediatum**, report it privately before disclosing it publicly.
 
-**Do not open a public GitHub issue for security vulnerabilities.**
+**Preferred channel:**
+Email — `legal.sxnnyside@sxnnysideproject.com`
 
-Instead, send an email to:
+**Alternative:**
+[GitHub Private Security Advisory](https://github.com/sxnnyside-scholarships/promediatum/security/advisories/new)
 
-**security.sxnnyside@sxnnysideproject.com**
+---
 
-Include:
+## What to Include
+
 - Description of the vulnerability
-- Steps to reproduce (if applicable)
-- Potential impact assessment
-- Suggested fix (if any)
+- Steps to reproduce
+- Potential impact
+- Your suggested fix, if you have one
 
-## Response Timeline
+The more context you provide, the faster it gets resolved.
 
-- **Acknowledgment:** Within 48 hours of receipt
-- **Initial assessment:** Within 7 days
-- **Fix or mitigation:** As soon as reasonably possible, depending on severity
+---
 
-## Responsible Disclosure
+## Response Time
 
-We ask that you:
+Expect an initial response within **2–5 calendar days**.
 
-1. **Do not** disclose the vulnerability publicly until we have issued a fix or explicitly agreed to disclosure.
-2. **Do not** exploit the vulnerability beyond what is necessary to demonstrate it.
-3. **Do not** access, modify, or delete data belonging to other users (Promediatum is single-user and local-only, but this applies to any shared testing environments).
+This is a solo-maintained project. That window reflects reality, not indifference.
 
-We will credit reporters in the release notes unless you prefer to remain anonymous.
+---
+
+## Process
+
+1. You report privately.
+2. The vulnerability is confirmed or dismissed with an explanation.
+3. If confirmed, a fix is developed and shipped.
+4. You're credited in the changelog unless you prefer otherwise.
+
+Public disclosure is expected after a fix is available. If a fix isn't possible, that will be communicated directly.
+
+---
 
 ## Scope
 
-This policy applies to the Promediatum desktop application and its source code hosted at:
+This policy covers the **Promediatum** repository only.
+For ecosystem-wide security concerns, use the email above.
 
-https://github.com/HoujouSxnnyside/promediatum
+---
 
-## Security Design
-
-Promediatum is a **local-first, single-user** desktop application. Key security properties:
-
-- **No cloud services** — All data is stored locally in SQLite. No telemetry, no external API calls.
-- **Encrypted backups** — Backup files use AES-256-CBC encryption.
-- **Encrypted SMTP credentials** — SMTP passwords are stored using Laravel's `encrypted` cast (AES-256-CBC via APP_KEY).
-- **No plaintext secrets** — Sensitive environment variables are excluded from desktop builds via `cleanup_env_keys`.
-- **Recovery codes** — Password reset uses locally-stored recovery codes instead of email-based flows.
-- **Session lock** — Users can lock their session without logging out.
-- **Production hardening** — Dev tools disabled, debug mode off, no test/debug routes exposed.
-
-## Contact
-
-- **Security issues:** security.sxnnyside@sxnnysideproject.com
-- **General support:** support.sxnnyside@sxnnysideproject.com
-- **Website:** https://www.sxnnysideproject.com
+*Promediatum is A Sxnnyside Scholarships Release. Part of the [Sxnnyside Project](https://sxnnysideproject.com).*

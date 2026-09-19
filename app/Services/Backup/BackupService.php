@@ -46,6 +46,34 @@ class BackupService
      * @throws \RuntimeException If the database file doesn't exist or backup fails.
      */
     /**
+     * Resolve the active SQLite database path.
+     * Prioritizes the active database connection configuration, then the desktop path resolver.
+     */
+    public function getDatabasePath(): string
+    {
+        $desktopDb = $this->pathResolver->databasePath();
+        if (file_exists($desktopDb)) {
+            return $desktopDb;
+        }
+
+        try {
+            if (function_exists('config')) {
+                $configured = config('database.connections.sqlite.database');
+                if (is_string($configured) && file_exists($configured)) {
+                    return $configured;
+                }
+                if (is_string($configured) && $configured !== '') {
+                    return $configured;
+                }
+            }
+        } catch (\Throwable) {
+            // Container not initialized (e.g. pure PHPUnit unit test)
+        }
+
+        return $desktopDb;
+    }
+
+    /**
      * Create an encrypted backup of the current database.
      *
      * @param  string|null  $password  Optional encryption password.
@@ -53,7 +81,7 @@ class BackupService
      */
     public function create(?string $password = null): array
     {
-        $dbPath = $this->pathResolver->databasePath();
+        $dbPath = $this->getDatabasePath();
 
         if (! file_exists($dbPath)) {
             throw new \RuntimeException('Database file does not exist: '.$dbPath);
@@ -62,7 +90,12 @@ class BackupService
         $timestamp = Carbon::now()->format('Y-m-d_His');
         $unique = substr(bin2hex(random_bytes(3)), 0, 6);
         $filename = "promediatum_backup_{$timestamp}_{$unique}.".self::EXTENSION;
-        $backupPath = $this->pathResolver->backupsPath().DIRECTORY_SEPARATOR.$filename;
+
+        $backupsDir = $this->pathResolver->backupsPath();
+        if (! is_dir($backupsDir)) {
+            mkdir($backupsDir, 0755, true);
+        }
+        $backupPath = $backupsDir.DIRECTORY_SEPARATOR.$filename;
 
         // Read the database
         $plaintext = file_get_contents($dbPath);
@@ -119,7 +152,7 @@ class BackupService
             throw new \RuntimeException('Decrypted data is not a valid SQLite database. Wrong password?');
         }
 
-        $dbPath = $this->pathResolver->databasePath();
+        $dbPath = $this->getDatabasePath();
 
         // Create a safety copy of the current database before restoring
         if (file_exists($dbPath)) {

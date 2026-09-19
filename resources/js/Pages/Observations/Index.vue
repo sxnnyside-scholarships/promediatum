@@ -304,12 +304,12 @@ function submitNewObservation() {
                         </p>
                     </div>
 
-                    <div class="rounded-xl bg-white/80 dark:bg-surface-dark-3 p-3.5 border border-cafe-200/80 dark:border-cafe-700 shadow-2xs">
+                    <div class="rounded-xl bg-cafe-100/60 dark:bg-surface-dark-2 p-3.5 border border-cafe-200/70 dark:border-cafe-700 shadow-2xs">
                         <div class="flex items-center justify-between">
-                            <p class="text-xs text-cafe-500 dark:text-cafe-400 font-medium">{{ t('observations.stat_achievements') }}</p>
-                            <AwardRegular class="w-4 h-4 text-accent-600 dark:text-accent-400" />
+                            <p class="text-xs text-cafe-600 dark:text-cafe-400 font-medium">{{ t('observations.stat_achievements') }}</p>
+                            <AwardRegular class="w-4 h-4 text-cafe-500" />
                         </div>
-                        <p class="text-xl font-bold font-serif text-accent-600 dark:text-accent-400 mt-1">
+                        <p class="text-xl font-bold font-serif text-cafe-900 dark:text-cafe-100 mt-1">
                             {{ achievementCount }}
                         </p>
                     </div>
@@ -480,8 +480,8 @@ function submitNewObservation() {
                     :class="[
                         'rounded-2xl border p-5 sm:p-6 shadow-xs hover:shadow-md transition-all space-y-3',
                         obs.status === 'resolved'
-                            ? 'bg-white/80 dark:bg-surface-dark-1/80 border-cafe-200/80 dark:border-cafe-800 opacity-90'
-                            : 'bg-white dark:bg-surface-dark-1 border-cafe-200 dark:border-cafe-800',
+                            ? 'bg-cafe-50/40 dark:bg-surface-dark-1/80 border-cafe-200/80 dark:border-cafe-800 opacity-90'
+                            : 'bg-white dark:bg-surface-dark-1 border-cafe-200/90 dark:border-cafe-800',
                     ]"
                 >
                     <!-- Header of card: Student avatar, name, group, type, and quick actions -->
@@ -511,7 +511,7 @@ function submitNewObservation() {
                             <span
                                 class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-xs font-bold"
                                 :class="{
-                                    'bg-accent-100 dark:bg-accent-950/60 text-accent-800 dark:text-accent-200 border border-accent-200/70 dark:border-accent-800/60': obs.type === 'achievement',
+                                    'bg-amber-100 dark:bg-amber-950/60 text-amber-900 dark:text-amber-200 border border-amber-300/80 dark:border-amber-700': obs.type === 'achievement',
                                     'bg-state-warning/15 text-state-warning border border-state-warning/30': obs.type === 'behavior',
                                     'bg-cafe-200/80 dark:bg-surface-dark-3 text-cafe-800 dark:text-cafe-200 border border-cafe-300 dark:border-cafe-700': obs.type === 'performance',
                                     'bg-state-info/15 text-state-info border border-state-info/30': obs.type === 'followup',
@@ -684,7 +684,7 @@ function submitNewObservation() {
                                     :class="[
                                         'p-2.5 rounded-xl border text-xs font-medium flex items-center justify-center gap-1.5 transition-all',
                                         newObsForm.type === 'achievement'
-                                            ? 'bg-accent-100 dark:bg-accent-950/60 border-accent-500 text-accent-800 dark:text-accent-200 font-bold shadow-2xs'
+                                            ? 'bg-amber-100 dark:bg-amber-950/60 border-amber-400 text-amber-900 dark:text-amber-200 font-bold shadow-2xs'
                                             : 'bg-cafe-50/60 dark:bg-surface-dark-2 border-cafe-200 dark:border-cafe-700 text-cafe-600 dark:text-cafe-400',
                                     ]"
                                     @click="newObsForm.type = 'achievement'"

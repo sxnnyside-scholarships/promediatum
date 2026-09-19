@@ -8,6 +8,10 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
+/**
+ * @property \Illuminate\Support\Carbon|null $two_factor_confirmed_at
+ * @property string|null $two_factor_secret
+ */
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
@@ -58,10 +62,19 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'two_factor_confirmed_at' => 'datetime',
+            'two_factor_secret' => 'encrypted',
             'password' => 'hashed',
             'is_locked' => 'boolean',
             'settings' => 'array',
         ];
+    }
+
+    /**
+     * Check if two-factor authentication is confirmed and enabled.
+     */
+    public function hasEnabledTwoFactorAuthentication(): bool
+    {
+        return ! is_null($this->two_factor_confirmed_at) && ! is_null($this->two_factor_secret);
     }
 
     /**

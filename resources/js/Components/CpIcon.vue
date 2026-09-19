@@ -225,23 +225,17 @@
     </svg>
 </template>
 
-<script setup>
-defineProps({
-    name: {
-        type: String,
-        required: true,
-    },
-    size: {
-        type: [Number, String],
-        default: 20,
-    },
-    strokeWidth: {
-        type: [Number, String],
-        default: 1.5,
-    },
-    className: {
-        type: String,
-        default: '',
-    },
+<script setup lang="ts">
+interface Props {
+    name: string;
+    size?: number | string;
+    strokeWidth?: number | string;
+    className?: string;
+}
+
+withDefaults(defineProps<Props>(), {
+    size: 20,
+    strokeWidth: 1.5,
+    className: '',
 });
 </script>

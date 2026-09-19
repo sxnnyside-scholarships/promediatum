@@ -45,7 +45,7 @@ class PDFExporter implements ExporterInterface
 
         Storage::disk('local')->makeDirectory($directory);
 
-        $filePath = storage_path("app/{$directory}/{$fileName}");
+        $filePath = Storage::disk('local')->path("{$directory}/{$fileName}");
 
         $pdf->save($filePath);
 

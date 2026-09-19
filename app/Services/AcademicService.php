@@ -21,33 +21,12 @@ class AcademicService
             return null;
         }
 
-        $totalWeight = 0;
-        $weightedSum = 0;
+        $grades = Grade::where('student_id', $studentId)
+            ->where('group_id', $groupId)
+            ->where('period_id', $periodId)
+            ->get();
 
-        foreach ($categories as $category) {
-            $grades = Grade::where('student_id', $studentId)
-                ->where('group_id', $groupId)
-                ->where('period_id', $periodId)
-                ->where('category_id', $category->id)
-                ->get();
-
-            if ($grades->isEmpty()) {
-                continue;
-            }
-
-            // Average percentage within this category
-            $categoryAvg = $grades->avg(fn (Grade $g) => ($g->score / $g->max_score) * 100);
-
-            $weightedSum += $categoryAvg * ($category->weight / 100);
-            $totalWeight += $category->weight;
-        }
-
-        if ($totalWeight === 0) {
-            return null;
-        }
-
-        // Scale to actual weight used (in case not all categories have grades yet)
-        return round(($weightedSum / $totalWeight) * 100, 2);
+        return $this->computeWeightedAverage($grades, $categories);
     }
 
     /**
@@ -60,18 +39,7 @@ class AcademicService
             ->where('period_id', $periodId)
             ->get();
 
-        $total = $records->count();
-        $present = $records->where('status', 'present')->count();
-        $absent = $records->where('status', 'absent')->count();
-        $justified = $records->where('status', 'justified')->count();
-
-        return [
-            'total' => $total,
-            'present' => $present,
-            'absent' => $absent,
-            'justified' => $justified,
-            'rate' => $total > 0 ? round(($present / $total) * 100, 1) : null,
-        ];
+        return $this->computeAttendanceStats($records);
     }
 
     /**
@@ -86,16 +54,7 @@ class AcademicService
             ->orderByDesc('date')
             ->get();
 
-        $streak = 0;
-        foreach ($records as $record) {
-            if ($record->status === 'absent') {
-                $streak++;
-            } else {
-                break;
-            }
-        }
-
-        return $streak;
+        return $this->computeAbsenceStreak($records);
     }
 
     /**
@@ -109,13 +68,25 @@ class AcademicService
     }
 
     /**
-     * Get a summary for a student in a group/period.
+     * Get a summary for a student in a group/period using minimal queries.
      */
     public function getStudentSummary(int $studentId, int $groupId, int $periodId): array
     {
-        $average = $this->calculateWeightedAverage($studentId, $groupId, $periodId);
-        $attendance = $this->getAttendanceStats($studentId, $groupId, $periodId);
-        $absenceStreak = $this->detectConsecutiveAbsences($studentId, $groupId, $periodId);
+        $categories = GradeCategory::where('group_id', $groupId)->get();
+        $grades = Grade::where('student_id', $studentId)
+            ->where('group_id', $groupId)
+            ->where('period_id', $periodId)
+            ->get();
+
+        $average = $this->computeWeightedAverage($grades, $categories);
+
+        $attendanceRecords = Attendance::where('student_id', $studentId)
+            ->where('group_id', $groupId)
+            ->where('period_id', $periodId)
+            ->get();
+
+        $attendance = $this->computeAttendanceStats($attendanceRecords);
+        $absenceStreak = $this->computeAbsenceStreak($attendanceRecords);
 
         return [
             'average' => $average,
@@ -124,6 +95,95 @@ class AcademicService
             'has_absence_alert' => $absenceStreak >= 3,
             'at_risk' => $average !== null && $average < 60,
         ];
+    }
+
+    /**
+     * Get aggregate metrics for a collection of students across all their enrolled groups.
+     * Uses batching to prevent N+1 queries.
+     *
+     * @param  \Illuminate\Support\Collection<int, \App\Models\Student>  $students
+     * @return array<int, array{average: float|null, at_risk: bool, has_absence_alert: bool, groups_count: int}>
+     */
+    public function getBulkStudentMetrics(Collection $students): array
+    {
+        if ($students->isEmpty()) {
+            return [];
+        }
+
+        $studentIds = $students->pluck('id')->all();
+        $groupIds = $students->flatMap(fn (\App\Models\Student $s) => $s->groups->pluck('id'))->unique()->all();
+
+        if (empty($groupIds)) {
+            $emptyMetrics = [];
+            foreach ($students as $student) {
+                $emptyMetrics[$student->id] = [
+                    'average' => null,
+                    'at_risk' => false,
+                    'has_absence_alert' => false,
+                    'groups_count' => $student->groups->count(),
+                ];
+            }
+
+            return $emptyMetrics;
+        }
+
+        // Batch Query 1: Grade categories for all involved groups
+        $categoriesByGroup = GradeCategory::whereIn('group_id', $groupIds)
+            ->get()
+            ->groupBy('group_id');
+
+        // Batch Query 2: All grades for all students in these groups
+        $gradesByStudentAndGroup = Grade::whereIn('student_id', $studentIds)
+            ->whereIn('group_id', $groupIds)
+            ->get()
+            ->groupBy(fn (Grade $g) => "{$g->student_id}_{$g->group_id}_{$g->period_id}");
+
+        // Batch Query 3: All attendance for all students in these groups
+        $attendanceByStudentAndGroup = Attendance::whereIn('student_id', $studentIds)
+            ->whereIn('group_id', $groupIds)
+            ->get()
+            ->groupBy(fn (Attendance $a) => "{$a->student_id}_{$a->group_id}_{$a->period_id}");
+
+        $metrics = [];
+
+        foreach ($students as $student) {
+            $totalAvg = 0;
+            $avgCount = 0;
+            $hasAlert = false;
+            $atRisk = false;
+
+            foreach ($student->groups as $group) {
+                $periodId = $group->pivot->period_id ?? $group->period_id;
+                $categories = $categoriesByGroup->get($group->id, collect());
+                $lookupKey = "{$student->id}_{$group->id}_{$periodId}";
+                $studentGrades = $gradesByStudentAndGroup->get($lookupKey, collect());
+                $studentAttendance = $attendanceByStudentAndGroup->get($lookupKey, collect());
+
+                $groupAvg = $this->computeWeightedAverage($studentGrades, $categories);
+                $absenceStreak = $this->computeAbsenceStreak($studentAttendance);
+
+                if ($groupAvg !== null) {
+                    $totalAvg += $groupAvg;
+                    $avgCount++;
+                    if ($groupAvg < 60) {
+                        $atRisk = true;
+                    }
+                }
+
+                if ($absenceStreak >= 3) {
+                    $hasAlert = true;
+                }
+            }
+
+            $metrics[$student->id] = [
+                'average' => $avgCount > 0 ? round($totalAvg / $avgCount, 1) : null,
+                'at_risk' => $atRisk,
+                'has_absence_alert' => $hasAlert,
+                'groups_count' => $student->groups->count(),
+            ];
+        }
+
+        return $metrics;
     }
 
     /**
