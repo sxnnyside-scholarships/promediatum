@@ -808,6 +808,11 @@ export default {
 
     // Desktop notifications & IPC
     'desktop.status': 'Native Desktop Environment',
+    'desktop.card_title': 'Promediatum Desktop Application',
+    'desktop.card_subtitle':
+        'Your grades and academic records are processed and stored privately and autonomously on this device.',
+    'desktop.status_badge': 'Active & Secure',
+    'desktop.local_engine': 'Local processing engine',
     'desktop.connected': 'Connected to local process',
     'desktop.first_launch_ready': 'Promediatum is ready. Welcome!',
     'desktop.notification_export_title': 'Export Complete',

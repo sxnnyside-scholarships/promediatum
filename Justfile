@@ -126,9 +126,9 @@ setup-sidecar:
             fi ;; \
     esac
 
-# Run desktop app via Tauri
+# Run desktop app with local Laravel backend in a single terminal
 tauri-dev:
-    bunx @tauri-apps/cli dev
+    bunx concurrently -k -n "php,tauri" -c "green,cyan" "php artisan serve" "bunx @tauri-apps/cli dev"
 
 # Build standalone desktop bundle via Tauri
 tauri-build: setup-sidecar

@@ -825,6 +825,11 @@ export default {
 
     // Desktop notifications & IPC
     'desktop.status': 'Entorno de Escritorio Nativo',
+    'desktop.card_title': 'Aplicación de Escritorio Promediatum',
+    'desktop.card_subtitle':
+        'Tus notas y registros se procesan y almacenan de forma privada y autónoma en este equipo.',
+    'desktop.status_badge': 'Activo y Seguro',
+    'desktop.local_engine': 'Motor de procesamiento local',
     'desktop.connected': 'Conectado a proceso local',
     'desktop.first_launch_ready': 'Promediatum está listo. ¡Bienvenido!',
     'desktop.notification_export_title': 'Exportación Completada',

@@ -90,6 +90,22 @@ const tauriSystemInfo = ref<SystemInfo | null>(null);
 const tauriAppPaths = ref<AppPaths | null>(null);
 const tauriHealth = ref<BackendHealth | null>(null);
 
+const friendlyPlatform = computed(() => {
+    if (!tauriSystemInfo.value) return '';
+    const plat = tauriSystemInfo.value.platform.toLowerCase();
+    const arch = tauriSystemInfo.value.arch;
+    if (plat === 'macos' || plat === 'darwin') {
+        return arch === 'aarch64' ? 'macOS · Apple Silicon' : 'macOS';
+    }
+    if (plat === 'windows' || plat === 'windows_nt') {
+        return 'Windows';
+    }
+    if (plat === 'linux') {
+        return 'Linux';
+    }
+    return `${tauriSystemInfo.value.platform} (${arch})`;
+});
+
 onMounted(async () => {
     if (isTauri.value) {
         tauriSystemInfo.value = await getSystemInfo();
@@ -1047,28 +1063,48 @@ const currentPreviewClass = computed(() => {
                         </div>
                     </section>
 
-                    <!-- SECTION 5: Native Desktop IPC Status (Tauri only) -->
+                    <!-- SECTION 5: Native Desktop Mode (Tauri only) -->
                     <section
                         v-if="isTauri && tauriSystemInfo"
-                        class="rounded-2xl border border-accent-200/80 dark:border-accent-800/60 bg-gradient-to-br from-white via-cafe-50/40 to-accent-50/20 dark:from-surface-dark-1 dark:via-surface-dark-2/40 dark:to-surface-dark-3/20 p-5 shadow-xs space-y-3"
+                        class="rounded-2xl border border-emerald-200/80 dark:border-emerald-800/50 bg-gradient-to-br from-white via-emerald-50/20 to-accent-50/20 dark:from-surface-dark-1 dark:via-surface-dark-2/40 dark:to-surface-dark-3/20 p-5 shadow-xs space-y-3.5"
                     >
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-2">
-                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-                                <h3 class="text-xs font-bold text-cafe-900 dark:text-cafe-100 uppercase tracking-wider">
-                                    {{ t('desktop.status') }}
-                                </h3>
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex items-start gap-3">
+                                <div class="w-9 h-9 rounded-xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 flex items-center justify-center shrink-0 border border-emerald-200/60">
+                                    <ComputerRegular class="w-5 h-5" />
+                                </div>
+                                <div>
+                                    <div class="flex items-center gap-2">
+                                        <h3 class="text-sm font-bold text-cafe-900 dark:text-cafe-100">
+                                            {{ t('desktop.card_title') }}
+                                        </h3>
+                                        <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-200/60">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                            {{ t('desktop.status_badge') }}
+                                        </span>
+                                    </div>
+                                    <p class="text-xs text-cafe-500 dark:text-cafe-400 mt-1 leading-relaxed">
+                                        {{ t('desktop.card_subtitle') }}
+                                    </p>
+                                </div>
                             </div>
-                            <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-accent-100 dark:bg-accent-950 text-accent-700 dark:text-accent-300 font-semibold">
-                                {{ tauriSystemInfo.platform }} · {{ tauriSystemInfo.arch }}
+                        </div>
+
+                        <!-- Pill row: Friendly System & Local Processing indicator -->
+                        <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-cafe-100/80 dark:border-surface-dark-3">
+                            <span class="inline-flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-lg bg-cafe-100/70 dark:bg-surface-dark-3 text-cafe-700 dark:text-cafe-200">
+                                <span class="font-semibold">{{ friendlyPlatform }}</span>
+                                <span class="text-cafe-400 dark:text-cafe-500">·</span>
+                                <span>v{{ tauriSystemInfo.app_version }}</span>
+                            </span>
+
+                            <span class="inline-flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-100/80 dark:border-emerald-900/40">
+                                <span>{{ t('desktop.local_engine') }}</span>
+                                <span v-if="tauriHealth" class="text-emerald-600/80 dark:text-emerald-400/80 font-mono text-[10px]">
+                                    (&lt;{{ Math.max(1, tauriHealth.latency_ms) }}ms)
+                                </span>
                             </span>
                         </div>
-                        <p class="text-xs text-cafe-600 dark:text-cafe-300 leading-relaxed">
-                            {{ t('desktop.connected') }} (v{{ tauriSystemInfo.app_version }})
-                            <span v-if="tauriHealth" class="ml-1 text-emerald-600 font-mono font-medium">
-                                · Ping: {{ tauriHealth.latency_ms }}ms (127.0.0.1:{{ tauriHealth.port }})
-                            </span>
-                        </p>
                     </section>
                 </div>
             </div>
